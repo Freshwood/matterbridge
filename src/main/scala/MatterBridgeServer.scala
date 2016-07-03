@@ -3,9 +3,13 @@ import java.util.concurrent.TimeUnit
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.util.Timeout
+import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
+import com.freshsoft.matterbridge.entity.MattermostEntities.StartNineGagIntegration
 import com.freshsoft.matterbridge.routing.MatterBridgeRoute
 import com.freshsoft.matterbridge.server.IRest
 import com.freshsoft.matterbridge.util.MatterBridgeServerConfig
+
+import scala.concurrent.duration._
 
 /**
 	* The matter bridge server entry point which is working as web server
@@ -29,4 +33,9 @@ object MatterBridgeServer extends App
 		case ex: Exception =>
 			log.error(ex, "Failed to bind to {}:{}!", host, port)
 	}
+
+	system.scheduler.schedule(0 milliseconds,
+		1 minutes,
+		NineGagIntegration.nineGagResolver,
+		StartNineGagIntegration("Start", NineGagIntegration.nineGagWorker))
 }

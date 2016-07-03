@@ -1,6 +1,6 @@
 package com.freshsoft.matterbridge.client.ninegag
 
-import akka.actor.Actor
+import akka.actor.{Actor, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.util.ByteString
@@ -19,9 +19,13 @@ object NineGagIntegration extends IRest{
 
 	override implicit def executionContext: ExecutionContext = system.dispatcher
 
-	val nineGagGifs: Map[String, String] = Map.empty
+	val nineGagResolver = system.actorOf(Props(classOf[NineGagResolver]))
 
-	private val nineGagUrl = "http://9gag.com/"
+	val nineGagWorker = system.actorOf(Props(classOf[NineGagWorker]))
+
+	var nineGagGifs: Map[String, String] = Map.empty
+
+	private val nineGagUrl = "http://9gag.com/gif"
 
 	private val nineGagRawResult = Http().singleRequest(HttpRequest(uri = nineGagUrl)).flatMap {
 		case HttpResponse(StatusCodes.OK, headers, entity, _) =>
@@ -31,20 +35,21 @@ object NineGagIntegration extends IRest{
 	}
 
 	private def addGif(gif: NineGagGifResult) = {
-		nineGagGifs ++ Map(gif.key -> gif.gifUrl)
+		nineGagGifs += (gif.key -> gif.gifUrl)
 	}
 
 	class NineGagResolver extends Actor {
 		override def receive: Receive = {
-			case x: StartNineGagIntegration => x.worker ! StartNineGagGifSearch("Start")
+			case x: StartNineGagIntegration => x.worker ! StartNineGagGifSearch(x.command)
 			case x: NineGagGifResult => addGif(x)
 		}
 	}
 
 	class NineGagWorker extends Actor {
+
 		override def receive: Receive = {
 			case x: StartNineGagGifSearch => getNineGagGifs onSuccess {
-				case result => result.foreach(u => sender() ! u)
+				case result => result.foreach(u => nineGagResolver ! u)
 			}
 		}
 
@@ -61,12 +66,13 @@ object NineGagIntegration extends IRest{
 			val browser = JsoupBrowser()
 			val doc = browser.parseString(htmlContent)
 
-			val items = doc >> element("article")
+			val articles = doc >> elements("article")
+			val headers = articles("header h2 a")
+			val gifs = (doc >> elementList("article div a div") >?> attr("data-image")("div")).flatten
 
-			val headers = items("header h2 a")
-			val gifs = items >> elements("div a div")
+			val result = (for(h <- headers; g <- gifs) yield (h, g)).toMap
 
-			(for(h <- headers; g <- gifs) yield NineGagGifResult(h, g.attr("data-image"))).toList
+			result.map(r => NineGagGifResult(r._1, r._2)).toList
 		}
 	}
 }
