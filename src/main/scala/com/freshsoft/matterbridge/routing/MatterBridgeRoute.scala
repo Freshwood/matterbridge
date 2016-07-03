@@ -21,6 +21,8 @@ class MatterBridgeRoute extends ISlashCommandJsonSupport {
 						entity(as[FormData]) { entity =>
 							complete(matterBridgeService.matterBridgeIntegration(entity))
 						}
+					} ~ get {
+						complete("The matterbridge service is online!")
 					}
 				}
 			}

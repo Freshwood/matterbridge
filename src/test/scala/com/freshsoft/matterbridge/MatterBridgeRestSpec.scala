@@ -33,13 +33,6 @@ class MatterBridgeRestSpec
 			}
 		}
 
-		"return method not allowed on api/matterbridge with GET" in {
-			Get("/api/matterbridge") ~> Route.seal(routes) ~> check {
-				status shouldBe StatusCodes.MethodNotAllowed
-				responseAs[String] shouldEqual "HTTP method not allowed, supported methods: POST"
-			}
-		}
-
 		"leave GET requests to other paths unhandled" in {
 			// tests:
 			Get("/kermit") ~> routes ~> check {
@@ -47,10 +40,10 @@ class MatterBridgeRestSpec
 			}
 		}
 
-		"disallow Get on matterbridge path" in {
+		"Get on matterbridge path should result with a welcome message" in {
 			Get("/api/matterbridge") ~> Route.seal(routes) ~> check {
-				status === StatusCodes.MethodNotAllowed
-				responseAs[String] shouldEqual "HTTP method not allowed, supported methods: POST"
+				status === StatusCodes.OK
+				responseAs[String] shouldEqual "The matterbridge service is online!"
 			}
 		}
 
