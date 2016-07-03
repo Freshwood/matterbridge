@@ -2,12 +2,13 @@ package com.freshsoft.matterbridge.entity
 
 import akka.http.scaladsl.model.FormData
 import akka.http.scaladsl.model.Uri.Query
-import com.freshsoft.matterbridge.entity.MattermostEntities.SlashRequest
 
 /**
 	* The SlashRequest companion object to match FormData
 	*/
 object SlashRequest {
+
+	case class SlashRequest(command: String = "", username: String = "", text: String = "")
 
 	val extractFormDataField = (x: Query, y: String) => x.find(_._1 == y)
 

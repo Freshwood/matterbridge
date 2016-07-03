@@ -6,7 +6,8 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse, StatusCodes}
 import akka.util.ByteString
-import com.freshsoft.matterbridge.entity.MattermostEntities.{SlashRequest, SlashResponse}
+import com.freshsoft.matterbridge.entity.MattermostEntities.SlashResponse
+import com.freshsoft.matterbridge.entity.SlashRequest.SlashRequest
 import com.freshsoft.matterbridge.server.IRest
 import com.freshsoft.matterbridge.util.WithConfig
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser

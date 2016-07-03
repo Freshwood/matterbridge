@@ -1,6 +1,7 @@
 package com.freshsoft.matterbridge.client
 
-import com.freshsoft.matterbridge.entity.MattermostEntities.{SlashRequest, SlashResponse}
+import com.freshsoft.matterbridge.entity.MattermostEntities.SlashResponse
+import com.freshsoft.matterbridge.entity.SlashRequest.SlashRequest
 
 import scala.concurrent.Future
 

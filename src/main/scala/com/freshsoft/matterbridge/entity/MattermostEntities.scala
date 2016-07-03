@@ -13,8 +13,6 @@ object MattermostEntities {
 
 	case class SlashResponse(response_type: String, text: String)
 
-	case class SlashRequest(command: String = "", username: String = "", text: String = "")
-
 	/**
 		* Implicit json conversion -> Nothing to do when we complete the object
 		*/
