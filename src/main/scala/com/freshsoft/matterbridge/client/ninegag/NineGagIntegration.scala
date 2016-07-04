@@ -13,7 +13,7 @@ import net.ruippeixotog.scalascraper.dsl.DSL._
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-	* Created by Freshwood on 03.07.2016.
+	* The nine gag integration which is searching in the background for gifs
 	*/
 object NineGagIntegration extends IRest{
 
@@ -25,9 +25,14 @@ object NineGagIntegration extends IRest{
 
 	var nineGagGifs: Map[String, String] = Map.empty
 
-	private val nineGagUrl = "http://9gag.com/gif"
+	private val nineGagBaseUrl = "http://9gag.com/"
 
-	private val nineGagRawResult = Http().singleRequest(HttpRequest(uri = nineGagUrl)).flatMap {
+	private val nineGagCategories = Seq("funny/", "wtf/", "gif/", "gaming/", "anime-manga/",
+		"movie-tv/", "cute/", "girl/", "awesome/", "cosplay/", "sport/", "food/", "timely/")
+
+	private val nineGagExtraCategory = "fresh/"
+
+	private def nineGagRawResult(url: String) = Http().singleRequest(HttpRequest(uri = url)).flatMap {
 		case HttpResponse(StatusCodes.OK, headers, entity, _) =>
 			entity.dataBytes.runFold(ByteString(""))(_ ++ _).map {
 				x => x.decodeString("UTF-8")
@@ -54,7 +59,7 @@ object NineGagIntegration extends IRest{
 		}
 
 		private def getNineGagGifs: Future[List[NineGagGifResult]] = {
-			nineGagRawResult flatMap {
+			nineGagRawResult(nineGagBaseUrl) flatMap {
 				case x if x.isEmpty => Future {Nil}
 				case x if !x.isEmpty => Future {
 					resolveGifsFromContent(x)
@@ -67,12 +72,14 @@ object NineGagIntegration extends IRest{
 			val doc = browser.parseString(htmlContent)
 
 			val articles = doc >> elements("article")
-			val headers = articles("header h2 a")
-			val gifs = (doc >> elementList("article div a div") >?> attr("data-image")("div")).flatten
 
-			val result = (for(h <- headers; g <- gifs) yield (h, g)).toMap
+			val gifResults = for {
+				article <- articles
+				headline <- article("header h2 a")
+			  gifSrc <- (article >> elementList("div a div") >?> attr("data-image")("div")).flatten
+			} yield (headline, gifSrc)
 
-			result.map(r => NineGagGifResult(r._1, r._2)).toList
+			gifResults.map(r => NineGagGifResult(r._1, r._2)).toList
 		}
 	}
 }
