@@ -35,7 +35,7 @@ object MatterBridgeServer extends App
 	}
 
 	system.scheduler.schedule(0 milliseconds,
-		1 minutes,
+		10 seconds,
 		NineGagIntegration.nineGagResolver,
 		StartNineGagIntegration("Start", NineGagIntegration.nineGagWorker))
 }

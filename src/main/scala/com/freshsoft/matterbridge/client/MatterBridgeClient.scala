@@ -69,7 +69,7 @@ object MatterBridgeClient {
 
 		/**
 			* Filter the content to fit our needs
-			* @param htmlContent The web result to retrieve the informations
+			* @param htmlContent The web result to retrieve the information
 			* @param request The request to build the final response
 			* @return The response message as String
 			*/
