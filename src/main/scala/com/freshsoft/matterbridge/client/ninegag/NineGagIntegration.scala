@@ -147,8 +147,7 @@ object NineGagIntegration extends IMatterBridgeResult with WithConfig with IRest
 
 		val words = request.text.split("\\W+")
 
-		val test = nineGagGifs.toVector(Random.nextInt(nineGagGifs.size))
-
+		// TODO: filter with filter to get a list
 		 Future {
 			 nineGagGifs.find(p => p._1.equals(request.text) || p._1.contains(request.text) || p._1.contains(words)) match {
 				 case Some(x) => Some(SlashResponse(nineGagResponseType, responseText(x, request.text)))
