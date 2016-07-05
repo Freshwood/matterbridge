@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse, StatusCodes}
 import akka.util.ByteString
 import com.freshsoft.matterbridge.entity.MattermostEntities.SlashResponse
-import com.freshsoft.matterbridge.entity.SlashRequest.SlashRequest
+import com.freshsoft.matterbridge.entity.SlashRequest
 import com.freshsoft.matterbridge.server.IRest
 import com.freshsoft.matterbridge.util.WithConfig
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
@@ -32,7 +32,8 @@ object MatterBridgeClient {
 
 		val randomUrl = "http://thecodinglove.com/random"
 
-		def getResult(request: SlashRequest): Future[Option[SlashResponse]] = {
+
+		override def getResult(request: SlashRequest): Future[Option[SlashResponse]] = {
 				getDataFromWebsite(randomUrl, request)
 		}
 
@@ -50,7 +51,7 @@ object MatterBridgeClient {
 							x.decodeString("UTF-8") match {
 								case response if response.isEmpty => log.info("NONE RESULT"); None
 								case response if !response.isEmpty => log.info(response)
-									Some(new SlashResponse(responseType, getCodingLoveResponseContent(response, request)))
+									Some(new SlashResponse(codingLoveResponseType, getCodingLoveResponseContent(response, request)))
 							}
 						}
 					}

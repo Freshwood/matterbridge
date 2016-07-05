@@ -2,6 +2,7 @@ package com.freshsoft.matterbridge.server
 
 import akka.http.scaladsl.model.FormData
 import com.freshsoft.matterbridge.client.MatterBridgeClient.CodingLoveIntegration
+import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
 import com.freshsoft.matterbridge.entity.MattermostEntities.SlashResponse
 import com.freshsoft.matterbridge.entity.SlashRequest
 import com.freshsoft.matterbridge.util.WithConfig
@@ -28,7 +29,13 @@ class MatterBridgeService extends WithConfig with IRest {
 
 		val request = SlashRequest(formData)
 
-		if (isMatterBridgeCommand(request.command)) codingLoveIntegration.getResult(request) else Future { None }
+		startIntegration(request)
+	}
+
+	private def startIntegration(request: SlashRequest) = request.command match {
+		case x if x.contains(codingLoveCommand) => codingLoveIntegration.getResult(request)
+		case x if x.contains(nineGagCommand) => NineGagIntegration.getResult(request)
+		case _ => Future { None }
 	}
 
 }

@@ -6,9 +6,9 @@ import akka.http.scaladsl.model.Uri.Query
 /**
 	* The SlashRequest companion object to match FormData
 	*/
-object SlashRequest {
+case class SlashRequest(command: String = "", username: String = "", text: String = "")
 
-	case class SlashRequest(command: String = "", username: String = "", text: String = "")
+object SlashRequest {
 
 	val extractFormDataField = (x: Query, y: String) => x.find(_._1 == y)
 

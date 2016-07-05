@@ -23,7 +23,9 @@ trait MatterBridgeServerConfig extends MatterBridgeConfigHolder {
 	*/
 trait MatterBridgeIntegrationsConfig extends MatterBridgeServerConfig {
 	val codingLoveCommand = config.getString("matterbridge.integrations.codinglove.command")
-	val responseType = config.getString("matterbridge.integrations.codinglove.response_type")
+	val codingLoveResponseType = config.getString("matterbridge.integrations.codinglove.response_type")
+	val nineGagCommand = config.getString("matterbridge.integrations.ninegag.command")
+	val nineGagResponseType = config.getString("matterbridge.integrations.ninegag.response_type")
 }
 
 /**
