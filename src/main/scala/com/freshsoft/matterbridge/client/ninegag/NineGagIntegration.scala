@@ -145,14 +145,16 @@ object NineGagIntegration extends IMatterBridgeResult with WithConfig with IRest
 
 		val responseText = (x: (String, String), y: String) => s"${x._1} \n ${x._2}\nSearched for $y"
 
+		val getSpecificMap = (x: Vector[(String, String)]) => x(Random.nextInt(x.size))
+
+		// Search for every word to as fallback
 		val words = request.text.split("\\W+")
 
-		// TODO: filter with filter to get a list
 		 Future {
-			 nineGagGifs.find(p => p._1.equals(request.text) || p._1.contains(request.text) || p._1.contains(words)) match {
-				 case Some(x) => Some(SlashResponse(nineGagResponseType, responseText(x, request.text)))
+			 nineGagGifs.filter(p => p._1.contains(request.text) || p._1.contains(request.text) || p._1.contains(words)) match {
+				 case x: Map[String, String] if x.nonEmpty => Some(SlashResponse(nineGagResponseType, responseText(getSpecificMap(x.toVector), request.text)))
 				 // Nothing found then search further
-				 case _ => nineGagGifs.toVector(Random.nextInt(nineGagGifs.size)) match {
+				 case _ => getSpecificMap(nineGagGifs.toVector) match {
 					 case y: (String, String) => Some(SlashResponse(nineGagResponseType, responseText(y, request.text)))
 					 case _ => None
 				 }
