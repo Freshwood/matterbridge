@@ -25,7 +25,7 @@ object MatterBridgeIntegration extends IMatterBridgeResult with WithConfig with 
 		*/
 	override def getResult(request: SlashRequest): Future[Option[SlashResponse]] = {
 		Future {
-			Some(new SlashResponse(getLastEntryFromMap(NineGagIntegration.nineGagGifs), matterBridgeResponseType))
+			Some(SlashResponse(matterBridgeResponseType, getLastEntryFromMap(NineGagIntegration.nineGagGifs)))
 		}
 	}
 }
