@@ -6,7 +6,7 @@ import akka.util.Timeout
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
 import com.freshsoft.matterbridge.entity.MattermostEntities.StartNineGagIntegration
 import com.freshsoft.matterbridge.routing.MatterBridgeRoute
-import com.freshsoft.matterbridge.server.IRest
+import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.MatterBridgeServerConfig
 
 import scala.concurrent.duration._
@@ -16,9 +16,8 @@ import scala.concurrent.duration._
 	*/
 object MatterBridgeServer extends App
 	with MatterBridgeServerConfig
-	with IRest {
+	with WithActorContext {
 
-	implicit val executionContext = system.dispatcher
 	implicit val timeout: Timeout = Timeout(10, TimeUnit.SECONDS)
 
 	val log = Logging.getLogger(system, this)

@@ -8,21 +8,19 @@ import akka.util.ByteString
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
 import com.freshsoft.matterbridge.entity.MattermostEntities.{NineGagGifResult, SlashResponse, StartNineGagGifSearch, StartNineGagIntegration}
 import com.freshsoft.matterbridge.entity.SlashRequest
-import com.freshsoft.matterbridge.server.IRest
+import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.WithConfig
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.util.{Failure, Random, Success}
 
 /**
 	* The nine gag integration which is searching in the background for gifs
 	*/
-object NineGagIntegration extends IMatterBridgeResult with WithConfig with IRest{
-
-	override implicit def executionContext: ExecutionContext = system.dispatcher
+object NineGagIntegration extends IMatterBridgeResult with WithConfig with WithActorContext{
 
 	val log = Logging.getLogger(system, this)
 

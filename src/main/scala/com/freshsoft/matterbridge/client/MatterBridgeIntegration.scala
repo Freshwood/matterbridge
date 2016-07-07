@@ -3,17 +3,15 @@ package com.freshsoft.matterbridge.client
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
 import com.freshsoft.matterbridge.entity.MattermostEntities.SlashResponse
 import com.freshsoft.matterbridge.entity.SlashRequest
-import com.freshsoft.matterbridge.server.IRest
+import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.WithConfig
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /**
 	* The global matter bridge integration
 	*/
-object MatterBridgeIntegration extends IMatterBridgeResult with WithConfig with IRest {
-
-	override implicit def executionContext: ExecutionContext = materializer.executionContext
+object MatterBridgeIntegration extends IMatterBridgeResult with WithConfig with WithActorContext {
 
 	val getLastEntryFromMap = (x: Map[String, String]) => s"9Gag Gifs [${x.size}]\nLast gif ${x.last._2}"
 
