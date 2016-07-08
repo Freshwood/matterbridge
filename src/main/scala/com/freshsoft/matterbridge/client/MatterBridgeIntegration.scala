@@ -2,7 +2,7 @@ package com.freshsoft.matterbridge.client
 
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
 import com.freshsoft.matterbridge.entity.MattermostEntities.SlashResponse
-import com.freshsoft.matterbridge.entity.SlashRequest
+import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.WithConfig
 
@@ -21,7 +21,7 @@ object MatterBridgeIntegration extends IMatterBridgeResult with WithConfig with 
 		* @param request The SlashRequest to build the response
 		* @return A Future of SlashResponse
 		*/
-	override def getResult(request: SlashRequest): Future[Option[SlashResponse]] = {
+	override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] = {
 		Future {
 			Some(SlashResponse(matterBridgeResponseType, getLastEntryFromMap(NineGagIntegration.nineGagGifs)))
 		}

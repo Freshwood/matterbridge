@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.util.ByteString
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
 import com.freshsoft.matterbridge.entity.MattermostEntities.{NineGagGifResult, SlashResponse, StartNineGagGifSearch, StartNineGagIntegration}
-import com.freshsoft.matterbridge.entity.SlashRequest
+import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.WithConfig
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
@@ -139,7 +139,7 @@ object NineGagIntegration extends IMatterBridgeResult with WithConfig with WithA
 		}
 	}
 
-	override def getResult(request: SlashRequest): Future[Option[SlashResponse]] = {
+	override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] = {
 
 		val responseText = (x: (String, String), y: String) => s"${x._1} \n ${x._2}\nSearched for $y"
 

@@ -15,14 +15,22 @@ class MatterBridgeRoute extends ISlashCommandJsonSupport {
 
 	val routes: Route = logRequestResult("matter-bridge") {
 		pathPrefix("api") {
-			path("matterbridge") {
+			pathPrefix("matterbridge") {
 				pathEnd {
 					post {
 						entity(as[FormData]) { entity =>
-							complete(matterBridgeService.matterBridgeIntegration(entity))
+							complete(matterBridgeService.slashCommandIntegration(entity))
 						}
 					} ~ get {
 						complete("The matterbridge service is online!")
+					}
+				} ~ pathPrefix("out") {
+					pathEnd {
+						post {
+							entity(as[FormData]) { entity =>
+								complete(matterBridgeService.outgoingHookIntegration(entity))
+							}
+						}
 					}
 				}
 			}

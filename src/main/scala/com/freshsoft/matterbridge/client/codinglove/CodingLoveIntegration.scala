@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse, StatusCo
 import akka.util.ByteString
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
 import com.freshsoft.matterbridge.entity.MattermostEntities.SlashResponse
-import com.freshsoft.matterbridge.entity.SlashRequest
+import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.WithConfig
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
@@ -28,7 +28,7 @@ object CodingLoveIntegration extends IMatterBridgeResult
 	val randomUrl = "http://thecodinglove.com/random"
 
 
-	override def getResult(request: SlashRequest): Future[Option[SlashResponse]] = {
+	override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] = {
 		getDataFromWebsite(randomUrl, request)
 	}
 
@@ -39,7 +39,7 @@ object CodingLoveIntegration extends IMatterBridgeResult
 		* @param request The SlashRequest to work with
 		* @return Future as Option from SlashResponse
 		*/
-	private def getDataFromWebsite(uri: String, request: SlashRequest): Future[Option[SlashResponse]] = {
+	private def getDataFromWebsite(uri: String, request: SlashCommandRequest): Future[Option[SlashResponse]] = {
 		Http().singleRequest(HttpRequest(uri = uri)).flatMap {
 			case HttpResponse(StatusCodes.OK, headers, entity, _) =>
 				entity.dataBytes.runFold(ByteString(""))(_ ++ _).flatMap {
@@ -71,7 +71,7 @@ object CodingLoveIntegration extends IMatterBridgeResult
 		* @param request     The request to build the final response
 		* @return The response message as String
 		*/
-	private def getCodingLoveResponseContent(htmlContent: String, request: SlashRequest) = {
+	private def getCodingLoveResponseContent(htmlContent: String, request: SlashCommandRequest) = {
 		val browser = JsoupBrowser()
 		val doc = browser.parseString(htmlContent)
 

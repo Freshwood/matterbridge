@@ -20,7 +20,7 @@ class MatterBridgeServiceSpec
 	"The matter bridge service" should {
 
 		"Return nothing when a wrong command was send" in {
-			whenReady(service.matterBridgeIntegration(wrongFormData)) {
+			whenReady(service.slashCommandIntegration(wrongFormData)) {
 				result => result shouldBe None
 			}
 		}
