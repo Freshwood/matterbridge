@@ -20,7 +20,7 @@ object MattermostEntities {
 
 	case class StartNineGagGifSearch(command: String)
 
-	case class NineGagGifResult(key: String, gifUrl: String)
+	case class NineGagGifResult(key: String = "", gifUrl: String = "")
 
 	/**
 		* Implicit json conversion -> Nothing to do when we complete the object

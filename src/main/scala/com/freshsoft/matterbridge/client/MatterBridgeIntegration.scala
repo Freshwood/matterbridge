@@ -1,7 +1,7 @@
 package com.freshsoft.matterbridge.client
 
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
-import com.freshsoft.matterbridge.entity.MattermostEntities.SlashResponse
+import com.freshsoft.matterbridge.entity.MattermostEntities.{NineGagGifResult, SlashResponse}
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.WithConfig
@@ -13,7 +13,7 @@ import scala.concurrent.Future
 	*/
 object MatterBridgeIntegration extends IMatterBridgeResult with WithConfig with WithActorContext {
 
-	val getLastEntryFromMap = (x: Map[String, String]) => s"9Gag Gifs [${x.size}]\nLast gif ${x.last._2}"
+	private val responseMessage = (x: Int, y: NineGagGifResult) => s"9Gag Gifs [$x] Last Gif:\n${y.key}\nUrl: ${y.gifUrl}"
 
 	/**
 		* Get the SlashResponse result for this integration
@@ -23,7 +23,8 @@ object MatterBridgeIntegration extends IMatterBridgeResult with WithConfig with 
 		*/
 	override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] = {
 		Future {
-			Some(SlashResponse(matterBridgeResponseType, getLastEntryFromMap(NineGagIntegration.nineGagGifs)))
+			Some(SlashResponse(matterBridgeResponseType,
+				responseMessage(NineGagIntegration.nineGagGifs.size, NineGagIntegration.lastGif)))
 		}
 	}
 }

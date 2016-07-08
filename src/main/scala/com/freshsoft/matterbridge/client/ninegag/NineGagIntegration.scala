@@ -30,6 +30,8 @@ object NineGagIntegration extends IMatterBridgeResult with WithConfig with WithA
 
 	var nineGagGifs: Map[String, String] = Map.empty
 
+	var lastGif: NineGagGifResult = new NineGagGifResult
+
 	private val nineGagBaseUrl = "http://9gag.com/"
 
 	private var previousUrl = nineGagBaseUrl
@@ -85,7 +87,7 @@ object NineGagIntegration extends IMatterBridgeResult with WithConfig with WithA
 	class NineGagResolver extends Actor {
 		override def receive: Receive = {
 			case x: StartNineGagIntegration => x.worker ! StartNineGagGifSearch(x.command)
-			case x: NineGagGifResult => addGif(x)
+			case x: NineGagGifResult => lastGif = x; addGif(x)
 		}
 	}
 
