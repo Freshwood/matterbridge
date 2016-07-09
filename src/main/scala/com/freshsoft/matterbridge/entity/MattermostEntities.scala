@@ -5,6 +5,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.Uri.Query
 import spray.json.DefaultJsonProtocol
 
+
 /**
 	* Here are all matterbridge defined entities
 	*/
@@ -16,9 +17,7 @@ object MattermostEntities {
 
 	case class OutgoingResponse(text: String)
 
-	case class StartNineGagIntegration(command: String, worker: ActorRef)
-
-	case class StartNineGagGifSearch(command: String)
+	case class NineGagResolveCommand(worker: ActorRef)
 
 	case class NineGagGifResult(key: String = "", gifUrl: String = "")
 
