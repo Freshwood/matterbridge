@@ -15,7 +15,7 @@ import scala.util.Random
 /**
 	* The nine gag integration which is searching in the background for gifs
 	*/
-object NineGagIntegration extends IMatterBridgeResult with WithConfig with WithActorContext{
+object NineGagIntegration extends IMatterBridgeResult with WithConfig with WithActorContext {
 
 	val log = Logging.getLogger(system, this)
 
