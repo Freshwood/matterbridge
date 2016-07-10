@@ -52,11 +52,5 @@ class MatterBridgeRestSpec
 				status === StatusCodes.OK
 			}
 		}
-
-		"allow Posts on matterbridge out path" in {
-			Post("/api/matterbridge/out") ~> Route.seal(routes) ~> check {
-				status === StatusCodes.OK
-			}
-		}
 	}
 }

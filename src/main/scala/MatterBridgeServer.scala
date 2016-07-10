@@ -4,12 +4,13 @@ import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.util.Timeout
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
-import com.freshsoft.matterbridge.entity.MattermostEntities.StartNineGagIntegration
+import com.freshsoft.matterbridge.entity.MattermostEntities.NineGagResolveCommand
 import com.freshsoft.matterbridge.routing.MatterBridgeRoute
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.MatterBridgeServerConfig
 
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
 	* The matter bridge server entry point which is working as web server
@@ -34,7 +35,7 @@ object MatterBridgeServer extends App
 	}
 
 	system.scheduler.schedule(0 milliseconds,
-		10 seconds,
+		15 seconds,
 		NineGagIntegration.nineGagResolver,
-		StartNineGagIntegration("Start", NineGagIntegration.nineGagWorker))
+		NineGagResolveCommand(NineGagIntegration.nineGagWorker))
 }
