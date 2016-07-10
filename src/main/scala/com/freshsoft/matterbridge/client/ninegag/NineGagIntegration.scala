@@ -8,6 +8,7 @@ import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.WithConfig
 
+import scala.collection.mutable
 import scala.concurrent.Future
 import scala.util.Random
 
@@ -24,7 +25,7 @@ object NineGagIntegration extends IMatterBridgeResult with WithConfig with WithA
 
 	val nineGagGifReceiver = system.actorOf(Props(classOf[NineGagGifReceiver]))
 
-	var nineGagGifs: Map[String, String] = Map.empty
+	var nineGagGifs: mutable.LinkedHashMap[String, String] = mutable.LinkedHashMap.empty
 
 	var lastGif: NineGagGifResult = new NineGagGifResult
 
@@ -36,6 +37,19 @@ object NineGagIntegration extends IMatterBridgeResult with WithConfig with WithA
 
 		override def receive: Receive = {
 			case x: NineGagGifResult => addGif(x)
+				adjustGifStore()
+				log.info(s"Actual size [${nineGagGifs.size}]")
+		}
+	}
+
+	/**
+		* Adjust the gif store. Almost 100000 gifs should be enough to cache
+		*/
+	private def adjustGifStore() = {
+		val dropSize = nineGagGifs.size - nineGagMaximumGifStore
+		if (dropSize > 0) {
+			log.info(s"Dropping $dropSize gifs, cause the gif store limit is reached")
+			nineGagGifs = nineGagGifs.drop(dropSize)
 		}
 	}
 
@@ -48,7 +62,7 @@ object NineGagIntegration extends IMatterBridgeResult with WithConfig with WithA
 		val oldSize = nineGagGifs.size
 		nineGagGifs += (gif.key -> gif.gifUrl)
 		if (oldSize != nineGagGifs.size) {
-			log.info(s"Added new gif [${gif.key}]\n[${gif.gifUrl}]. Actual size [${nineGagGifs.size}]")
+			log.info(s"Added new gif [${gif.key}]\n[${gif.gifUrl}]")
 			lastGif = gif
 		}
 	}
