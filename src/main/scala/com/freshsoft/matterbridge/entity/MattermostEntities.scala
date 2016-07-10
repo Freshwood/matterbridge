@@ -15,8 +15,6 @@ object MattermostEntities {
 
 	case class SlashResponse(response_type: String, text: String)
 
-	case class OutgoingResponse(text: String)
-
 	case class NineGagResolveCommand(worker: ActorRef)
 
 	case class NineGagGifResult(key: String = "", gifUrl: String = "")
@@ -26,6 +24,5 @@ object MattermostEntities {
 		*/
 	trait ISlashCommandJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
 		implicit val slashResponseFormat = jsonFormat2(SlashResponse)
-		implicit val outgoingResponseFormat = jsonFormat1(OutgoingResponse)
 	}
 }
