@@ -1,4 +1,5 @@
 # matterbridge
+[![Build Status](https://travis-ci.org/Freshwood/matterbridge.svg?branch=master)](https://travis-ci.org/Freshwood/matterbridge)
 ## A mattermost and slack bridge with powerful integrations. The goal is to provide integrations which are not present in mattermost and slack
 
 ***
