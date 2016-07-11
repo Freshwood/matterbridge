@@ -24,6 +24,12 @@ lazy val root = (project in file(".")).
 			"com.typesafe.akka" %% "akka-http-testkit" % akkaVersion % "test",
 			"org.scalatest" %% "scalatest" % scalaTestVersion % "test",
 			"org.scalamock" %% "scalamock-scalatest-support" % scalaMockVersion % "test"
-		)
+		),
+		mappings in Universal += {
+			// we are using the application.conf as default application.conf
+			// the user can override settings here
+			val conf = (resourceDirectory in Compile).value / "application.conf"
+			conf -> "conf/application.conf"
+		}
 	)
 
