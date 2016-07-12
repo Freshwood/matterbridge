@@ -19,6 +19,8 @@ class NineGagIntegrationTest extends WordSpec with Matchers with ScalaFutures wi
 
 	val extendedRequest = new SlashCommandRequest("ninegag", "somename", "is a")
 
+	val complexRequest = new SlashCommandRequest("ninegag", "somename", "roflroflname")
+
 	before {
 		NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
 		// Add a test gif
@@ -44,6 +46,12 @@ class NineGagIntegrationTest extends WordSpec with Matchers with ScalaFutures wi
 		"Return the right filtered response which a word match" in {
 			whenReady(NineGagIntegration.getResult(extendedRequest)) {
 				case Some(x) => assert(x.text.contains("This is a big header"))
+			}
+		}
+
+		"Return a random gif when the gif can not be filtered" in {
+			whenReady(NineGagIntegration.getResult(complexRequest)) {
+				case Some(x) => x.response_type shouldBe "in_channel"
 			}
 		}
 	}
