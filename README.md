@@ -1,5 +1,6 @@
 # matterbridge
 [![Build Status](https://travis-ci.org/Freshwood/matterbridge.svg?branch=master)](https://travis-ci.org/Freshwood/matterbridge)
+[![Coverage Status](https://coveralls.io/repos/github/Freshwood/matterbridge/badge.svg?branch=master)](https://coveralls.io/github/Freshwood/matterbridge?branch=master)
 ## A mattermost and slack bridge with powerful integrations. The goal is to provide integrations which are not present in mattermost and slack
 
 ***
