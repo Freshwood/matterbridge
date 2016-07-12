@@ -16,10 +16,10 @@ When you deploy your application you can reach the REST endpoint at **http://you
 ## Samples
 
 #### Coding love integration
-![](docs/codinglove.png)
+![](docs/codinglove.PNG)
 
 #### Nine gag integration
-![](docs/ninegag.png)
+![](docs/ninegag.PNG)
 
 #### Matterbridge integration
-![](docs/matterbridge.png)
+![](docs/matterbridge.PNG)
