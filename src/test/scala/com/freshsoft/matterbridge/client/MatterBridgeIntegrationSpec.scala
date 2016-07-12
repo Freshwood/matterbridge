@@ -31,7 +31,9 @@ class MatterBridgeIntegrationSpec extends WordSpec with Matchers with BeforeAndA
 				result => result shouldBe a [Option[_]]
 			}
 		}
+	}
 
+	"The matter bridge integration with expected output" should {
 		"Return a slash response from the last added nine gag gif" in {
 			whenReady(MatterBridgeIntegration.getResult(null)) {
 				result => result shouldBe Some(expectedOutput)
