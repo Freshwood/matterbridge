@@ -11,3 +11,15 @@ When you deploy your application you can reach the REST endpoint at **http://you
 
 ### For more information visit the [wiki](https://github.com/Freshwood/matterbridge/wiki/Home)
 
+***
+
+## Samples
+
+#### Coding love integration
+![](docs/codinglove.png)
+
+#### Nine gag integration
+![](docs/ninegag.png)
+
+#### Matterbridge integration
+![](docs/matterbridge.png)
