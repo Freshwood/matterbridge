@@ -25,6 +25,4 @@ class NineGagResolverTest extends TestKit(ActorSystem("testSystem")) with WordSp
 		}
 
 	}
-
-
 }
