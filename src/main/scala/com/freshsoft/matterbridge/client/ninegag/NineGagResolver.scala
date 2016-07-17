@@ -1,7 +1,7 @@
 package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.Actor
-import com.freshsoft.matterbridge.entity.MattermostEntities.NineGagResolveCommand
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.NineGagResolveCommand
 import com.freshsoft.matterbridge.server.WithActorContext
 
 /**

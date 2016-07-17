@@ -2,11 +2,11 @@ package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{TestKit, TestProbe}
-import com.freshsoft.matterbridge.entity.MattermostEntities.NineGagResolveCommand
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.NineGagResolveCommand
 import org.scalatest.{MustMatchers, WordSpecLike}
 
 /**
-	* Created by Freshwood on 14.07.2016.
+	* The nine gag resolver test
 	*/
 class NineGagResolverTest extends TestKit(ActorSystem("testSystem")) with WordSpecLike with MustMatchers {
 

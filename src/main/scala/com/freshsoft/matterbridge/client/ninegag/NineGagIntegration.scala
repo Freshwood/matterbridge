@@ -3,7 +3,7 @@ package com.freshsoft.matterbridge.client.ninegag
 import akka.actor.{Actor, Props}
 import akka.event.Logging
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
-import com.freshsoft.matterbridge.entity.MattermostEntities.{NineGagGifResult, SlashResponse}
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, SlashResponse}
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.WithConfig

@@ -1,7 +1,7 @@
 package com.freshsoft.matterbridge.client
 
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
-import com.freshsoft.matterbridge.entity.MattermostEntities.{NineGagGifResult, SlashResponse}
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, SlashResponse}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
 
@@ -13,10 +13,10 @@ import scala.collection.mutable
 class MatterBridgeIntegrationSpec extends WordSpec with Matchers with BeforeAndAfter with ScalaFutures {
 
 	// Generate Test data
-	val gifResult = new NineGagGifResult("This is a test", "http://testurl.com")
+	val gifResult = NineGagGifResult("This is a test", "http://testurl.com")
 
 	// Expected Output
-	val expectedOutput = new SlashResponse("ephemeral", "9Gag Gifs [1] Last Gif:\nThis is a test\nUrl: http://testurl.com")
+	val expectedOutput = SlashResponse("ephemeral", "9Gag Gifs [1] Last Gif:\nThis is a test\nUrl: http://testurl.com")
 
 	 before {
 		 NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
@@ -40,6 +40,4 @@ class MatterBridgeIntegrationSpec extends WordSpec with Matchers with BeforeAndA
 			}
 		}
 	}
-
-
 }

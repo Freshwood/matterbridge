@@ -5,7 +5,7 @@ import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.util.ByteString
-import com.freshsoft.matterbridge.entity.MattermostEntities.{NineGagGifResult, NineGagResolveCommand}
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, NineGagResolveCommand}
 import com.freshsoft.matterbridge.server.WithActorContext
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._

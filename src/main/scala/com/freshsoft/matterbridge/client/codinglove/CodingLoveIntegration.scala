@@ -6,7 +6,7 @@ import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse, StatusCodes}
 import akka.util.ByteString
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
-import com.freshsoft.matterbridge.entity.MattermostEntities.SlashResponse
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.WithConfig
