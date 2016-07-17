@@ -1,7 +1,7 @@
 package com.freshsoft.matterbridge.client
 
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
-import com.freshsoft.matterbridge.entity.MattermostEntities.{NineGagGifResult, SlashResponse}
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, SlashResponse}
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.WithConfig

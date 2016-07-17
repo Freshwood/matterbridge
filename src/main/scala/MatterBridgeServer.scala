@@ -4,7 +4,7 @@ import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.util.Timeout
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
-import com.freshsoft.matterbridge.entity.MattermostEntities.NineGagResolveCommand
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.NineGagResolveCommand
 import com.freshsoft.matterbridge.routing.MatterBridgeRoute
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.MatterBridgeServerConfig

@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.FormData
 import com.freshsoft.matterbridge.client.MatterBridgeIntegration
 import com.freshsoft.matterbridge.client.codinglove.CodingLoveIntegration
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
-import com.freshsoft.matterbridge.entity.MattermostEntities.SlashResponse
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.util.WithConfig
 
