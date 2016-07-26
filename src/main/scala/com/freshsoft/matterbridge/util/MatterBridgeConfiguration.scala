@@ -29,6 +29,8 @@ trait MatterBridgeIntegrationsConfig extends MatterBridgeServerConfig {
 	val nineGagCommand = config.getString("matterbridge.integrations.ninegag.command")
 	val nineGagResponseType = config.getString("matterbridge.integrations.ninegag.response_type")
 	val nineGagMaximumGifStore = config.getInt("matterbridge.integrations.ninegag.max_gif_store")
+	val newsriverCommand = config.getString("matterbridge.integrations.newsriver.command")
+	val newsriverResponseType = config.getString("matterbridge.integrations.newsriver.response_type")
 }
 
 /**
