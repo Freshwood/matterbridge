@@ -3,7 +3,7 @@ package com.freshsoft.matterbridge.client.ninegag
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.TestKit
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.NineGagGifResult
-import org.scalatest.{BeforeAndAfter, Matchers, WordSpecLike}
+import org.scalatest._
 
 import scala.collection.mutable
 
@@ -31,6 +31,7 @@ class NineGagReceiverTest extends TestKit(ActorSystem("testSystem"))
 		}
 
 		"store a gif" in {
+			NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
 			nineGagReceiver ! expectedMessage
 			expectNoMsg()
 			NineGagIntegration.nineGagGifs.size should be (1)
