@@ -21,5 +21,8 @@ When you deploy your application you can reach the REST endpoint at **http://you
 #### Nine gag integration
 ![](docs/ninegag.PNG)
 
+#### Newsriver integration
+![](docs/newsriver.PNG)
+
 #### Matterbridge integration
 ![](docs/matterbridge.PNG)
