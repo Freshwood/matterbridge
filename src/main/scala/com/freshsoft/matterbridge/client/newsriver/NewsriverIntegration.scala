@@ -13,6 +13,7 @@ import com.freshsoft.matterbridge.util.WithConfig
 import spray.json._
 
 import scala.concurrent.Future
+import scala.language.postfixOps
 
 /**
 	* Created by Freshwood on 27.07.2016.
@@ -52,10 +53,17 @@ object NewsriverIntegration extends IMatterBridgeResult
 	}
 
 	private def buildSlashResponse(newsriverResponses: List[NewsriverResponse]): Option[SlashResponse] = {
-		newsriverResponses.headOption match {
-			case Some(x) => Some(SlashResponse(newsriverResponseType, s"${x.title}\n${x.url}"))
-			case None => Some(SlashResponse("ephemeral", "nothing found"))
+		newsriverResponses match {
+			case x: List[NewsriverResponse] if x nonEmpty =>
+				Some(SlashResponse(newsriverResponseType, buildSlashResponseText(x)))
+
+			case x: List[NewsriverResponse] if x isEmpty =>
+				Some(SlashResponse("ephemeral", "nothing found"))
 		}
+	}
+
+	private def buildSlashResponseText(newsriverResponses: List[NewsriverResponse]): String = {
+		newsriverResponses.foldLeft("")((x, y) => x + s"${y.title}\n${y.url}\nDiscover Date: ${y.discoverDate}\n" )
 	}
 
 	/**
