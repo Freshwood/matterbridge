@@ -34,11 +34,12 @@ class NineGagReceiverTest extends TestKit(ActorSystem("testSystem"))
 			NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
 			nineGagReceiver ! expectedMessage
 			expectNoMsg()
-			NineGagIntegration.nineGagGifs.size should be (1)
+			assert(NineGagIntegration.nineGagGifs.nonEmpty)
 			NineGagIntegration.lastGif should be (expectedMessage)
 		}
 
 		"adjust the gif store" in {
+			NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
 			// In the test settings the maximum gif store is at 10
 			for(i <- 1 to 100) {
 				// prepare message
