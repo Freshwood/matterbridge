@@ -16,13 +16,22 @@ object MatterBridgeEntities {
 
 	case class NineGagGifResult(key: String = "", gifUrl: String = "")
 
-	case class NewsriverResponse(id: String, discoverDate: String, title: String, text: String, url: String)
+	case class NewsriverResponseEntity(primary: Boolean, url: String)
+
+	case class NewsriverResponse(id: String,
+	                             discoverDate: String,
+	                             title: String,
+	                             text: String,
+	                             url: String,
+	                             elements: List[NewsriverResponseEntity])
+
 
 	/**
 		* Implicit json conversion -> Nothing to do when we complete the object
 		*/
 	trait ISlashCommandJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
 		implicit val slashResponseFormat = jsonFormat2(SlashResponse)
-		implicit val newsriverResponseFormat = jsonFormat5(NewsriverResponse)
+		implicit val newsriverResponseEntityFormat = jsonFormat2(NewsriverResponseEntity)
+		implicit val newsriverResponseFormat = jsonFormat6(NewsriverResponse)
 	}
 }

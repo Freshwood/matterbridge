@@ -1,5 +1,7 @@
 package com.freshsoft.matterbridge.client.newsriver
 
+import java.net.URLEncoder
+
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
@@ -33,7 +35,7 @@ object NewsriverIntegration extends IMatterBridgeResult
 	}
 
 	private def buildNewsriverUrl(title: String) = {
-		s"https://api.newsriver.io/v2/search?query=title:$title&limit=10"
+		s"https://api.newsriver.io/v2/search?query=title:$title&limit=5"
 	}
 
 	private def getResponse(url: String) = {
@@ -63,7 +65,14 @@ object NewsriverIntegration extends IMatterBridgeResult
 	}
 
 	private def buildSlashResponseText(newsriverResponses: List[NewsriverResponse]): String = {
-		newsriverResponses.foldLeft("")((x, y) => x + s"${y.title}\n${y.url}\nDiscover Date: ${y.discoverDate}\n" )
+		(for {
+			r <- newsriverResponses
+			e <- r.elements
+		} yield s"${r.title}\nUrl: ${r.url}\nImage: ${e.url}\nDiscover Date: ${r.discoverDate}\n").mkString
+	}
+
+	private def sanitizeTitle(title: String): String = {
+		URLEncoder.encode(title, "utf8")
 	}
 
 	/**
@@ -73,7 +82,7 @@ object NewsriverIntegration extends IMatterBridgeResult
 		* @return A Future of SlashResponse
 		*/
 	override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] = {
-		val url = buildNewsriverUrl(request.text)
+		val url = buildNewsriverUrl(sanitizeTitle(request.text))
 		val response = getResponse(url)
 
 		response.map {
