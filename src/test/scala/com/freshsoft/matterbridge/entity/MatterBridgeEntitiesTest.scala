@@ -26,9 +26,22 @@ class MatterBridgeEntitiesTest extends TestKit(ActorSystem("testSystem")) with W
 			actual should be (expected)
 		}
 
-		"successful creat a nine gag gif result" in {
+		"successful create a nine gag gif result" in {
 			val actual = MatterBridgeEntities.NineGagGifResult("Test", "Text")
 			val expected = MatterBridgeEntities.NineGagGifResult("Test", "Text")
+			actual should be (expected)
+		}
+
+		"successful create a news river response entity" in {
+			val actual = MatterBridgeEntities.NewsriverResponseEntity(primary = true, "Some Text")
+			val expected = MatterBridgeEntities.NewsriverResponseEntity(primary = true, "Some Text")
+			actual should be (expected)
+		}
+
+		"successful create a news river response" in {
+			val element = MatterBridgeEntities.NewsriverResponseEntity(primary = true, "Some Text")
+			val actual = MatterBridgeEntities.NewsriverResponse("Some Id", "Some Date", "Title", "Text", "url", List(element))
+			val expected = MatterBridgeEntities.NewsriverResponse("Some Id", "Some Date", "Title", "Text", "url", List(element))
 			actual should be (expected)
 		}
 	}

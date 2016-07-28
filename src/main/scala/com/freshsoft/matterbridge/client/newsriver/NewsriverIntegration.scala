@@ -38,6 +38,11 @@ object NewsriverIntegration extends IMatterBridgeResult
 		s"https://api.newsriver.io/v2/search?query=title:$title&limit=5"
 	}
 
+	/**
+		* Get a raw response from the newsriver site
+		* @param url the pre builded url to retrieve the data
+		* @return A raw json response
+		*/
 	private def getResponse(url: String) = {
 
 		val request = HttpRequest(HttpMethods.GET, url, collection.immutable.Seq(apiHeader))
@@ -54,6 +59,11 @@ object NewsriverIntegration extends IMatterBridgeResult
 		 }
 	}
 
+	/**
+		* Build from a list of NewsriverResponses a single SlashResponse
+		* @param newsriverResponses The List of newsriver responses
+		* @return A single optional slash response
+		*/
 	private def buildSlashResponse(newsriverResponses: List[NewsriverResponse]): Option[SlashResponse] = {
 		newsriverResponses match {
 			case x: List[NewsriverResponse] if x nonEmpty =>
@@ -77,6 +87,7 @@ object NewsriverIntegration extends IMatterBridgeResult
 
 	/**
 		* Get the SlashResponse result for this integration
+		* Converts the string to a json string and serialize it to the NewsriverResponse
 		*
 		* @param request The SlashRequest to build the response
 		* @return A Future of SlashResponse
