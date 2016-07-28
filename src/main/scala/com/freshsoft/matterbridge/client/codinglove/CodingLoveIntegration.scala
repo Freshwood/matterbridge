@@ -47,7 +47,7 @@ object CodingLoveIntegration extends IMatterBridgeResult
 						x.decodeString("UTF-8") match {
 							case response if response.isEmpty => log.info("NONE RESULT"); None
 							case response if !response.isEmpty => log.info(response)
-								Some(SlashResponse(codingLoveResponseType, getCodingLoveResponseContent(response, request)))
+								Some(SlashResponse(codingLoveResponseType, getCodingLoveResponseContent(response, request), List()))
 						}
 					}
 				}

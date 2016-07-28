@@ -78,10 +78,10 @@ object NineGagIntegration extends IMatterBridgeResult with WithConfig with WithA
 
 		 Future {
 			 nineGagGifs.filter(p => p._1.contains(request.text) || p._1.contains(request.text) || p._1.contains(words)) match {
-				 case x: mutable.LinkedHashMap[String, String] if x.nonEmpty => Some(SlashResponse(nineGagResponseType, responseText(getSpecificMap(x.toVector), request.text)))
+				 case x: mutable.LinkedHashMap[String, String] if x.nonEmpty => Some(SlashResponse(nineGagResponseType, responseText(getSpecificMap(x.toVector), request.text), List()))
 				 // Nothing found then search further
 				 case _ => getSpecificMap(nineGagGifs.toVector) match {
-					 case y: (String, String) => Some(SlashResponse(nineGagResponseType, responseText(y, request.text)))
+					 case y: (String, String) => Some(SlashResponse(nineGagResponseType, responseText(y, request.text), List()))
 					 case _ => None
 				 }
 			 }
