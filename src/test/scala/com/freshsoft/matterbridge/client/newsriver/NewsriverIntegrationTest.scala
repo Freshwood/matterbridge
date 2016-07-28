@@ -1,5 +1,6 @@
 package com.freshsoft.matterbridge.client.newsriver
 
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.server.WithActorContext
 import org.scalatest.{Matchers, WordSpec}
@@ -18,7 +19,7 @@ class NewsriverIntegrationTest extends WordSpec with Matchers with WithActorCont
 			val result = NewsriverIntegration.getResult(rightRequest)
 
 			result onSuccess {
-				case Some(x) => x.response_type shouldBe "in_channel"
+				case Some(x) => x shouldBe a [SlashResponse]
 			}
 		}
 	}

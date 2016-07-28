@@ -1,5 +1,6 @@
 package com.freshsoft.matterbridge.client.codinglove
 
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
 import com.freshsoft.matterbridge.server.WithActorContext
 import org.scalatest.{Matchers, WordSpec}
@@ -17,7 +18,7 @@ class CodingLoveIntegrationTest extends WordSpec with Matchers with WithActorCon
 			val result = CodingLoveIntegration.getResult(rightRequest)
 
 			result onSuccess {
-				case Some(x) => x.response_type shouldBe "in_channel"
+				case Some(x) => x shouldBe a [SlashResponse]
 			}
 		}
 	}
