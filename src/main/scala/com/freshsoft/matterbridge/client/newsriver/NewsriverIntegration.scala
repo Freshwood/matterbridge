@@ -82,7 +82,7 @@ object NewsriverIntegration extends IMatterBridgeResult
 		val attachments = for {
 			r <- newsriverResponses
 			e <- r.elements
-		} yield SlashResponseAttachment(r.title, r.text, e.url,
+		} yield SlashResponseAttachment(r.title,r.url, r.text, e.url,
 			List(SlashResponseField(r.website.domainName, "Ranking: " + r.website.rankingGlobal.toString)),
 			rankingColor(r.website.rankingGlobal))
 		SlashResponse(newsriverResponseType, s"${request.username} searched for *${request.text}*", attachments)

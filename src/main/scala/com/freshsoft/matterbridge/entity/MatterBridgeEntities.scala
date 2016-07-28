@@ -17,6 +17,7 @@ object MatterBridgeEntities {
 	                         attachments: List[SlashResponseAttachment])
 
 	case class SlashResponseAttachment(title: String,
+	                                   title_link: String,
 	                                   text: String,
 	                                   image_url: String,
 	                                   fields: List[SlashResponseField],
@@ -45,7 +46,7 @@ object MatterBridgeEntities {
 		*/
 	trait ISlashCommandJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
 		implicit val slashResponseFieldFormat = jsonFormat3(SlashResponseField)
-		implicit val slashResponseElementFormat = jsonFormat6(SlashResponseAttachment)
+		implicit val slashResponseElementFormat = jsonFormat7(SlashResponseAttachment)
 		implicit val slashResponseFormat = jsonFormat3(SlashResponse)
 		implicit val newsriverRecoverWebsiteFormat = jsonFormat2(NewsriverRecoverWebsite)
 		implicit val newsriverResponseEntityFormat = jsonFormat2(NewsriverResponseEntity)

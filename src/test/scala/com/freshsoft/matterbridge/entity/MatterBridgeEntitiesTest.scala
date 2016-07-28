@@ -16,8 +16,8 @@ class MatterBridgeEntitiesTest extends TestKit(ActorSystem("testSystem")) with W
 
 		"successful create a slash response attachment" in {
 			val fields = List(SlashResponseField("Title", "Value"))
-			val actual = MatterBridgeEntities.SlashResponseAttachment("Title", "Text", "img_url", fields, "#FFFFFF")
-			val expected = MatterBridgeEntities.SlashResponseAttachment("Title", "Text", "img_url", fields, "#FFFFFF")
+			val actual = MatterBridgeEntities.SlashResponseAttachment("Title", "URL", "Text", "img_url", fields, "#FFFFFF")
+			val expected = MatterBridgeEntities.SlashResponseAttachment("Title", "URL", "Text", "img_url", fields, "#FFFFFF")
 			actual should be (expected)
 		}
 
