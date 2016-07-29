@@ -16,13 +16,17 @@ object MatterBridgeEntities {
 	                         text: String,
 	                         attachments: List[SlashResponseAttachment])
 
-	case class SlashResponseAttachment(title: String,
+	case class SlashResponseAttachment(fallback: String,
+	                                   title: String,
 	                                   title_link: String,
 	                                   text: String,
 	                                   image_url: String,
 	                                   fields: List[SlashResponseField],
 	                                   color: String,
-	                                   footer: String = "by matterbridge service")
+	                                   pretext: String = "",
+	                                   author_name: String = "",
+	                                   author_icon: String = "",
+	                                   author_link: String = "")
 
 	case class NineGagResolveCommand(worker: ActorRef)
 
@@ -46,7 +50,7 @@ object MatterBridgeEntities {
 		*/
 	trait ISlashCommandJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
 		implicit val slashResponseFieldFormat = jsonFormat3(SlashResponseField)
-		implicit val slashResponseElementFormat = jsonFormat7(SlashResponseAttachment)
+		implicit val slashResponseElementFormat = jsonFormat11(SlashResponseAttachment)
 		implicit val slashResponseFormat = jsonFormat3(SlashResponse)
 		implicit val newsriverRecoverWebsiteFormat = jsonFormat2(NewsriverRecoverWebsite)
 		implicit val newsriverResponseEntityFormat = jsonFormat2(NewsriverResponseEntity)

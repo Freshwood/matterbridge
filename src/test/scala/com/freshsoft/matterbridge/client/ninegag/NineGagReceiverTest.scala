@@ -36,7 +36,7 @@ class NineGagReceiverTest extends TestKit(ActorSystem("testSystem"))
 			nineGagReceiver ! expectedMessage
 			expectNoMsg()
 			assert(NineGagIntegration.nineGagGifs.nonEmpty)
-			NineGagIntegration.lastGif should be (expectedMessage)
+			NineGagIntegration.lastGif shouldBe a [NineGagGifResult]
 		}
 
 		"adjust the gif store" in {
