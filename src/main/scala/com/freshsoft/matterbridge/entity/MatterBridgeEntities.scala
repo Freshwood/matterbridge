@@ -12,10 +12,6 @@ object MatterBridgeEntities {
 
 	case class SlashResponseField(title: String, value: String, short: Boolean = false)
 
-	case class SlashResponse(response_type: String,
-	                         text: String,
-	                         attachments: List[SlashResponseAttachment])
-
 	case class SlashResponseAttachment(fallback: String,
 	                                   title: String,
 	                                   title_link: String,
@@ -27,6 +23,11 @@ object MatterBridgeEntities {
 	                                   author_name: String = "",
 	                                   author_icon: String = "",
 	                                   author_link: String = "")
+
+
+	case class SlashResponse(response_type: String,
+	                         text: String,
+	                         attachments: List[SlashResponseAttachment])
 
 	case class NineGagResolveCommand(worker: ActorRef)
 

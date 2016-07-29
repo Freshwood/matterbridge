@@ -44,23 +44,20 @@ object NewsriverIntegration extends IMatterBridgeResult
 		* @param url the pre builded url to retrieve the data
 		* @return A raw json response
 		*/
-	private def getResponse(url: String) = {
-
-		val request = HttpRequest(HttpMethods.GET, url, collection.immutable.Seq(apiHeader))
-
-		Http().singleRequest(request).flatMap {
-			case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-				entity.dataBytes.runFold(ByteString(""))(_ ++ _).map {
-					x => x.decodeString("UTF-8")
-				}
-
-			// Just return nothing when the site is down or we don't receive what we want
-			// The further handling is above
-			case _ => Future {
-				""
+	private def getResponse(url: String) = Http().singleRequest(
+		HttpRequest(uri = url, method = HttpMethods.GET, headers = collection.immutable.Seq(apiHeader)))
+		.flatMap { case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+			entity.dataBytes.runFold(ByteString(""))(_ ++ _).map {
+				x => x.decodeString("UTF-8")
 			}
+
+		// Just return nothing when the site is down or we don't receive what we want
+		// The further handling is above
+		case _ => Future {
+			""
 		}
 	}
+
 
 	/**
 		* Build from a list of NewsriverResponses a single SlashResponse

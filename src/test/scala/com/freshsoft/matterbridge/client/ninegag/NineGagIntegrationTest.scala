@@ -33,18 +33,21 @@ class NineGagIntegrationTest extends WordSpec with Matchers with ScalaFutures wi
 		"Return a response" in {
 			whenReady(NineGagIntegration.getResult(rightRequest)) {
 				case Some(x) => x shouldBe a [SlashResponse]
+				case None => fail("None may not returned")
 			}
 		}
 
 		"Return the right filtered response" in {
 			whenReady(NineGagIntegration.getResult(rightRequest)) {
 				case Some(x) => assert(x.text.contains("test"))
+				case None => fail("None may not returned")
 			}
 		}
 
 		"Return the right filtered response which a word match" in {
 			whenReady(NineGagIntegration.getResult(extendedRequest)) {
 				case Some(x) => assert(x.text.contains("This is a big header"))
+				case None => fail("None may not returned")
 			}
 		}
 	}
