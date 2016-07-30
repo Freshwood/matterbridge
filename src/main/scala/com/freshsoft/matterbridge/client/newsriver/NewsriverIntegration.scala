@@ -18,7 +18,7 @@ import scala.concurrent.Future
 import scala.language.postfixOps
 
 /**
-	* Created by Freshwood on 27.07.2016.
+	* The news river integration object
 	*/
 object NewsriverIntegration extends IMatterBridgeResult
 	with WithConfig
@@ -58,7 +58,6 @@ object NewsriverIntegration extends IMatterBridgeResult
 		}
 	}
 
-
 	/**
 		* Build from a list of NewsriverResponses a single SlashResponse
 		*
@@ -85,6 +84,11 @@ object NewsriverIntegration extends IMatterBridgeResult
 		SlashResponse(newsriverResponseType, s"${request.username} searched for *${request.text}*", attachments)
 	}
 
+	/**
+		* Get a ranking color for a single news
+		* @param globalRanking The global ranking value
+		* @return A hex color code on global ranking
+		*/
 	private def rankingColor(globalRanking: Int) = {
 		globalRanking match {
 			case x if x < 10000 => "#FF5000"

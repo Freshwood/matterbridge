@@ -8,7 +8,7 @@ import org.scalatest._
 import scala.collection.mutable
 
 /**
-	* Created by Freshwood on 15.07.2016.
+	* The nine gag receiver test
 	*/
 class NineGagReceiverTest extends TestKit(ActorSystem("testSystem"))
 	with WordSpecLike

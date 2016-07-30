@@ -14,6 +14,12 @@ class MatterBridgeEntitiesTest extends TestKit(ActorSystem("testSystem")) with W
 
 	"The matter bridge entities" should {
 
+		"successful create a slash response field" in {
+			val actual = MatterBridgeEntities.SlashResponseField("Title", "Value")
+			val expected = MatterBridgeEntities.SlashResponseField("Title", "Value")
+			actual should be (expected)
+		}
+
 		"successful create a slash response attachment" in {
 			val fields = List(SlashResponseField("Title", "Value"))
 			val actual = MatterBridgeEntities.SlashResponseAttachment("Title", "Title", "URL", "Text", "img_url", fields, "#FFFFFF")
