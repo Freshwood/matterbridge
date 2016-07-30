@@ -10,16 +10,51 @@ import spray.json.DefaultJsonProtocol
 	*/
 object MatterBridgeEntities {
 
-	case class SlashResponse(response_type: String, text: String)
+	case class SlashResponseField(title: String, value: String, short: Boolean = false)
+
+	case class SlashResponseAttachment(fallback: String,
+	                                   title: String,
+	                                   title_link: String,
+	                                   text: String,
+	                                   image_url: String,
+	                                   fields: List[SlashResponseField],
+	                                   color: String,
+	                                   pretext: String = "",
+	                                   author_name: String = "",
+	                                   author_icon: String = "",
+	                                   author_link: String = "")
+
+
+	case class SlashResponse(response_type: String,
+	                         text: String,
+	                         attachments: List[SlashResponseAttachment])
 
 	case class NineGagResolveCommand(worker: ActorRef)
 
 	case class NineGagGifResult(key: String = "", gifUrl: String = "")
 
+	case class NewsriverRecoverWebsite(domainName: String, rankingGlobal: Int)
+
+	case class NewsriverResponseEntity(primary: Boolean, url: String)
+
+	case class NewsriverResponse(id: String,
+	                             discoverDate: String,
+	                             title: String,
+	                             text: String,
+	                             url: String,
+	                             elements: List[NewsriverResponseEntity],
+	                             website: NewsriverRecoverWebsite)
+
+
 	/**
 		* Implicit json conversion -> Nothing to do when we complete the object
 		*/
 	trait ISlashCommandJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
-		implicit val slashResponseFormat = jsonFormat2(SlashResponse)
+		implicit val slashResponseFieldFormat = jsonFormat3(SlashResponseField)
+		implicit val slashResponseElementFormat = jsonFormat11(SlashResponseAttachment)
+		implicit val slashResponseFormat = jsonFormat3(SlashResponse)
+		implicit val newsriverRecoverWebsiteFormat = jsonFormat2(NewsriverRecoverWebsite)
+		implicit val newsriverResponseEntityFormat = jsonFormat2(NewsriverResponseEntity)
+		implicit val newsriverResponseFormat = jsonFormat7(NewsriverResponse)
 	}
 }

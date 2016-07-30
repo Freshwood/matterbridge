@@ -42,13 +42,11 @@ object CodingLoveIntegration extends IMatterBridgeResult
 	private def getDataFromWebsite(uri: String, request: SlashCommandRequest): Future[Option[SlashResponse]] = {
 		Http().singleRequest(HttpRequest(uri = uri)).flatMap {
 			case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-				entity.dataBytes.runFold(ByteString(""))(_ ++ _).flatMap {
-					x => Future {
-						x.decodeString("UTF-8") match {
-							case response if response.isEmpty => log.info("NONE RESULT"); None
-							case response if !response.isEmpty => log.info(response)
-								Some(new SlashResponse(codingLoveResponseType, getCodingLoveResponseContent(response, request)))
-						}
+				entity.dataBytes.runFold(ByteString(""))(_ ++ _).map {
+					x => x.decodeString("UTF-8") match {
+						case response if response.isEmpty => log.info("NONE RESULT"); None
+						case response if !response.isEmpty => log.info(response)
+							Some(SlashResponse(codingLoveResponseType, getCodingLoveResponseContent(response, request), List()))
 					}
 				}
 			case HttpResponse(StatusCodes.Found, headers, entity, _) =>

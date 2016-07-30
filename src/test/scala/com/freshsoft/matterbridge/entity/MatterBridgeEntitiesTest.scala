@@ -3,6 +3,7 @@ package com.freshsoft.matterbridge.entity
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.TestKit
 import com.freshsoft.matterbridge.client.ninegag.NineGagWorker
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponseField
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
@@ -13,9 +14,22 @@ class MatterBridgeEntitiesTest extends TestKit(ActorSystem("testSystem")) with W
 
 	"The matter bridge entities" should {
 
+		"successful create a slash response field" in {
+			val actual = MatterBridgeEntities.SlashResponseField("Title", "Value")
+			val expected = MatterBridgeEntities.SlashResponseField("Title", "Value")
+			actual should be (expected)
+		}
+
+		"successful create a slash response attachment" in {
+			val fields = List(SlashResponseField("Title", "Value"))
+			val actual = MatterBridgeEntities.SlashResponseAttachment("Title", "Title", "URL", "Text", "img_url", fields, "#FFFFFF")
+			val expected = MatterBridgeEntities.SlashResponseAttachment("Title", "Title", "URL", "Text", "img_url", fields, "#FFFFFF")
+			actual should be (expected)
+		}
+
 		"successful create a slash response" in {
-			val actual = MatterBridgeEntities.SlashResponse("Test", "Text")
-			val expected = MatterBridgeEntities.SlashResponse("Test", "Text")
+			val actual = MatterBridgeEntities.SlashResponse("Test", "Text", List())
+			val expected = MatterBridgeEntities.SlashResponse("Test", "Text", List())
 			actual should be (expected)
 		}
 
@@ -26,9 +40,23 @@ class MatterBridgeEntitiesTest extends TestKit(ActorSystem("testSystem")) with W
 			actual should be (expected)
 		}
 
-		"successful creat a nine gag gif result" in {
+		"successful create a nine gag gif result" in {
 			val actual = MatterBridgeEntities.NineGagGifResult("Test", "Text")
 			val expected = MatterBridgeEntities.NineGagGifResult("Test", "Text")
+			actual should be (expected)
+		}
+
+		"successful create a news river response entity" in {
+			val actual = MatterBridgeEntities.NewsriverResponseEntity(primary = true, "Some Text")
+			val expected = MatterBridgeEntities.NewsriverResponseEntity(primary = true, "Some Text")
+			actual should be (expected)
+		}
+
+		"successful create a news river response" in {
+			val website = MatterBridgeEntities.NewsriverRecoverWebsite("Test", 100000)
+			val element = MatterBridgeEntities.NewsriverResponseEntity(primary = true, "Some Text")
+			val actual = MatterBridgeEntities.NewsriverResponse("Some Id", "Some Date", "Title", "Text", "url", List(element), website)
+			val expected = MatterBridgeEntities.NewsriverResponse("Some Id", "Some Date", "Title", "Text", "url", List(element), website)
 			actual should be (expected)
 		}
 	}

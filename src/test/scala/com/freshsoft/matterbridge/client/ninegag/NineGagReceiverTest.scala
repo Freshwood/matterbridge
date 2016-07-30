@@ -3,12 +3,12 @@ package com.freshsoft.matterbridge.client.ninegag
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.TestKit
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.NineGagGifResult
-import org.scalatest.{BeforeAndAfter, Matchers, WordSpecLike}
+import org.scalatest._
 
 import scala.collection.mutable
 
 /**
-	* Created by Freshwood on 15.07.2016.
+	* The nine gag receiver test
 	*/
 class NineGagReceiverTest extends TestKit(ActorSystem("testSystem"))
 	with WordSpecLike
@@ -31,13 +31,17 @@ class NineGagReceiverTest extends TestKit(ActorSystem("testSystem"))
 		}
 
 		"store a gif" in {
+			NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
+			NineGagIntegration.lastGif = new NineGagGifResult
 			nineGagReceiver ! expectedMessage
 			expectNoMsg()
-			NineGagIntegration.nineGagGifs.size should be (1)
-			NineGagIntegration.lastGif should be (expectedMessage)
+			assert(NineGagIntegration.nineGagGifs.nonEmpty)
+			NineGagIntegration.lastGif shouldBe a [NineGagGifResult]
 		}
 
 		"adjust the gif store" in {
+			NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
+			NineGagIntegration.lastGif = new NineGagGifResult
 			// In the test settings the maximum gif store is at 10
 			for(i <- 1 to 100) {
 				// prepare message

@@ -16,7 +16,7 @@ class MatterBridgeIntegrationSpec extends WordSpec with Matchers with BeforeAndA
 	val gifResult = NineGagGifResult("This is a test", "http://testurl.com")
 
 	// Expected Output
-	val expectedOutput = SlashResponse("ephemeral", "9Gag Gifs [1] Last Gif:\nThis is a test\nUrl: http://testurl.com")
+	val expectedOutput = SlashResponse("ephemeral", "9Gag Gifs [1] Last Gif:\nThis is a test\nUrl: http://testurl.com", List())
 
 	 before {
 		 NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
