@@ -56,7 +56,16 @@ object NewsriverIntegration extends IMatterBridgeResult
 		case _ => Future {
 			""
 		}
+		}
+
+	private def sendNewsriverResultToIncomingWebhook(incomingResponse: IncomingResponse) =
+		Http().singleRequest(HttpRequest(uri = newsriverIncomingTokenUrl, method = HttpMethods.POST, headers = Nil, entity = HttpEntity(incomingResponse.toJson.toString))) map {
+		case HttpResponse(StatusCodes.OK, _, _, _) => true
+
+		// Something went wrong while sending information to incoming token url
+		case _ => false
 	}
+
 
 	/**
 		* Build from a list of NewsriverResponses a single SlashResponse
@@ -64,28 +73,30 @@ object NewsriverIntegration extends IMatterBridgeResult
 		* @param newsriverResponses The List of newsriver responses
 		* @return A single optional slash response
 		*/
-	private def buildSlashResponse(newsriverResponses: List[NewsriverResponse], request: SlashCommandRequest): Option[SlashResponse] = {
+	private def buildSlashAndIncomingWebhookResponse(newsriverResponses: List[NewsriverResponse], request: SlashCommandRequest): (Option[SlashResponse], Option[IncomingResponse]) = {
 		newsriverResponses match {
-			case x: List[NewsriverResponse] if x nonEmpty =>
-				Some(createSlashResponse(newsriverResponses, request))
+			case x: List[NewsriverResponse] if x nonEmpty => val responses = createSlashResponse(x, request)
+				(Some(responses._1), Some(responses._2))
 
-			case x: List[NewsriverResponse] if x isEmpty =>
-				Some(SlashResponse("ephemeral", "nothing found", List()))
+			case x: List[NewsriverResponse] if x isEmpty => (Some(SlashResponse("ephemeral", "nothing found", List())), None)
 		}
 	}
 
-	private def createSlashResponse(newsriverResponses: List[NewsriverResponse], request: SlashCommandRequest): SlashResponse = {
+	private def createSlashResponse(newsriverResponses: List[NewsriverResponse], request: SlashCommandRequest): (SlashResponse, IncomingResponse) = {
 		val attachments = for {
 			r <- newsriverResponses
 			e <- r.elements
 		} yield SlashResponseAttachment(r.title, r.title, r.url, r.text, e.url,
 			List(SlashResponseField(r.website.domainName, "Ranking: " + r.website.rankingGlobal.toString)),
 			rankingColor(r.website.rankingGlobal))
-		SlashResponse(newsriverResponseType, s"${request.username} searched for *${request.text}*", attachments)
+
+		val responseText = s"${request.username} searched for ${request.text}\nFound ${attachments.size} articles"
+		(SlashResponse(newsriverResponseType, responseText, List()), IncomingResponse(responseText, attachments))
 	}
 
 	/**
 		* Get a ranking color for a single news
+		*
 		* @param globalRanking The global ranking value
 		* @return A hex color code on global ranking
 		*/
@@ -118,10 +129,14 @@ object NewsriverIntegration extends IMatterBridgeResult
 		response.map { x =>
 			try {
 				x.parseJson.convertTo[List[NewsriverResponse]] match {
-					case x: List[NewsriverResponse] => buildSlashResponse(x, request)
+					case x: List[NewsriverResponse] => buildSlashAndIncomingWebhookResponse(x, request) match {
+						case (a, Some(b)) => sendNewsriverResultToIncomingWebhook(b); a
+						case (a, b) => a
+					}
+
 				}
 			} catch {
-				case ex: Exception => buildSlashResponse(List(), request)
+				case ex: Exception => buildSlashAndIncomingWebhookResponse(List(), request)._1
 			}
 		}
 	}
