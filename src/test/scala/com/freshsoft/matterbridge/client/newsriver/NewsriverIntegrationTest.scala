@@ -12,7 +12,7 @@ import org.scalatest.{Matchers, WordSpec}
 	*/
 class NewsriverIntegrationTest extends WordSpec with Matchers with WithActorContext {
 
-	val rightRequest = new SlashCommandRequest("newsriver", "somename", "sometext")
+	val rightRequest = new SlashCommandRequest("news", "somename", "test")
 
 	"The newsriver integration" should {
 

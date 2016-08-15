@@ -23,6 +23,8 @@ class JsonMarshalling
 
 		val slashResponse = SlashResponse("in_channel", "Text", List(slashResponseElement))
 
+		val incomingResponse = IncomingResponse("Text", List(slashResponseElement))
+
 		val newsriverRecoverWebsite = NewsriverRecoverWebsite("http://some.com", 10000)
 
 		val newsriverResponseEntity = NewsriverResponseEntity(primary = true, "http://something")
@@ -38,6 +40,11 @@ class JsonMarshalling
 		"correct marshal slash response element" in {
 			val actual = slashResponseElement.toJson.toString
 			slashResponseElement should be (actual.parseJson.convertTo[SlashResponseAttachment])
+		}
+
+		"correct marshal incoming response" in {
+			val actual = incomingResponse.toJson.toString
+			incomingResponse should be (actual.parseJson.convertTo[IncomingResponse])
 		}
 
 		"correct marshal slash response" in {

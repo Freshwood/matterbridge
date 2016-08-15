@@ -27,6 +27,12 @@ class MatterBridgeEntitiesTest extends TestKit(ActorSystem("testSystem")) with W
 			actual should be (expected)
 		}
 
+		"successful create a slash incoming response" in {
+			val actual = MatterBridgeEntities.IncomingResponse("Test", List())
+			val expected = MatterBridgeEntities.IncomingResponse("Test", List())
+			actual should be (expected)
+		}
+
 		"successful create a slash response" in {
 			val actual = MatterBridgeEntities.SlashResponse("Test", "Text", List())
 			val expected = MatterBridgeEntities.SlashResponse("Test", "Text", List())
