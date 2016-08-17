@@ -2,11 +2,9 @@ package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.Actor
 import akka.event.Logging
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
-import akka.util.ByteString
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, NineGagResolveCommand}
 import com.freshsoft.matterbridge.server.WithActorContext
+import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
@@ -45,27 +43,12 @@ class NineGagWorker extends Actor with WithActorContext {
 		* @return A Future list of NineGagGifResult
 		*/
 	private def getNineGagGifs(url: String): Future[List[NineGagGifResult]] = {
-		nineGagRawResult(url) flatMap {
+		MatterBridgeHttpClient.getUrlContent(url) flatMap {
 			case x if x.isEmpty => log.warning(s"Get no content from $url"); Future {Nil}
 			case x if !x.isEmpty => Future {
 				resolveGifsFromContent(x)
 			}
 		}
-	}
-
-	/**
-		* Get a raw http result from the provided url
-		* @param url The url to retrieve the result
-		* @return Raw HttpResponse UTF-8 conform String as a future
-		*/
-	private def nineGagRawResult(url: String) = Http().singleRequest(HttpRequest(uri = url)).flatMap {
-		case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-			entity.dataBytes.runFold(ByteString(""))(_ ++ _).map {
-				x => x.decodeString("UTF-8")
-			}
-		// Just return nothing when the site is down or we don't receive what we want
-		// The further handling is above
-		case _ => Future {""}
 	}
 
 	/**

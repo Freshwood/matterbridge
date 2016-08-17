@@ -1,22 +1,95 @@
 package com.freshsoft.matterbridge.client.rss
 
 import akka.actor.{Actor, Props}
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.IncomingResponse
+import akka.event.Logging
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities._
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.{MatterBridgeHttpClient, WithConfig}
 
+import scala.xml.XML
+
 /**
-	* Created by Freshwood on 16.08.2016.
+	* The rss reader integration which does not produce a matter bridge result
+	* cause it only send incoming requests to slack/mattermost
 	*/
 object RssIntegration extends WithConfig with WithActorContext {
 
+	val log = Logging.getLogger(system, this)
+
 	val rssReaderActor = system.actorOf(Props(classOf[RssReaderActor]))
+
+	val rssReaderWorkerActor = system.actorOf(Props(classOf[RssReaderWorkerActor]))
+
+	val rssReaderSenderActor = system.actorOf(Props(classOf[RssReaderSenderActor]))
 
 	class RssReaderActor extends Actor {
 		override def receive: Receive = {
-			case "Start" => rssFeedList.map {
-				rss => MatterBridgeHttpClient.postToIncomingWebhook(rss.incoming_token, IncomingResponse("Test " + rss.url, List()))
+			case RssReaderActorModel.Start => rssFeedList foreach { feed =>
+				log.info(s"Start reading rss feed from ${feed.url}")
+				rssReaderWorkerActor ! feed
+				log.info(s"Reading ${feed.url} done")
 			}
+		}
+	}
+
+	class RssReaderWorkerActor extends Actor {
+		override def receive: Receive = {
+			case x: RssFeedConfigEntry => retrieveRssData(x) map {
+				case Some(model) => rssReaderSenderActor ! model
+				case None => log.info("Got no rss items to send. No rss content was sent")
+			}
+		}
+
+		private def retrieveRssData(rssConfig: RssFeedConfigEntry) = {
+			val rssData = MatterBridgeHttpClient.getUrlContent(rssConfig.url)
+			rssData map { rssContent =>
+				if (rssContent.nonEmpty) buildRssModel(rssConfig, rssContent) else None
+			}
+		}
+
+		private def buildRssModel(rssConfig: RssFeedConfigEntry, content: String): Option[RssReaderIncomingModel] = {
+			try {
+				val xml = XML.loadString(content)
+				val items = xml \\ "item"
+
+				val rssModels = (for {
+					i <- items
+					title = (i \ "title").text
+					link = (i \ "link").text
+					pubDate = (i \ "pubDate").text
+					description = (i \ "description").text
+				} yield RssReaderModel(title, link, pubDate, description)).toList
+
+				// TODO: Check for last receiving time!!!
+
+				Some(RssReaderIncomingModel(rssConfig, rssModels))
+			} catch {
+				case e: Exception => log.error(s"Could not parse rss content $content")
+					None
+			}
+		}
+	}
+
+	class RssReaderSenderActor extends Actor {
+		override def receive: Receive = {
+			case x: RssReaderIncomingModel if x.rssReaderModels.nonEmpty =>
+				val incomingResponseData = buildIncomingResponseFromRssModel(x.rssReaderModels)
+				MatterBridgeHttpClient.postToIncomingWebhook(x.rssFeedConfigEntry.incoming_token, incomingResponseData)
+
+			case y: RssReaderIncomingModel if y.rssReaderModels.isEmpty =>
+				log.warning(s"Actual there are no rss items from ${y.rssFeedConfigEntry.url} to send")
+		}
+
+		private def buildIncomingResponseFromRssModel(rssReaderModels: List[RssReaderModel]) = {
+			val text = s"Found ${rssReaderModels.length} rss items"
+
+			def buildMessageAttachments(rssReaderModels: List[RssReaderModel]) = {
+				for {
+					m <- rssReaderModels
+				} yield SlashResponseAttachment(m.title, m.title, m.link, m.description, image_url = "", fields = Nil)
+			}
+
+			IncomingResponse(text, buildMessageAttachments(rssReaderModels))
 		}
 	}
 }

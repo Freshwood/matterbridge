@@ -18,7 +18,7 @@ object MatterBridgeEntities {
 	                                   text: String,
 	                                   image_url: String,
 	                                   fields: List[SlashResponseField],
-	                                   color: String,
+	                                   color: String = "#764FA5",
 	                                   pretext: String = "",
 	                                   author_name: String = "",
 	                                   author_icon: String = "",
@@ -49,6 +49,14 @@ object MatterBridgeEntities {
 
 	case class RssFeedConfigEntry(url: String, incoming_token: String)
 
+	case class RssReaderIncomingModel(rssFeedConfigEntry: RssFeedConfigEntry,
+	                                  rssReaderModels: List[RssReaderModel])
+
+	case class RssReaderModel(title: String, link: String, pubDate: String, description: String)
+
+	object RssReaderActorModel extends Enumeration(initial = 0) {
+		val Start = Value
+	}
 
 	/**
 		* Implicit json conversion -> Nothing to do when we complete the object

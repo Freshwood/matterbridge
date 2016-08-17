@@ -5,7 +5,7 @@ import akka.http.scaladsl.Http
 import akka.util.Timeout
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
 import com.freshsoft.matterbridge.client.rss.RssIntegration
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.NineGagResolveCommand
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagResolveCommand, RssReaderActorModel}
 import com.freshsoft.matterbridge.routing.MatterBridgeRoute
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.MatterBridgeServerConfig
@@ -43,5 +43,5 @@ object MatterBridgeServer extends App
 	system.scheduler.schedule(0 milliseconds,
 		10 seconds,
 		RssIntegration.rssReaderActor,
-		"Start")
+		RssReaderActorModel.Start)
 }
