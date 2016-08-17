@@ -47,6 +47,8 @@ object MatterBridgeEntities {
 	                             elements: List[NewsriverResponseEntity],
 	                             website: NewsriverRecoverWebsite)
 
+	case class RssFeedConfigEntry(url: String, incoming_token: String)
+
 
 	/**
 		* Implicit json conversion -> Nothing to do when we complete the object

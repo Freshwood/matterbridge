@@ -1,6 +1,8 @@
 package com.freshsoft.matterbridge.util
 
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.RssFeedConfigEntry
 import com.typesafe.config.ConfigFactory
+import scala.collection.JavaConversions._
 
 /**
 	* The global config property holder
@@ -32,6 +34,8 @@ trait MatterBridgeIntegrationsConfig extends MatterBridgeServerConfig {
 	val newsriverIncomingTokenUrl = config.getString("matterbridge.integrations.newsriver.incoming_token")
 	val newsriverCommand = config.getString("matterbridge.integrations.newsriver.command")
 	val newsriverResponseType = config.getString("matterbridge.integrations.newsriver.response_type")
+	val rssFeedList: List[RssFeedConfigEntry] = config.getConfigList("matterbridge.integrations.rss") map { p =>
+			RssFeedConfigEntry(p.getString("url"), p.getString("incoming_token")) } toList
 }
 
 /**

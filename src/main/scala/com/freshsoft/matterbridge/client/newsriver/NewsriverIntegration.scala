@@ -58,7 +58,7 @@ object NewsriverIntegration extends IMatterBridgeResult
 		}
 		}
 
-	private def sendNewsriverResultToIncomingWebhook(incomingResponse: IncomingResponse) =
+		private def sendNewsriverResultToIncomingWebhook(incomingResponse: IncomingResponse) =
 		Http().singleRequest(HttpRequest(uri = newsriverIncomingTokenUrl, method = HttpMethods.POST, headers = Nil, entity = HttpEntity(incomingResponse.toJson.toString))) map {
 		case HttpResponse(StatusCodes.OK, _, _, _) => log.info(s"Successfully send data to $newsriverIncomingTokenUrl with data ${incomingResponse.toJson.toString}")
 
