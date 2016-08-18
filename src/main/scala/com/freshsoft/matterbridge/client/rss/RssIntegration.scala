@@ -1,7 +1,11 @@
 package com.freshsoft.matterbridge.client.rss
 
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+
 import akka.actor.{Actor, Props}
 import akka.event.Logging
+import akka.http.scaladsl.model.DateTime
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities._
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.{MatterBridgeHttpClient, WithConfig}
@@ -25,7 +29,7 @@ object RssIntegration extends WithConfig with WithActorContext {
 	class RssReaderActor extends Actor {
 		override def receive: Receive = {
 			case RssReaderActorModel.Start => rssFeedList foreach { feed =>
-				log.info(s"Start reading rss feed from ${feed.url}")
+				log.info(s"Start reading rss feed from ${feed.url} \nScan Time ${feed.lastScanTime}")
 				rssReaderWorkerActor ! feed
 				log.info(s"Reading ${feed.url} done")
 			}
@@ -33,6 +37,7 @@ object RssIntegration extends WithConfig with WithActorContext {
 	}
 
 	class RssReaderWorkerActor extends Actor {
+
 		override def receive: Receive = {
 			case x: RssFeedConfigEntry => retrieveRssData(x) map {
 				case Some(model) => rssReaderSenderActor ! model
@@ -47,12 +52,22 @@ object RssIntegration extends WithConfig with WithActorContext {
 			}
 		}
 
+		private def getParsedTime(pubDate: String) = {
+			OffsetDateTime.parse(pubDate, DateTimeFormatter.RFC_1123_DATE_TIME)
+		}
+
+		private def isArticleNew(actualPubDate: String, lastScanDate: String) = {
+			getParsedTime(actualPubDate).toInstant.toEpochMilli >
+			getParsedTime(lastScanDate).toInstant.toEpochMilli
+		}
+
 		private def buildRssModel(rssConfig: RssFeedConfigEntry, content: String): Option[RssReaderIncomingModel] = {
+
 			try {
 				val xml = XML.loadString(content)
 				val items = xml \\ "item"
 
-				val rssModels = (for {
+				val allRssModels = (for {
 					i <- items
 					title = (i \ "title").text
 					link = (i \ "link").text
@@ -60,7 +75,10 @@ object RssIntegration extends WithConfig with WithActorContext {
 					description = (i \ "description").text
 				} yield RssReaderModel(title, link, pubDate, description)).toList
 
-				// TODO: Check for last receiving time!!!
+				val rssModels = allRssModels.filter(m => isArticleNew(m.pubDate, rssConfig.lastScanTime))
+				rssConfig.lastScanTime = DateTime.now.toIsoDateTimeString()
+
+				// TODO: Fix UTC Bug
 
 				Some(RssReaderIncomingModel(rssConfig, rssModels))
 			} catch {
