@@ -11,7 +11,7 @@ lazy val root = (project in file(".")).
 	settings(
 		organization := "freshsoft",
 		name := "matter-bridge",
-		version := "1.3.1",
+		version := "1.4.0",
 		scalaVersion := "2.11.8",
 		resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
 		libraryDependencies ++= Seq(
