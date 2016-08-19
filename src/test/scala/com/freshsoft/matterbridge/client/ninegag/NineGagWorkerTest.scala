@@ -5,7 +5,7 @@ import akka.testkit.TestKit
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
-	* Created by Freshwood on 14.07.2016.
+	* The NineGagWorker test
 	*/
 class NineGagWorkerTest extends TestKit(ActorSystem("testSystem")) with WordSpecLike with Matchers {
 

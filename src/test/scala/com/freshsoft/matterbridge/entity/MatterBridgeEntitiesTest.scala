@@ -1,9 +1,10 @@
 package com.freshsoft.matterbridge.entity
 
 import akka.actor.{ActorSystem, Props}
+import akka.http.scaladsl.model.DateTime
 import akka.testkit.TestKit
 import com.freshsoft.matterbridge.client.ninegag.NineGagWorker
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponseField
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities._
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
@@ -65,6 +66,27 @@ class MatterBridgeEntitiesTest extends TestKit(ActorSystem("testSystem")) with W
 			val expected = MatterBridgeEntities.NewsriverResponse("Some Id", "Some Date", "Title", "Text", "url", List(element), website)
 			actual should be (expected)
 		}
-	}
 
+		"successful create a rss feed config entry" in {
+			val lastScanTimeRfcString = DateTime.now.minus(86400000).toRfc1123DateTimeString()
+			val actual = RssFeedConfigEntry("url", "token", "name", lastScanTimeRfcString)
+			val expected = RssFeedConfigEntry("url", "token", "name", lastScanTimeRfcString)
+			actual should be (expected)
+		}
+
+		"successful create a rss reader incoming model" in {
+			val lastScanTimeRfcString = DateTime.now.minus(86400000).toRfc1123DateTimeString()
+			val rssReedConfig = RssFeedConfigEntry("url", "token", "name", lastScanTimeRfcString)
+			val rssReaderModel = RssReaderModel("title", "link", "pubDate", "description")
+			val actual = RssReaderIncomingModel(rssReedConfig, List(rssReaderModel))
+			val expected = RssReaderIncomingModel(rssReedConfig, List(rssReaderModel))
+			actual should be (expected)
+		}
+
+		"successful create a rss reader raw model" in {
+			val actual = RssReaderModel("title", "link", "pubDate", "description")
+			val expected = RssReaderModel("title", "link", "pubDate", "description")
+			actual should be (expected)
+		}
+	}
 }
