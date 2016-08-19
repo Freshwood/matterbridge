@@ -37,7 +37,7 @@ trait MatterBridgeIntegrationsConfig extends MatterBridgeServerConfig {
 	val newsriverCommand = config.getString("matterbridge.integrations.newsriver.command")
 	val newsriverResponseType = config.getString("matterbridge.integrations.newsriver.response_type")
 	val rssFeedList: List[RssFeedConfigEntry] = config.getConfigList("matterbridge.integrations.rss") map { p =>
-			RssFeedConfigEntry(p.getString("url"), p.getString("incoming_token")) } toList
+			RssFeedConfigEntry(p.getString("url"), p.getString("incoming_token"), p.getString("name")) } toList
 }
 
 /**

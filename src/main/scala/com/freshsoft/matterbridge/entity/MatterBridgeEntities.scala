@@ -50,12 +50,13 @@ object MatterBridgeEntities {
 
 	case class RssFeedConfigEntry(url: String,
 	                              incoming_token: String,
+	                              name: String,
 	                              var lastScanTime: String = DateTime.now.minus(86400000).toRfc1123DateTimeString())
 
 	case class RssReaderIncomingModel(rssFeedConfigEntry: RssFeedConfigEntry,
 	                                  rssReaderModels: List[RssReaderModel])
 
-	case class RssReaderModel(title: String, link: String, pubDate: String, description: String, img_url: String = "")
+	case class RssReaderModel(title: String, link: String, pubDate: String, description: String, img_url: String = "", author: String = "")
 
 	object RssReaderActorModel extends Enumeration(initial = 0) {
 		val Start = Value
