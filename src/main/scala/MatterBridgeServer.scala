@@ -41,7 +41,7 @@ object MatterBridgeServer extends App
 		NineGagResolveCommand(NineGagIntegration.nineGagWorker))
 
 	system.scheduler.schedule(0 milliseconds,
-		10 seconds,
+		15 minutes,
 		RssIntegration.rssReaderActor,
 		RssReaderActorModel.Start)
 }

@@ -57,8 +57,7 @@ object RssIntegration extends WithConfig with WithActorContext {
 		}
 
 		private def isArticleNew(actualPubDate: String, lastScanDate: String) = {
-			getParsedTime(actualPubDate).toInstant.toEpochMilli >
-			getParsedTime(lastScanDate).toInstant.toEpochMilli
+			getParsedTime(actualPubDate).isAfter(getParsedTime(lastScanDate))
 		}
 
 		private def buildRssModel(rssConfig: RssFeedConfigEntry, content: String): Option[RssReaderIncomingModel] = {
@@ -76,13 +75,13 @@ object RssIntegration extends WithConfig with WithActorContext {
 				} yield RssReaderModel(title, link, pubDate, description)).toList
 
 				val rssModels = allRssModels.filter(m => isArticleNew(m.pubDate, rssConfig.lastScanTime))
-				rssConfig.lastScanTime = DateTime.now.toIsoDateTimeString()
+				rssConfig.lastScanTime = DateTime.now.toRfc1123DateTimeString()
 
 				// TODO: Fix UTC Bug
 
 				Some(RssReaderIncomingModel(rssConfig, rssModels))
 			} catch {
-				case e: Exception => log.error(s"Could not parse rss content $content")
+				case e: Exception => log.error(s"Could not parse rss content $content", e)
 					None
 			}
 		}
@@ -104,7 +103,7 @@ object RssIntegration extends WithConfig with WithActorContext {
 			def buildMessageAttachments(rssReaderModels: List[RssReaderModel]) = {
 				for {
 					m <- rssReaderModels
-				} yield SlashResponseAttachment(m.title, m.title, m.link, m.description, image_url = "", fields = Nil)
+				} yield SlashResponseAttachment(m.title, m.title, m.link, m.description, m.img_url, fields = Nil)
 			}
 
 			IncomingResponse(text, buildMessageAttachments(rssReaderModels))

@@ -2,7 +2,9 @@ package com.freshsoft.matterbridge.util
 
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.RssFeedConfigEntry
 import com.typesafe.config.ConfigFactory
+
 import scala.collection.JavaConversions._
+import scala.language.postfixOps
 
 /**
 	* The global config property holder
