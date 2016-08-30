@@ -68,7 +68,7 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
 
 	/**
 		* Build a optional RssReaderIncomingModel which belongs to a rss feed config entry
-		* @param rssConfig The rss config entry to retrieve the neccessary informations
+		* @param rssConfig The rss config entry to retrieve the necessary information
 		* @param content The raw rss feed content as string
 		* @return A optional RssReaderIncomingModel
 		*/
@@ -88,7 +88,7 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
 			} yield RssReaderModel(title, link, pubDate, description, imageLink, rssConfig.name)).toList
 
 			val rssModels = allRssModels.filter(m => isArticleNew(m.pubDate, rssConfig.lastScanTime))
-			rssConfig.lastScanTime = DateTime.now.toRfc1123DateTimeString()
+			if (rssModels.nonEmpty) rssConfig.lastScanTime = DateTime.now.toRfc1123DateTimeString()
 
 			Some(RssReaderIncomingModel(rssConfig, rssModels))
 		} catch {
