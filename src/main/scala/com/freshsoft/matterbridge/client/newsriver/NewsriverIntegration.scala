@@ -116,6 +116,25 @@ object NewsriverIntegration extends IMatterBridgeResult
 	}
 
 	/**
+		* To make a compatibility with mattermost we have to split the list of message attachments
+		* Every message attachment has to be sent over a single request
+		* Mattermost issue: https://github.com/mattermost/platform/issues/3880
+		* @param incomingResponse The root incoming response with the list of message attachments
+		* @return Nothing, the future is sending the given list of message attachments
+		*/
+	private def zipIncomingResponseAndSendRequestsToWebhook(incomingResponse: IncomingResponse) = {
+		val responses = for {
+			attachment <- incomingResponse.attachments
+		} yield IncomingResponse(incomingResponse.text, List(attachment))
+
+		Future {
+			for (r <- responses) {
+				sendNewsriverResultToIncomingWebhook(r)
+			}
+		}
+	}
+
+	/**
 		* Get the SlashResponse result for this integration
 		* Converts the string to a json string and serialize it to the NewsriverResponse
 		*
@@ -130,7 +149,7 @@ object NewsriverIntegration extends IMatterBridgeResult
 			try {
 				x.parseJson.convertTo[List[NewsriverResponse]] match {
 					case x: List[NewsriverResponse] => buildSlashAndIncomingWebhookResponse(x, request) match {
-						case (a, Some(b)) => sendNewsriverResultToIncomingWebhook(b); a
+						case (a, Some(b)) => zipIncomingResponseAndSendRequestsToWebhook(b); a
 						case (a, b) => a
 					}
 

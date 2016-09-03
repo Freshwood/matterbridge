@@ -21,6 +21,7 @@ class NewsriverIntegrationTest extends WordSpec with Matchers with WithActorCont
 
 			result onSuccess {
 				case Some(x) => x shouldBe a [SlashResponse]
+				case None => fail("There should be `SlashResponse` available")
 			}
 		}
 
