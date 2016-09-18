@@ -31,6 +31,7 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
 
 	/**
 		* Retrieves the raw rss feed data and build the raw rss model to send
+		*
 		* @param rssConfig the rss configuration
 		* @return A rss reader incoming model or none when parsing was not successful
 		*/
@@ -43,8 +44,9 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
 
 	/**
 		* Check if the given pudDate String of an article is newer then the old search time
+		*
 		* @param actualPubDate The actual rss feed item article time
-		* @param lastScanDate The last actor run time saved in a model
+		* @param lastScanDate  The last actor run time saved in a model
 		* @return true when the actual rss item (pubDate) is new
 		*/
 	private def isArticleNew(actualPubDate: String, lastScanDate: String) = {
@@ -54,6 +56,7 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
 
 	/**
 		* Looks in the description tag for a image link
+		*
 		* @param description The content of a rss item description tag
 		* @return A link of an image otherwise an empty string (compatibility)
 		*/
@@ -68,32 +71,50 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
 
 	/**
 		* Build a optional RssReaderIncomingModel which belongs to a rss feed config entry
+		*
 		* @param rssConfig The rss config entry to retrieve the necessary information
-		* @param content The raw rss feed content as string
+		* @param content   The raw rss feed content as string
 		* @return A optional RssReaderIncomingModel
 		*/
 	private def buildRssModel(rssConfig: RssFeedConfigEntry, content: String): Option[RssReaderIncomingModel] = {
 
+		val allRssModels = getRawRssModels(rssConfig, content)
+
+		val rssModels = allRssModels.filter(m => isArticleNew(m.pubDate, rssConfig.lastScanTime))
+		if (rssModels.nonEmpty) rssConfig.lastScanTime = DateTime.now.toRfc1123DateTimeString()
+
+		Some(RssReaderIncomingModel(rssConfig, rssModels))
+	}
+
+	private def getRawRssModels(rssConfig: RssFeedConfigEntry, rawRssContent: String): List[RssReaderModel] = {
+
 		try {
-			val xml = XML.loadString(content)
+			val xml = XML.loadString(rawRssContent)
 			val items = xml \\ "item"
+			val entries = xml \\ "entry"
 
-			val allRssModels = (for {
-				i <- items
-				title = (i \ "title").text
-				link = (i \ "link").text
-				pubDate = (i \ "pubDate").text
-				description = (i \ "description").text
-				imageLink = extractImageFromContent(description)
-			} yield RssReaderModel(title, link, pubDate, description, imageLink, rssConfig.name)).toList
-
-			val rssModels = allRssModels.filter(m => isArticleNew(m.pubDate, rssConfig.lastScanTime))
-			if (rssModels.nonEmpty) rssConfig.lastScanTime = DateTime.now.toRfc1123DateTimeString()
-
-			Some(RssReaderIncomingModel(rssConfig, rssModels))
+			if (items.nonEmpty) {
+				(for {
+					i <- items
+					title = (i \ "title").text
+					link = (i \ "link").text
+					pubDate = (i \ "pubDate").text
+					description = (i \ "description").text
+					imageLink = extractImageFromContent(description)
+				} yield RssReaderModel(title, link, pubDate, description, imageLink, rssConfig.name)).toList
+			} else {
+				(for {
+					i <- entries
+					title = (i \ "title").text
+					link = (i \ "link").text
+					pubDate = (i \ "updated").text
+					description = (i \ "summary").text
+					imageLink = extractImageFromContent(description)
+				} yield RssReaderModel(title, link, pubDate, description, imageLink, rssConfig.name)).toList
+			}
 		} catch {
-			case e: Throwable => log.error(s"Could not parse rss content $content", e)
-				None
+			case e: Throwable => log.error(s"Could not parse rss content $rawRssContent", e)
+				List()
 		}
 	}
 }
