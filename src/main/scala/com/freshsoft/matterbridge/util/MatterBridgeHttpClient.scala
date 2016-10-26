@@ -42,10 +42,13 @@ object MatterBridgeHttpClient extends ISlashCommandJsonSupport with WithActorCon
 		* @param url The url to retrieve the result
 		* @return Raw HttpResponse UTF-8 conform String as a future
 		*/
-	def getUrlContent(url: String) = Http().singleRequest(HttpRequest(uri = url)) flatMap {
+	def getUrlContent(url: String): Future[String] = Http().singleRequest(HttpRequest(uri = url)) flatMap {
+
 		case HttpResponse(StatusCodes.OK, headers, entity, _) =>
 
-			headers.find(h => h.name() == "Content-Encoding" && h.value() == "gzip") match {
+			val isGzipContent = (x: HttpHeader) => x.name() == "Content-Encoding" && x.value() == "gzip"
+
+			headers.find(isGzipContent) match {
 				case Some(x) =>
 					entity.dataBytes.via(Gzip.decoderFlow).map(_.decodeString("UTF-8")).runWith(Sink.fold("")(_ ++ _))
 

@@ -25,6 +25,7 @@ lazy val root = (project in file(".")).
 			"org.scalatest" %% "scalatest" % scalaTestVersion % "test",
 			"org.scalamock" %% "scalamock-scalatest-support" % scalaMockVersion % "test"
 		),
+		parallelExecution := false,
 		mappings in Universal += {
 			// we are using the application.conf as default application.conf
 			// the user can override settings here
