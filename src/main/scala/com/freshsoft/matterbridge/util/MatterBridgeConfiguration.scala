@@ -25,7 +25,7 @@ trait MatterBridgeServerConfig extends MatterBridgeConfigHolder {
 /**
 	* The trait which includes all matterbridge integration configurations
 	*/
-trait MatterBridgeIntegrationsConfig extends MatterBridgeServerConfig {
+trait MatterBridgeConfig extends MatterBridgeServerConfig {
 	val matterBridgeCommand = config.getString("matterbridge.command")
 	val matterBridgeResponseType = config.getString("matterbridge.response_type")
 	val codingLoveCommand = config.getString("matterbridge.integrations.codinglove.command")
@@ -39,8 +39,3 @@ trait MatterBridgeIntegrationsConfig extends MatterBridgeServerConfig {
 	val rssFeedList: List[RssFeedConfigEntry] = config.getConfigList("matterbridge.integrations.rss") map { p =>
 			RssFeedConfigEntry(p.getString("url"), p.getString("incoming_token"), p.getString("name")) } toList
 }
-
-/**
-	* Only a trait tag
-	*/
-trait WithConfig extends MatterBridgeIntegrationsConfig
