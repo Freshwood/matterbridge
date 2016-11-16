@@ -26,12 +26,9 @@ object NewsriverIntegration
     with WithActorContext
     with ISlashCommandJsonSupport {
 
-  val log = Logging.getLogger(system, this)
+  private val log = Logging.getLogger(system, this)
 
-  val apiToken =
-    "sBBqsGXiYgF0Db5OV5tAw9cKkG-R9HP8i_Hw0VCYICEOnIvuIlisyP67o0v1pThT"
-
-  val apiHeader = HttpHeader.parse("authorization", apiToken) match {
+  val apiHeader = HttpHeader.parse("authorization", newsriverApiToken) match {
     case Ok(header, errors) => header
     case _ =>
       throw new IllegalArgumentException("Could not parse api token to header")
@@ -62,7 +59,7 @@ object NewsriverIntegration
         // Just return nothing when the site is down or we don't receive what we want
         // The further handling is above
         case _ =>
-          Future {
+          Future.successful {
             ""
           }
       }

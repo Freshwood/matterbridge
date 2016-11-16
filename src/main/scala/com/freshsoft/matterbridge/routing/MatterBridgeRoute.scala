@@ -11,21 +11,21 @@ import com.freshsoft.matterbridge.server.MatterBridgeService
 	*/
 class MatterBridgeRoute extends ISlashCommandJsonSupport {
 
-	val matterBridgeService = new MatterBridgeService
+  val matterBridgeService = new MatterBridgeService
 
-	val routes: Route = logRequestResult("matter-bridge") {
-		pathPrefix("api") {
-			pathPrefix("matterbridge") {
-				pathEnd {
-					post {
-						entity(as[FormData]) { entity =>
-							complete(matterBridgeService.slashCommandIntegration(entity))
-						}
-					} ~ get {
-						complete("The matterbridge service is online!")
-					}
-				}
-			}
-		}
-	}
+  val routes: Route = logRequestResult("matter-bridge") {
+    pathPrefix("api") {
+      pathPrefix("matterbridge") {
+        pathEnd {
+          post {
+            entity(as[FormData]) { entity =>
+              complete(matterBridgeService.slashCommandIntegration(entity))
+            }
+          } ~ get {
+            complete("The matterbridge service is online!")
+          }
+        }
+      }
+    }
+  }
 }

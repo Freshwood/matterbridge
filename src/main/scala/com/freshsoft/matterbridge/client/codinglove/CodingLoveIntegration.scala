@@ -29,14 +29,15 @@ object CodingLoveIntegration
     with MatterBridgeConfig
     with WithActorContext {
 
-  val log = Logging.getLogger(system, this)
+  private val log = Logging.getLogger(system, this)
 
-  val randomUrl = "http://thecodinglove.com/random"
+  private val randomUrl = "http://thecodinglove.com/random"
+
+  private val browser = JsoupBrowser()
 
   override def getResult(
-      request: SlashCommandRequest): Future[Option[SlashResponse]] = {
+      request: SlashCommandRequest): Future[Option[SlashResponse]] =
     getDataFromWebsite(randomUrl, request)
-  }
 
   /**
 		* Get the response from thecodinglove web page
@@ -85,7 +86,6 @@ object CodingLoveIntegration
 		*/
   private def getCodingLoveResponseContent(htmlContent: String,
                                            request: SlashCommandRequest) = {
-    val browser = JsoupBrowser()
     val doc = browser.parseString(htmlContent)
 
     val text = doc >> element("div div h3")
