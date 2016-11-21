@@ -4,14 +4,18 @@ import akka.http.scaladsl.model.FormData
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.ISlashCommandJsonSupport
-import com.freshsoft.matterbridge.server.MatterBridgeService
+import com.freshsoft.matterbridge.server.{
+  MatterBridgeService,
+  MatterBridgeServiceIntegration
+}
 
 /**
-	* The matter bridge application routing definition
-	*/
+  * The matter bridge application routing definition
+  */
 class MatterBridgeRoute extends ISlashCommandJsonSupport {
 
-  val matterBridgeService = new MatterBridgeService
+  val matterBridgeService: MatterBridgeServiceIntegration =
+    new MatterBridgeService
 
   val routes: Route = logRequestResult("matter-bridge") {
     pathPrefix("api") {
@@ -23,6 +27,14 @@ class MatterBridgeRoute extends ISlashCommandJsonSupport {
             }
           } ~ get {
             complete("The matterbridge service is online!")
+          }
+        } ~ pathPrefix("out") {
+          pathEnd {
+            post {
+              entity(as[FormData]) { entity =>
+                complete(matterBridgeService.outgoingHookIntegration(entity))
+              }
+            }
           }
         }
       }

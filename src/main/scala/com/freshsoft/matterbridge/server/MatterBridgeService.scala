@@ -5,16 +5,33 @@ import com.freshsoft.matterbridge.client.MatterBridgeIntegration
 import com.freshsoft.matterbridge.client.codinglove.CodingLoveIntegration
 import com.freshsoft.matterbridge.client.newsriver.NewsriverIntegration
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
-import com.freshsoft.matterbridge.entity.SlashCommandRequest
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
+  OutgoingResponse,
+  SlashResponse
+}
+import com.freshsoft.matterbridge.entity.{
+  OutgoingHookRequest,
+  SlashCommandRequest
+}
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
 
 import scala.concurrent.Future
 
+trait MatterBridgeServiceIntegration {
+  def slashCommandIntegration(
+      formData: FormData): Future[Option[SlashResponse]]
+
+  def outgoingHookIntegration(
+      formData: FormData): Future[Option[OutgoingResponse]]
+}
+
 /**
 	* The matter bridge service which has the integration logic
 	*/
-class MatterBridgeService extends MatterBridgeConfig with WithActorContext {
+class MatterBridgeService
+    extends MatterBridgeServiceIntegration
+    with MatterBridgeConfig
+    with WithActorContext {
 
   /**
 		* The matterbridge slash command integrations
@@ -22,7 +39,7 @@ class MatterBridgeService extends MatterBridgeConfig with WithActorContext {
 		* @param formData The FormData field to retrieve the request params
 		* @return Option SlashResponse
 		*/
-  def slashCommandIntegration(
+  override def slashCommandIntegration(
       formData: FormData): Future[Option[SlashResponse]] = {
     val request = SlashCommandRequest(formData)
     slashIntegration(request)
@@ -39,5 +56,14 @@ class MatterBridgeService extends MatterBridgeConfig with WithActorContext {
       case x if x.contains(newsriverCommand) =>
         NewsriverIntegration.getResult(request)
       case _ => Future { None }
+    }
+
+  override def outgoingHookIntegration(
+      formData: FormData): Future[Option[OutgoingResponse]] =
+    Future.successful {
+      OutgoingHookRequest(formData) map { data =>
+        if (data.text contains "Hallo") OutgoingResponse("Arschloch")
+        else OutgoingResponse("None")
+      }
     }
 }

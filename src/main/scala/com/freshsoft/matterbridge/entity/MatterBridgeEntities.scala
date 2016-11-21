@@ -33,6 +33,8 @@ object MatterBridgeEntities {
   case class IncomingResponse(text: String,
                               attachments: List[SlashResponseAttachment])
 
+  case class OutgoingResponse(text: String)
+
   case class NineGagResolveCommand(worker: ActorRef)
 
   case class NineGagGifResult(key: String = "", gifUrl: String = "")
@@ -81,6 +83,7 @@ object MatterBridgeEntities {
       SlashResponseAttachment)
     implicit val slashResponseFormat = jsonFormat3(SlashResponse)
     implicit val incomingResponseFormat = jsonFormat2(IncomingResponse)
+    implicit val outgoingResponseFormat = jsonFormat1(OutgoingResponse)
     implicit val newsriverRecoverWebsiteFormat = jsonFormat2(
       NewsriverRecoverWebsite)
     implicit val newsriverResponseEntityFormat = jsonFormat2(
