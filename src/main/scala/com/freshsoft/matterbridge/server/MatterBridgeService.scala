@@ -61,9 +61,10 @@ class MatterBridgeService
   override def outgoingHookIntegration(
       formData: FormData): Future[Option[OutgoingResponse]] =
     Future.successful {
-      OutgoingHookRequest(formData) map { data =>
-        if (data.text contains "Hallo") OutgoingResponse("Arschloch")
-        else OutgoingResponse("None")
+      OutgoingHookRequest(formData) flatMap { data =>
+        botMap.keys.toList collectFirst {
+          case x if data.text contains x => OutgoingResponse(botMap(x))
+        }
       }
     }
 }

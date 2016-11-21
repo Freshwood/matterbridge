@@ -52,4 +52,9 @@ trait MatterBridgeConfig extends MatterBridgeServerConfig {
                          p.getString("incoming_token"),
                          p.getString("name"))
     } toList
+
+  val botMap: Map[String, String] =
+    config.getConfigList("matterbridge.integrations.bot") flatMap { entry =>
+      Map(entry.getString("key") -> entry.getString("value"))
+    } toMap
 }
