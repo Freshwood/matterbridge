@@ -1,6 +1,6 @@
 package com.freshsoft.matterbridge.util
 
-import akka.event.Logging
+import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.coding.Gzip
 import akka.http.scaladsl.model._
@@ -25,7 +25,7 @@ object MatterBridgeHttpClient
     extends ISlashCommandJsonSupport
     with WithActorContext {
 
-  val log = Logging.getLogger(system, this)
+  val log: LoggingAdapter = Logging.getLogger(system, this)
 
   /**
 		* Try to post the incoming token response object to the given url
@@ -34,7 +34,8 @@ object MatterBridgeHttpClient
 		* @param incomingResponse The post data content
 		* @return Nothing => only logs the result
 		*/
-  def postToIncomingWebhook(url: String, incomingResponse: IncomingResponse) =
+  def postToIncomingWebhook(url: String,
+                            incomingResponse: IncomingResponse): Future[Unit] =
     Http().singleRequest(
       HttpRequest(uri = url,
                   method = HttpMethods.POST,
