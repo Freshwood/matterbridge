@@ -1,13 +1,10 @@
 package com.freshsoft.matterbridge.client.rss
 
-import akka.actor.{Actor, Props}
-import akka.event.Logging
+import akka.actor.{Actor, ActorRef, Props}
+import akka.event.{Logging, LoggingAdapter}
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities._
 import com.freshsoft.matterbridge.server.WithActorContext
-import com.freshsoft.matterbridge.util.{
-  MatterBridgeConfig,
-  MatterBridgeHttpClient
-}
+import com.freshsoft.matterbridge.util.{MatterBridgeConfig, MatterBridgeHttpClient}
 
 /**
   * The rss reader integration which does not produce a matter bridge result
@@ -15,32 +12,27 @@ import com.freshsoft.matterbridge.util.{
   */
 object RssIntegration extends MatterBridgeConfig with WithActorContext {
 
-  val log = Logging.getLogger(system, this)
+  val log: LoggingAdapter = Logging.getLogger(system, this)
 
-  val rssReaderActor = system.actorOf(Props(classOf[RssReaderActor]))
+  val rssReaderActor: ActorRef = system.actorOf(Props(classOf[RssReaderActor]))
 
-  val rssReaderWorkerActor =
+  val rssReaderWorkerActor: ActorRef =
     system.actorOf(Props(classOf[RssReaderWorkerActor]))
 
-  val rssReaderSenderActor =
+  val rssReaderSenderActor: ActorRef =
     system.actorOf(Props(classOf[RssReaderSenderActor]))
 
   class RssReaderSenderActor extends Actor {
     override def receive: Receive = {
       case x: RssReaderIncomingModel if x.rssReaderModels.nonEmpty =>
-        val incomingResponseData = buildIncomingResponseFromRssModel(
-          x.rssReaderModels)
-        MatterBridgeHttpClient.postToIncomingWebhook(
-          x.rssFeedConfigEntry.incoming_token,
-          incomingResponseData)
+        val incomingResponseData = buildIncomingResponseFromRssModel(x.rssReaderModels)
+        MatterBridgeHttpClient.postToIncomingWebhook(x.rssFeedConfigEntry.incoming_token, incomingResponseData)
 
       case y: RssReaderIncomingModel if y.rssReaderModels.isEmpty =>
-        log.warning(
-          s"Actual there are no rss items from ${y.rssFeedConfigEntry.url} to send")
+        log.warning(s"Actual there are no rss items from ${y.rssFeedConfigEntry.url} to send")
     }
 
-    private def buildIncomingResponseFromRssModel(
-        rssReaderModels: List[RssReaderModel]) = {
+    private def buildIncomingResponseFromRssModel(rssReaderModels: List[RssReaderModel]) = {
       val text = s"Found ${rssReaderModels.length} rss items"
 
       def buildMessageAttachments(rssReaderModels: List[RssReaderModel]) = {

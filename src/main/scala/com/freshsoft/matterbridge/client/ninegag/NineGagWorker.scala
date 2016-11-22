@@ -1,7 +1,7 @@
 package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.Actor
-import akka.event.Logging
+import akka.event.{Logging, LoggingAdapter}
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, NineGagResolveCommand}
 import com.freshsoft.matterbridge.server.WithActorContext
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
@@ -17,59 +17,61 @@ import scala.util.{Failure, Success}
 	*/
 class NineGagWorker extends Actor with WithActorContext {
 
-	val log = Logging.getLogger(system, this)
+  val log: LoggingAdapter = Logging.getLogger(system, this)
 
-	override def receive: Receive = {
-		case url: String =>
-			getNineGagGifs(url) onComplete {
-				case Success(result) => log.info(s"Found ${result.size} gifs from $url")
+  override def receive: Receive = {
+    case url: String =>
+      getNineGagGifs(url) onComplete {
+        case Success(result) =>
+          log.info(s"Found ${result.size} gifs from $url")
 
-					if (result.isEmpty) {
-						log.info("No gifs found, proceed with next url")
-						NineGagIntegration.nineGagResolver ! NineGagResolveCommand(self)
-					} else {
-						result.foreach(u => NineGagIntegration.nineGagGifReceiver ! u)
-					}
+          if (result.isEmpty) {
+            log.info("No gifs found, proceed with next url")
+            NineGagIntegration.nineGagResolver ! NineGagResolveCommand(self)
+          } else {
+            result.foreach(u => NineGagIntegration.nineGagGifReceiver ! u)
+          }
 
-				case Failure(ex) =>
-					log.error(ex, s"Could not parse html content from url [$url]")
-			}
-	}
+        case Failure(ex) =>
+          log.error(ex, s"Could not parse html content from url [$url]")
+      }
+  }
 
-	/**
+  /**
 		* Get concurrent the List of gifs from NineGag
 		*
 		* @param url The url to retrieve the gifs
 		* @return A Future list of NineGagGifResult
 		*/
-	private def getNineGagGifs(url: String): Future[List[NineGagGifResult]] = {
-		MatterBridgeHttpClient.getUrlContent(url) flatMap {
-			case x if x.isEmpty => log.warning(s"Get no content from $url"); Future {Nil}
-			case x if !x.isEmpty => Future {
-				resolveGifsFromContent(x)
-			}
-		}
-	}
+  private def getNineGagGifs(url: String): Future[List[NineGagGifResult]] = {
+    MatterBridgeHttpClient.getUrlContent(url) flatMap {
+      case x if x.isEmpty => log.warning(s"Get no content from $url"); Future { Nil }
+      case x if !x.isEmpty =>
+        Future {
+          resolveGifsFromContent(x)
+        }
+    }
+  }
 
-	/**
+  /**
 		* Get the gifs from the content
 		*
 		* @param htmlContent The web result to retrieve the information
 		* @return A list of NineGagGifResult
 		*/
-	@throws[Exception]
-	private def resolveGifsFromContent(htmlContent: String) = {
-		val browser = JsoupBrowser()
-		val doc = browser.parseString(htmlContent)
+  @throws[Exception]
+  private def resolveGifsFromContent(htmlContent: String) = {
+    val browser = JsoupBrowser()
+    val doc = browser.parseString(htmlContent)
 
-		val articles = doc >> elements("article")
+    val articles = doc >> elements("article")
 
-		val gifResults = for {
-			article <- articles
-			headline <- article("header h2 a")
-			gifSrc <- (article >> elementList("div a div") >?> attr("data-image")("div")).flatten
-		} yield (headline, gifSrc)
+    val gifResults = for {
+      article <- articles
+      headline <- article("header h2 a")
+      gifSrc <- (article >> elementList("div a div") >?> attr("data-image")("div")).flatten
+    } yield (headline, gifSrc)
 
-		gifResults.map(r => NineGagGifResult(r._1, r._2)).toList
-	}
+    gifResults.map(r => NineGagGifResult(r._1, r._2)).toList
+  }
 }

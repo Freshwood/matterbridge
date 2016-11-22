@@ -1,7 +1,7 @@
 package com.freshsoft.matterbridge.util
 
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.RssFeedConfigEntry
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.collection.JavaConversions._
 import scala.language.postfixOps
@@ -11,46 +11,44 @@ import scala.language.postfixOps
 	*/
 trait MatterBridgeConfigHolder {
 
-  val config = ConfigFactory.load()
+  val config: Config = ConfigFactory.load()
 }
 
 /**
 	* The matter bridge server configuration
 	*/
 trait MatterBridgeServerConfig extends MatterBridgeConfigHolder {
-  val host = config.getString("http.host")
-  val port = config.getInt("http.port")
+  val host: String = config.getString("http.host")
+  val port: Int = config.getInt("http.port")
 }
 
 /**
 	* The trait which includes all matterbridge integration configurations
 	*/
 trait MatterBridgeConfig extends MatterBridgeServerConfig {
-  val matterBridgeCommand = config.getString("matterbridge.command")
-  val matterBridgeResponseType = config.getString("matterbridge.response_type")
-  val codingLoveCommand =
+  val matterBridgeCommand: String = config.getString("matterbridge.command")
+  val matterBridgeResponseType: String = config.getString("matterbridge.response_type")
+  val codingLoveCommand: String =
     config.getString("matterbridge.integrations.codinglove.command")
-  val codingLoveResponseType =
+  val codingLoveResponseType: String =
     config.getString("matterbridge.integrations.codinglove.response_type")
-  val nineGagCommand =
+  val nineGagCommand: String =
     config.getString("matterbridge.integrations.ninegag.command")
-  val nineGagResponseType =
+  val nineGagResponseType: String =
     config.getString("matterbridge.integrations.ninegag.response_type")
-  val nineGagMaximumGifStore =
+  val nineGagMaximumGifStore: Int =
     config.getInt("matterbridge.integrations.ninegag.max_gif_store")
-  val newsriverApiToken =
+  val newsriverApiToken: String =
     config.getString("matterbridge.integrations.newsriver.api_token")
-  val newsriverIncomingTokenUrl =
+  val newsriverIncomingTokenUrl: String =
     config.getString("matterbridge.integrations.newsriver.incoming_token")
-  val newsriverCommand =
+  val newsriverCommand: String =
     config.getString("matterbridge.integrations.newsriver.command")
-  val newsriverResponseType =
+  val newsriverResponseType: String =
     config.getString("matterbridge.integrations.newsriver.response_type")
   val rssFeedList: List[RssFeedConfigEntry] =
     config.getConfigList("matterbridge.integrations.rss") map { p =>
-      RssFeedConfigEntry(p.getString("url"),
-                         p.getString("incoming_token"),
-                         p.getString("name"))
+      RssFeedConfigEntry(p.getString("url"), p.getString("incoming_token"), p.getString("name"))
     } toList
 
   val botMap: Map[String, String] =

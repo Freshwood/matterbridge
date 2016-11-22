@@ -4,7 +4,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 import akka.actor.Actor
-import akka.event.Logging
+import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.model.DateTime
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
   RssFeedConfigEntry,
@@ -24,7 +24,7 @@ import scala.xml.{NodeSeq, XML}
 	*/
 class RssReaderWorkerActor extends Actor with WithActorContext {
 
-  val log = Logging.getLogger(system, this)
+  val log: LoggingAdapter = Logging.getLogger(system, this)
 
   override def receive: Receive = {
     case x: RssFeedConfigEntry =>
@@ -56,13 +56,9 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
 		* @param isRssFeed Indicator if it is an rss feed or an atom feed
 		* @return true when the actual rss item (pubDate) is new
 		*/
-  private def isArticleNew(actualPubDate: String,
-                           lastScanDate: String,
-                           isRssFeed: Boolean) = {
-    val rssFeedTime = (x: String) =>
-      OffsetDateTime.parse(x, DateTimeFormatter.RFC_1123_DATE_TIME)
-    val atomFeedTime = (x: String) =>
-      OffsetDateTime.parse(x, DateTimeFormatter.ISO_DATE_TIME)
+  private def isArticleNew(actualPubDate: String, lastScanDate: String, isRssFeed: Boolean) = {
+    val rssFeedTime = (x: String) => OffsetDateTime.parse(x, DateTimeFormatter.RFC_1123_DATE_TIME)
+    val atomFeedTime = (x: String) => OffsetDateTime.parse(x, DateTimeFormatter.ISO_DATE_TIME)
 
     if (isRssFeed) {
       rssFeedTime(actualPubDate).isAfter(rssFeedTime(lastScanDate))
@@ -82,7 +78,7 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
       val doc = JsoupBrowser().parseString(description)
       (doc >> element("img")).attr("src")
     } catch {
-      case e: Throwable => ""
+      case _: Throwable => ""
     }
   }
 
@@ -93,9 +89,7 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
 		* @param content   The raw rss feed content as string
 		* @return A optional RssReaderIncomingModel
 		*/
-  private def buildRssModel(
-      rssConfig: RssFeedConfigEntry,
-      content: String): Option[RssReaderIncomingModel] = {
+  private def buildRssModel(rssConfig: RssFeedConfigEntry, content: String): Option[RssReaderIncomingModel] = {
 
     try {
       val xml = XML.loadString(content)
@@ -108,8 +102,7 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
         if (isRssFeed) getRssFeedModels(rssConfig, items)
         else getAtomFeedModels(rssConfig, entries)
 
-      val rssModels = allRssModels.filter(m =>
-        isArticleNew(m.pubDate, rssConfig.lastScanTime, isRssFeed))
+      val rssModels = allRssModels.filter(m => isArticleNew(m.pubDate, rssConfig.lastScanTime, isRssFeed))
       if (rssModels.nonEmpty)
         rssConfig.lastScanTime = DateTime.now.toRfc1123DateTimeString()
 
@@ -122,8 +115,7 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
     }
   }
 
-  private def getRssFeedModels(rssConfig: RssFeedConfigEntry,
-                               rssNodeSeq: NodeSeq) = {
+  private def getRssFeedModels(rssConfig: RssFeedConfigEntry, rssNodeSeq: NodeSeq) = {
     (for {
       i <- rssNodeSeq
       title = (i \ "title").text
@@ -131,17 +123,10 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
       pubDate = (i \ "pubDate").text
       description = (i \ "description").text
       imageLink = extractImageFromContent(description)
-    } yield
-      RssReaderModel(title,
-                     link,
-                     pubDate,
-                     description,
-                     imageLink,
-                     rssConfig.name)).toList
+    } yield RssReaderModel(title, link, pubDate, description, imageLink, rssConfig.name)).toList
   }
 
-  private def getAtomFeedModels(rssConfig: RssFeedConfigEntry,
-                                atomNodeSeq: NodeSeq) = {
+  private def getAtomFeedModels(rssConfig: RssFeedConfigEntry, atomNodeSeq: NodeSeq) = {
     (for {
       i <- atomNodeSeq
       title = (i \ "title").text
@@ -149,12 +134,6 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
       pubDate = (i \ "updated").text
       description = (i \ "summary").text
       imageLink = extractImageFromContent(description)
-    } yield
-      RssReaderModel(title,
-                     link,
-                     pubDate,
-                     description,
-                     imageLink,
-                     rssConfig.name)).toList
+    } yield RssReaderModel(title, link, pubDate, description, imageLink, rssConfig.name)).toList
   }
 }

@@ -28,8 +28,8 @@ object NewsriverIntegration
 
   private val log = Logging.getLogger(system, this)
 
-  val apiHeader = HttpHeader.parse("authorization", newsriverApiToken) match {
-    case Ok(header, errors) => header
+  val apiHeader: HttpHeader = HttpHeader.parse("authorization", newsriverApiToken) match {
+    case Ok(header, _) => header
     case _ =>
       throw new IllegalArgumentException("Could not parse api token to header")
   }
@@ -51,7 +51,7 @@ object NewsriverIntegration
                     method = HttpMethods.GET,
                     headers = collection.immutable.Seq(apiHeader)))
       .flatMap {
-        case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+        case HttpResponse(StatusCodes.OK, _, entity, _) =>
           entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { x =>
             x.decodeString("UTF-8")
           }
@@ -64,8 +64,7 @@ object NewsriverIntegration
           }
       }
 
-  private def sendNewsriverResultToIncomingWebhook(
-      incomingResponse: IncomingResponse) =
+  private def sendNewsriverResultToIncomingWebhook(incomingResponse: IncomingResponse) =
     Http().singleRequest(
       HttpRequest(uri = newsriverIncomingTokenUrl,
                   method = HttpMethods.POST,
@@ -77,8 +76,7 @@ object NewsriverIntegration
 
       // Something went wrong while sending information to incoming token url
       case _ =>
-        log.warning(
-          s"Could not send data to token url $newsriverIncomingTokenUrl")
+        log.warning(s"Could not send data to token url $newsriverIncomingTokenUrl")
     }
 
   /**
@@ -89,8 +87,7 @@ object NewsriverIntegration
     */
   private def buildSlashAndIncomingWebhookResponse(
       newsriverResponses: List[NewsriverResponse],
-      request: SlashCommandRequest)
-    : (Option[SlashResponse], Option[IncomingResponse]) = {
+      request: SlashCommandRequest): (Option[SlashResponse], Option[IncomingResponse]) = {
     newsriverResponses match {
       case x: List[NewsriverResponse] if x nonEmpty =>
         val responses = createSlashResponse(x, request)
@@ -154,8 +151,7 @@ object NewsriverIntegration
     * @param incomingResponse The root incoming response with the list of message attachments
     * @return Nothing, the future is sending the given list of message attachments
     */
-  private def zipIncomingResponseAndSendRequestsToWebhook(
-      incomingResponse: IncomingResponse) = {
+  private def zipIncomingResponseAndSendRequestsToWebhook(incomingResponse: IncomingResponse) = {
     val responses = for {
       attachment <- incomingResponse.attachments
     } yield IncomingResponse(incomingResponse.text, List(attachment))
@@ -174,8 +170,7 @@ object NewsriverIntegration
     * @param request The SlashRequest to build the response
     * @return A Future of SlashResponse
     */
-  override def getResult(
-      request: SlashCommandRequest): Future[Option[SlashResponse]] = {
+  override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] = {
     val url = buildNewsriverUrl(sanitizeTitle(request.text))
     val response = getResponse(url)
 
@@ -186,12 +181,12 @@ object NewsriverIntegration
             buildSlashAndIncomingWebhookResponse(x, request) match {
               case (a, Some(b)) =>
                 zipIncomingResponseAndSendRequestsToWebhook(b); a
-              case (a, b) => a
+              case (a, _) => a
             }
 
         }
       } catch {
-        case ex: Exception =>
+        case _: Exception =>
           buildSlashAndIncomingWebhookResponse(List(), request)._1
       }
     }

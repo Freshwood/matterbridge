@@ -3,16 +3,14 @@ package com.freshsoft.matterbridge.entity
 import akka.actor.ActorRef
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.DateTime
-import spray.json.DefaultJsonProtocol
+import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 /**
 	* Here are all matterbridge defined entities
 	*/
 object MatterBridgeEntities {
 
-  case class SlashResponseField(title: String,
-                                value: String,
-                                short: Boolean = false)
+  case class SlashResponseField(title: String, value: String, short: Boolean = false)
 
   case class SlashResponseAttachment(fallback: String,
                                      title: String,
@@ -30,8 +28,7 @@ object MatterBridgeEntities {
                            text: String,
                            attachments: List[SlashResponseAttachment])
 
-  case class IncomingResponse(text: String,
-                              attachments: List[SlashResponseAttachment])
+  case class IncomingResponse(text: String, attachments: List[SlashResponseAttachment])
 
   case class OutgoingResponse(text: String)
 
@@ -51,12 +48,11 @@ object MatterBridgeEntities {
                                elements: List[NewsriverResponseEntity],
                                website: NewsriverRecoverWebsite)
 
-  case class RssFeedConfigEntry(
-      url: String,
-      incoming_token: String,
-      name: String,
-      var lastScanTime: String =
-        DateTime.now.minus(86400000).toRfc1123DateTimeString())
+  case class RssFeedConfigEntry(url: String,
+                                incoming_token: String,
+                                name: String,
+                                var lastScanTime: String =
+                                  DateTime.now.minus(86400000).toRfc1123DateTimeString())
 
   case class RssReaderIncomingModel(rssFeedConfigEntry: RssFeedConfigEntry,
                                     rssReaderModels: List[RssReaderModel])
@@ -75,19 +71,21 @@ object MatterBridgeEntities {
   /**
 		* Implicit json conversion -> Nothing to do when we complete the object
 		*/
-  trait ISlashCommandJsonSupport
-      extends DefaultJsonProtocol
-      with SprayJsonSupport {
-    implicit val slashResponseFieldFormat = jsonFormat3(SlashResponseField)
-    implicit val slashResponseElementFormat = jsonFormat11(
-      SlashResponseAttachment)
-    implicit val slashResponseFormat = jsonFormat3(SlashResponse)
-    implicit val incomingResponseFormat = jsonFormat2(IncomingResponse)
-    implicit val outgoingResponseFormat = jsonFormat1(OutgoingResponse)
-    implicit val newsriverRecoverWebsiteFormat = jsonFormat2(
-      NewsriverRecoverWebsite)
-    implicit val newsriverResponseEntityFormat = jsonFormat2(
-      NewsriverResponseEntity)
-    implicit val newsriverResponseFormat = jsonFormat7(NewsriverResponse)
+  trait ISlashCommandJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
+    implicit val slashResponseFieldFormat: RootJsonFormat[SlashResponseField] = jsonFormat3(
+      SlashResponseField)
+    implicit val slashResponseElementFormat: RootJsonFormat[SlashResponseAttachment] =
+      jsonFormat11(SlashResponseAttachment)
+    implicit val slashResponseFormat: RootJsonFormat[SlashResponse] = jsonFormat3(SlashResponse)
+    implicit val incomingResponseFormat: RootJsonFormat[IncomingResponse] = jsonFormat2(
+      IncomingResponse)
+    implicit val outgoingResponseFormat: RootJsonFormat[OutgoingResponse] = jsonFormat1(
+      OutgoingResponse)
+    implicit val newsriverRecoverWebsiteFormat: RootJsonFormat[NewsriverRecoverWebsite] =
+      jsonFormat2(NewsriverRecoverWebsite)
+    implicit val newsriverResponseEntityFormat: RootJsonFormat[NewsriverResponseEntity] =
+      jsonFormat2(NewsriverResponseEntity)
+    implicit val newsriverResponseFormat: RootJsonFormat[NewsriverResponse] = jsonFormat7(
+      NewsriverResponse)
   }
 }

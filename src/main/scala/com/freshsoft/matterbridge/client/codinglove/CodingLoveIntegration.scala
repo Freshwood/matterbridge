@@ -3,12 +3,7 @@ package com.freshsoft.matterbridge.client.codinglove
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.headers.Location
-import akka.http.scaladsl.model.{
-  HttpHeader,
-  HttpRequest,
-  HttpResponse,
-  StatusCodes
-}
+import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse, StatusCodes}
 import akka.util.ByteString
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
@@ -35,8 +30,7 @@ object CodingLoveIntegration
 
   private val browser = JsoupBrowser()
 
-  override def getResult(
-      request: SlashCommandRequest): Future[Option[SlashResponse]] =
+  override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] =
     getDataFromWebsite(randomUrl, request)
 
   /**
@@ -46,11 +40,10 @@ object CodingLoveIntegration
 		* @param request The SlashRequest to work with
 		* @return Future as Option from SlashResponse
 		*/
-  private def getDataFromWebsite(
-      uri: String,
-      request: SlashCommandRequest): Future[Option[SlashResponse]] = {
+  private def getDataFromWebsite(uri: String,
+                                 request: SlashCommandRequest): Future[Option[SlashResponse]] = {
     Http().singleRequest(HttpRequest(uri = uri)).flatMap {
-      case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+      case HttpResponse(StatusCodes.OK, _, entity, _) =>
         entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { x =>
           x.decodeString("UTF-8") match {
             case response if response.isEmpty => log.info("NONE RESULT"); None
@@ -62,7 +55,7 @@ object CodingLoveIntegration
                               List()))
           }
         }
-      case HttpResponse(StatusCodes.Found, headers, entity, _) =>
+      case HttpResponse(StatusCodes.Found, headers, _, _) =>
         val locationHeader: Option[HttpHeader] =
           headers.find(h => h.isInstanceOf[Location])
 
@@ -84,8 +77,7 @@ object CodingLoveIntegration
 		* @param request     The request to build the final response
 		* @return The response message as String
 		*/
-  private def getCodingLoveResponseContent(htmlContent: String,
-                                           request: SlashCommandRequest) = {
+  private def getCodingLoveResponseContent(htmlContent: String, request: SlashCommandRequest) = {
     val doc = browser.parseString(htmlContent)
 
     val text = doc >> element("div div h3")
