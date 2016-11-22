@@ -53,8 +53,11 @@ object OutgoingHookRequest {
     val text = extractFormDataField(formData.fields, "text")
 
     (username, text) match {
-      case (Some(x), Some(y)) =>
+      case (Some(x), Some(y)) => if (triggerWord.isDefined) {
+        Some(OutgoingHookRequest(x._2, y._2, triggerWord.get._2))
+      } else {
         Some(OutgoingHookRequest(x._2, y._2))
+      }
       case _ => None
     }
   }
