@@ -5,7 +5,7 @@ import akka.event.{Logging, LoggingAdapter}
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, SlashResponse}
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
-import com.freshsoft.matterbridge.server.WithActorContext
+import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
 
 import scala.collection.mutable
@@ -15,7 +15,10 @@ import scala.util.Random
 /**
 	* The nine gag integration which is searching in the background for gifs
 	*/
-object NineGagIntegration extends IMatterBridgeResult with MatterBridgeConfig with WithActorContext {
+object NineGagIntegration
+    extends IMatterBridgeResult
+    with MatterBridgeConfig
+    with MatterBridgeContext {
 
   val log: LoggingAdapter = Logging.getLogger(system, this)
 
@@ -78,9 +81,13 @@ object NineGagIntegration extends IMatterBridgeResult with MatterBridgeConfig wi
     val words = request.text.split("\\W+")
 
     Future {
-      nineGagGifs.filter(p => p._1.contains(request.text) || p._1.contains(request.text) || p._1.contains(words)) match {
+      nineGagGifs.filter(p =>
+        p._1.contains(request.text) || p._1.contains(request.text) || p._1.contains(words)) match {
         case x: mutable.LinkedHashMap[String, String] if x.nonEmpty =>
-          Some(SlashResponse(nineGagResponseType, responseText(getSpecificMap(x.toVector), request.text), List()))
+          Some(
+            SlashResponse(nineGagResponseType,
+                          responseText(getSpecificMap(x.toVector), request.text),
+                          List()))
         // Nothing found then search further
         case _ =>
           getSpecificMap(nineGagGifs.toVector) match {

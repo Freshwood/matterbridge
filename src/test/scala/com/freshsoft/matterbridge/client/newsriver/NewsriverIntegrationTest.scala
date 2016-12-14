@@ -3,7 +3,7 @@ package com.freshsoft.matterbridge.client.newsriver
 import akka.http.scaladsl.model.HttpHeader
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
-import com.freshsoft.matterbridge.server.WithActorContext
+import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
 import org.scalatest.{Matchers, WordSpec}
 
@@ -13,7 +13,7 @@ import org.scalatest.{Matchers, WordSpec}
 class NewsriverIntegrationTest
     extends WordSpec
     with Matchers
-    with WithActorContext
+    with MatterBridgeContext
     with MatterBridgeConfig {
 
   val rightRequest = new SlashCommandRequest("news", "somename", "test")

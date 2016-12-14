@@ -3,13 +3,13 @@ package com.freshsoft.matterbridge.client.rss
 import akka.actor.Actor
 import akka.event.{Logging, LoggingAdapter}
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.RssReaderActorModel
-import com.freshsoft.matterbridge.server.WithActorContext
+import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
 
 /**
 	* The rss reader actor looks for the rss reader configurations and triggers the worker actor
 	*/
-class RssReaderActor extends Actor with WithActorContext with MatterBridgeConfig {
+class RssReaderActor extends Actor with MatterBridgeContext with MatterBridgeConfig {
 
   val log: LoggingAdapter =
     Logging.getLogger(system, this)

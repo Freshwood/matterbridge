@@ -8,10 +8,11 @@ import scala.concurrent.ExecutionContext
 /**
 	* Rest trait defining the execution context for the actors
 	*/
-trait WithActorContext {
-	implicit val system = ActorSystem("matter-bridge")
+trait MatterBridgeContext {
 
-	implicit val materializer = ActorMaterializer()
+  implicit val system = ActorSystem("matter-bridge")
 
-	implicit val executionContext: ExecutionContext = materializer.executionContext
+  implicit val materializer = ActorMaterializer()
+
+  implicit val executionContext: ExecutionContext = materializer.executionContext
 }

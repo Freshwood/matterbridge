@@ -11,7 +11,7 @@ import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
   RssReaderIncomingModel,
   RssReaderModel
 }
-import com.freshsoft.matterbridge.server.WithActorContext
+import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
@@ -22,7 +22,7 @@ import scala.xml.{NodeSeq, XML}
 /**
 	* The rss reader worker actor fetch the rss feed and build a Message for the rssReaderSenderActor
 	*/
-class RssReaderWorkerActor extends Actor with WithActorContext {
+class RssReaderWorkerActor extends Actor with MatterBridgeContext {
 
   val log: LoggingAdapter = Logging.getLogger(system, this)
 
@@ -89,7 +89,8 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
 		* @param content   The raw rss feed content as string
 		* @return A optional RssReaderIncomingModel
 		*/
-  private def buildRssModel(rssConfig: RssFeedConfigEntry, content: String): Option[RssReaderIncomingModel] = {
+  private def buildRssModel(rssConfig: RssFeedConfigEntry,
+                            content: String): Option[RssReaderIncomingModel] = {
 
     try {
       val xml = XML.loadString(content)
@@ -102,7 +103,8 @@ class RssReaderWorkerActor extends Actor with WithActorContext {
         if (isRssFeed) getRssFeedModels(rssConfig, items)
         else getAtomFeedModels(rssConfig, entries)
 
-      val rssModels = allRssModels.filter(m => isArticleNew(m.pubDate, rssConfig.lastScanTime, isRssFeed))
+      val rssModels =
+        allRssModels.filter(m => isArticleNew(m.pubDate, rssConfig.lastScanTime, isRssFeed))
       if (rssModels.nonEmpty)
         rssConfig.lastScanTime = DateTime.now.toRfc1123DateTimeString()
 

@@ -8,7 +8,7 @@ import akka.util.ByteString
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
-import com.freshsoft.matterbridge.server.WithActorContext
+import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
@@ -22,7 +22,7 @@ import scala.concurrent.Future
 object CodingLoveIntegration
     extends IMatterBridgeResult
     with MatterBridgeConfig
-    with WithActorContext {
+    with MatterBridgeContext {
 
   private val log = Logging.getLogger(system, this)
 

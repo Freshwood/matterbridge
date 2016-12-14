@@ -3,14 +3,14 @@ package com.freshsoft.matterbridge.client.rss
 import akka.actor.{Actor, ActorRef, Props}
 import akka.event.{Logging, LoggingAdapter}
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities._
-import com.freshsoft.matterbridge.server.WithActorContext
+import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.{MatterBridgeConfig, MatterBridgeHttpClient}
 
 /**
   * The rss reader integration which does not produce a matter bridge result
   * cause it only send incoming requests to slack/mattermost
   */
-object RssIntegration extends MatterBridgeConfig with WithActorContext {
+object RssIntegration extends MatterBridgeConfig with MatterBridgeContext {
 
   val log: LoggingAdapter = Logging.getLogger(system, this)
 
@@ -26,7 +26,8 @@ object RssIntegration extends MatterBridgeConfig with WithActorContext {
     override def receive: Receive = {
       case x: RssReaderIncomingModel if x.rssReaderModels.nonEmpty =>
         val incomingResponseData = buildIncomingResponseFromRssModel(x.rssReaderModels)
-        MatterBridgeHttpClient.postToIncomingWebhook(x.rssFeedConfigEntry.incoming_token, incomingResponseData)
+        MatterBridgeHttpClient
+          .postToIncomingWebhook(x.rssFeedConfigEntry.incoming_token, incomingResponseData)
 
       case y: RssReaderIncomingModel if y.rssReaderModels.isEmpty =>
         log.warning(s"Actual there are no rss items from ${y.rssFeedConfigEntry.url} to send")

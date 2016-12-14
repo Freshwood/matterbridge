@@ -1,12 +1,9 @@
 package com.freshsoft.matterbridge.client
 
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
-  NineGagGifResult,
-  SlashResponse
-}
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, SlashResponse}
 import com.freshsoft.matterbridge.entity.SlashCommandRequest
-import com.freshsoft.matterbridge.server.WithActorContext
+import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
 
 import scala.concurrent.Future
@@ -17,7 +14,7 @@ import scala.concurrent.Future
 object MatterBridgeIntegration
     extends IMatterBridgeResult
     with MatterBridgeConfig
-    with WithActorContext {
+    with MatterBridgeContext {
 
   private val responseMessage = (x: Int, y: NineGagGifResult) =>
     s"9Gag Gifs [$x] Last Gif:\n${y.key}\nUrl: ${y.gifUrl}"
@@ -28,8 +25,7 @@ object MatterBridgeIntegration
 		* @param request The SlashRequest to build the response
 		* @return A Future of SlashResponse
 		*/
-  override def getResult(
-      request: SlashCommandRequest): Future[Option[SlashResponse]] = {
+  override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] = {
     Future {
       Some(
         SlashResponse(matterBridgeResponseType,

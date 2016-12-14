@@ -2,8 +2,11 @@ package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.Actor
 import akka.event.{Logging, LoggingAdapter}
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, NineGagResolveCommand}
-import com.freshsoft.matterbridge.server.WithActorContext
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
+  NineGagGifResult,
+  NineGagResolveCommand
+}
+import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
@@ -15,7 +18,7 @@ import scala.util.{Failure, Success}
 /**
 	* The nine gag worker which is resolving the urls
 	*/
-class NineGagWorker extends Actor with WithActorContext {
+class NineGagWorker extends Actor with MatterBridgeContext {
 
   val log: LoggingAdapter = Logging.getLogger(system, this)
 

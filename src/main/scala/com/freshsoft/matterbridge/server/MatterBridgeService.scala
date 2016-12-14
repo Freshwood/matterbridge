@@ -12,11 +12,9 @@ import com.freshsoft.matterbridge.util.MatterBridgeConfig
 import scala.concurrent.Future
 
 trait MatterBridgeServiceIntegration {
-  def slashCommandIntegration(
-      formData: FormData): Future[Option[SlashResponse]]
+  def slashCommandIntegration(formData: FormData): Future[Option[SlashResponse]]
 
-  def outgoingHookIntegration(
-      formData: FormData): Future[Option[OutgoingResponse]]
+  def outgoingHookIntegration(formData: FormData): Future[Option[OutgoingResponse]]
 }
 
 /**
@@ -25,7 +23,7 @@ trait MatterBridgeServiceIntegration {
 class MatterBridgeService
     extends MatterBridgeServiceIntegration
     with MatterBridgeConfig
-    with WithActorContext {
+    with MatterBridgeContext {
 
   /**
 		* The matterbridge slash command integrations
@@ -33,8 +31,7 @@ class MatterBridgeService
 		* @param formData The FormData field to retrieve the request params
 		* @return Option SlashResponse
 		*/
-  override def slashCommandIntegration(
-      formData: FormData): Future[Option[SlashResponse]] = {
+  override def slashCommandIntegration(formData: FormData): Future[Option[SlashResponse]] = {
     val request = SlashCommandRequest(formData)
     slashIntegration(request)
   }
@@ -52,8 +49,7 @@ class MatterBridgeService
       case _ => Future { None }
     }
 
-  override def outgoingHookIntegration(
-      formData: FormData): Future[Option[OutgoingResponse]] =
+  override def outgoingHookIntegration(formData: FormData): Future[Option[OutgoingResponse]] =
     Future.successful {
       OutgoingHookRequest(formData) flatMap { data =>
         botMap.keys.toList collectFirst {
