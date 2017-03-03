@@ -60,12 +60,8 @@ object CodingLoveIntegration
           headers.find(h => h.isInstanceOf[Location])
 
         locationHeader match {
-          case Some(x) =>
-            getDataFromWebsite(x.asInstanceOf[Location].uri.toString, request)
-          case _ =>
-            Future {
-              None
-            }
+          case Some(x) => getDataFromWebsite(x.asInstanceOf[Location].uri.toString, request)
+          case _ => Future.successful(None)
         }
     }
   }

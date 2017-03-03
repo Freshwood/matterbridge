@@ -58,10 +58,7 @@ object NewsriverIntegration
 
         // Just return nothing when the site is down or we don't receive what we want
         // The further handling is above
-        case _ =>
-          Future.successful {
-            ""
-          }
+        case _ => Future.successful("")
       }
 
   private def sendNewsriverResultToIncomingWebhook(incomingResponse: IncomingResponse) =
@@ -114,7 +111,8 @@ object NewsriverIntegration
         List(
           SlashResponseField(r.website.domainName,
                              "Ranking: " + r.website.rankingGlobal.toString)),
-        rankingColor(r.website.rankingGlobal))
+        rankingColor(r.website.rankingGlobal)
+      )
 
     val responseText =
       s"${request.username} searched for ${request.text}\nFound ${attachments.size} articles"

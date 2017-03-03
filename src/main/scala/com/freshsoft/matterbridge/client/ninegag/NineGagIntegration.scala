@@ -14,6 +14,7 @@ import scala.util.Random
 
 /**
 	* The nine gag integration which is searching in the background for gifs
+  * TODO: Refactor this whole integration -> This is not an efficient actor usage
 	*/
 object NineGagIntegration
     extends IMatterBridgeResult

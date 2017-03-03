@@ -74,9 +74,6 @@ object MatterBridgeHttpClient extends ISlashCommandJsonSupport with MatterBridge
             }
         }
 
-      case _ =>
-        Future.successful {
-          ""
-        }
+      case _ => Future.successful("")
     }
 }
