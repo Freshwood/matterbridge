@@ -3,7 +3,7 @@ package com.freshsoft.matterbridge.client.codinglove
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.headers.Location
-import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.util.ByteString
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
 import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
@@ -44,26 +44,27 @@ object CodingLoveIntegration
                                  request: SlashCommandRequest): Future[Option[SlashResponse]] = {
     Http().singleRequest(HttpRequest(uri = uri)).flatMap {
       case HttpResponse(StatusCodes.OK, _, entity, _) =>
-        entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { x =>
-          x.decodeString("UTF-8") match {
-            case response if response.isEmpty => log.info("NONE RESULT"); None
-            case response if !response.isEmpty =>
-              log.info(response)
-              Some(
-                SlashResponse(codingLoveResponseType,
-                              getCodingLoveResponseContent(response, request),
-                              List()))
-          }
+        entity.dataBytes.runFold(ByteString(""))(_ ++ _) map { response =>
+          buildSlashResponse(response.decodeString("UTF-8"))
         }
       case HttpResponse(StatusCodes.Found, headers, _, _) =>
-        val locationHeader: Option[HttpHeader] =
-          headers.find(h => h.isInstanceOf[Location])
+        val result: Future[Option[SlashResponse]] = headers.find(_.isInstanceOf[Location]) map {
+          case header: Location => getDataFromWebsite(header.uri.toString, request)
+        } getOrElse Future.successful(None)
 
-        locationHeader match {
-          case Some(x) => getDataFromWebsite(x.asInstanceOf[Location].uri.toString, request)
-          case _ => Future.successful(None)
-        }
+        result
     }
+  }
+
+  private def buildSlashResponse: PartialFunction[String, Option[SlashResponse]] = {
+    case response if response.isEmpty =>
+      log.info(s"Got no result from coding love"); None
+    case response if response.nonEmpty =>
+      log.debug(response)
+      Some(
+        SlashResponse(codingLoveResponseType,
+                      getCodingLoveResponseContent(response, null),
+                      List()))
   }
 
   /**
