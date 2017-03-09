@@ -11,7 +11,7 @@ import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
   RssReaderActorModel
 }
 import com.freshsoft.matterbridge.routing.MatterBridgeRoute
-import com.freshsoft.matterbridge.server.{MatterBridgeContext, MatterBridgeWebService}
+import com.freshsoft.matterbridge.server.{Flyway, MatterBridgeContext, MatterBridgeWebService}
 import com.freshsoft.matterbridge.util.MatterBridgeServerConfig
 
 import scala.concurrent.duration._
@@ -24,7 +24,8 @@ object MatterBridgeServer
     extends App
     with MatterBridgeServerConfig
     with MatterBridgeContext
-    with MatterBridgeWebService {
+    with MatterBridgeWebService
+    with Flyway {
 
   implicit val timeout: Timeout = Timeout(10, TimeUnit.SECONDS)
 

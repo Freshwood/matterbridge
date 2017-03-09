@@ -56,3 +56,12 @@ trait MatterBridgeConfig extends MatterBridgeServerConfig {
       Map(entry.getString("key") -> entry.getString("value"))
     } toMap
 }
+
+trait DatabaseConfiguration extends MatterBridgeConfigHolder {
+  private lazy val databaseConfig = config.getConfig("database")
+
+  lazy val jdbcUrl: String = databaseConfig.getString("url")
+  lazy val dbUser: String = databaseConfig.getString("user")
+  lazy val dbPassword: String = databaseConfig.getString("password")
+  lazy val dbDriver: String = databaseConfig.getString("driver")
+}
