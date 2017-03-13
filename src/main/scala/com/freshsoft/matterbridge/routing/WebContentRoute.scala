@@ -2,13 +2,18 @@ package com.freshsoft.matterbridge.routing
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import com.freshsoft.matterbridge.entity.MatterBridgeEntities.ISlashCommandJsonSupport
+import com.freshsoft.matterbridge.server.IntegrationService
 
 import scala.concurrent.ExecutionContext
 
 /**
   * The web content specific static routes
   */
-class WebContentRoute(implicit executionContext: ExecutionContext) {
+class WebContentRoute(implicit executionContext: ExecutionContext)
+    extends ISlashCommandJsonSupport {
+
+  lazy val service = new IntegrationService()
 
   private val index: Route = get {
     getFromResource("content/index.html")
@@ -16,6 +21,10 @@ class WebContentRoute(implicit executionContext: ExecutionContext) {
 
   val route: Route = path("index.html") {
     index
+  } ~ path("test") {
+    get {
+      complete(service.nineGag)
+    }
   } ~
     pathPrefix("js") {
       get {

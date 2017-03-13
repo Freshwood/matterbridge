@@ -87,5 +87,7 @@ object MatterBridgeEntities {
       jsonFormat2(NewsriverResponseEntity)
     implicit val newsriverResponseFormat: RootJsonFormat[NewsriverResponse] = jsonFormat7(
       NewsriverResponse)
+    implicit val nineGagGifResultResponseFormat: RootJsonFormat[NineGagGifResult] = jsonFormat2(
+      NineGagGifResult)
   }
 }

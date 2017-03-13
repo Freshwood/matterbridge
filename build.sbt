@@ -9,9 +9,10 @@ val scalaMockVersion = "3.2.2"
 val flyway = "3.2.1"
 
 val database: Seq[ModuleID] = Seq(
-  "com.typesafe.play" %% "anorm" % "2.5.1",
+  "org.scalikejdbc" %% "scalikejdbc-async" % "0.7.+",
+  "com.github.mauricio" %% "postgresql-async" % "0.2.+",
   "org.flywaydb" % "flyway-core" % flyway,
-  "org.postgresql" % "postgresql" % "9.4.1211",
+  "org.postgresql" % "postgresql" % "42.0.0",
   "com.h2database" % "h2" % "1.4.192" % "test"
 )
 
