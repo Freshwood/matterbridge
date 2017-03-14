@@ -1,4 +1,4 @@
-package com.freshsoft.matterbridge.entity
+package model
 
 import akka.http.scaladsl.model.FormData
 import akka.http.scaladsl.model.Uri.Query
@@ -10,7 +10,8 @@ case class SlashCommandRequest(command: String = "", username: String = "", text
 
 object SlashCommandRequest {
 
-  val extractFormDataField: (Query, String) => Option[(String, String)] = (x: Query, y: String) => x.find(_._1 == y)
+  val extractFormDataField: (Query, String) => Option[(String, String)] = (x: Query, y: String) =>
+    x.find(_._1 == y)
 
   def apply(formData: FormData): SlashCommandRequest = {
     val command = extractFormDataField(formData.fields, "command")
@@ -41,7 +42,8 @@ case class OutgoingHookRequest(username: String = "", text: String = "", trigger
 
 object OutgoingHookRequest {
 
-  val extractFormDataField: (Query, String) => Option[(String, String)] = (x: Query, y: String) => x.find(_._1 == y)
+  val extractFormDataField: (Query, String) => Option[(String, String)] = (x: Query, y: String) =>
+    x.find(_._1 == y)
 
   def apply(formData: FormData): Option[OutgoingHookRequest] = {
     val triggerWord = extractFormDataField(formData.fields, "trigger_word")

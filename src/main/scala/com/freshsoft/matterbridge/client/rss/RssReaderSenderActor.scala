@@ -2,7 +2,7 @@ package com.freshsoft.matterbridge.client.rss
 
 import akka.actor.Actor
 import akka.event.{Logging, LoggingAdapter}
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
+import model.MatterBridgeEntities.{
   IncomingResponse,
   RssReaderIncomingModel,
   RssReaderModel,

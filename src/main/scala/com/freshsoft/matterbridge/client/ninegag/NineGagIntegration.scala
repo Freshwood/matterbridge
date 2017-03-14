@@ -3,10 +3,10 @@ package com.freshsoft.matterbridge.client.ninegag
 import akka.actor.{Actor, ActorRef, Props}
 import akka.event.{Logging, LoggingAdapter}
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, SlashResponse}
-import com.freshsoft.matterbridge.entity.SlashCommandRequest
+import model.MatterBridgeEntities.{NineGagGifResult, SlashResponse}
 import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
+import model.SlashCommandRequest
 
 import scala.collection.mutable
 import scala.concurrent.Future

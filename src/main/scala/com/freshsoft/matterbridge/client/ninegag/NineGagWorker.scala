@@ -2,10 +2,7 @@ package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.Actor
 import akka.event.{Logging, LoggingAdapter}
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
-  NineGagGifResult,
-  NineGagResolveCommand
-}
+import model.MatterBridgeEntities.{NineGagGifResult, NineGagResolveCommand}
 import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser

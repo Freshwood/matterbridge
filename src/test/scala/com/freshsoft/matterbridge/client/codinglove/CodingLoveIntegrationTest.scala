@@ -1,8 +1,8 @@
 package com.freshsoft.matterbridge.client.codinglove
 
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
-import com.freshsoft.matterbridge.entity.SlashCommandRequest
+import model.MatterBridgeEntities.SlashResponse
 import com.freshsoft.matterbridge.server.MatterBridgeContext
+import model.SlashCommandRequest
 import org.scalatest.{Matchers, WordSpec}
 
 /**

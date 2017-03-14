@@ -6,11 +6,7 @@ import java.time.format.DateTimeFormatter
 import akka.actor.Actor
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.model.DateTime
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
-  RssFeedConfigEntry,
-  RssReaderIncomingModel,
-  RssReaderModel
-}
+import model.MatterBridgeEntities.{RssFeedConfigEntry, RssReaderIncomingModel, RssReaderModel}
 import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser

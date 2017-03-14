@@ -1,6 +1,6 @@
 package com.freshsoft.matterbridge.server
 
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.NineGagGifResult
+import model.MatterBridgeEntities.NineGagGifResult
 import com.freshsoft.matterbridge.util.DatabaseConfiguration
 import scalikejdbc._
 import scalikejdbc.async.{AsyncConnectionPool, AsyncDB, _}

@@ -9,10 +9,7 @@ import akka.util.ByteString
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration.{
   newsriverIncomingTokenUrl => _
 }
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
-  ISlashCommandJsonSupport,
-  IncomingResponse
-}
+import model.MatterBridgeEntities.{ISlashCommandJsonSupport, IncomingResponse}
 import com.freshsoft.matterbridge.server.MatterBridgeContext
 import spray.json._
 

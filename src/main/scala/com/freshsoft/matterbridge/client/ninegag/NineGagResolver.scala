@@ -1,7 +1,7 @@
 package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.Actor
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.NineGagResolveCommand
+import model.MatterBridgeEntities.NineGagResolveCommand
 import com.freshsoft.matterbridge.server.MatterBridgeContext
 
 /**
@@ -30,8 +30,8 @@ class NineGagResolver extends Actor with MatterBridgeContext {
   private val nineGagExtraCategory = "fresh/"
 
   private val nineGagUrls = Seq(nineGagBaseUrl) ++ nineGagCategories
-      .flatMap(e => Seq(nineGagBaseUrl + e) ++ Seq(nineGagBaseUrl + e + nineGagExtraCategory))
-      .toList
+    .flatMap(e => Seq(nineGagBaseUrl + e) ++ Seq(nineGagBaseUrl + e + nineGagExtraCategory))
+    .toList
 
   override def receive: Receive = {
     case x: NineGagResolveCommand =>

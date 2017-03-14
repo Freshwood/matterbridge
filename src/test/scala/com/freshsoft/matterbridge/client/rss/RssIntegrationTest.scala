@@ -2,7 +2,7 @@ package com.freshsoft.matterbridge.client.rss
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.TestKit
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
+import model.MatterBridgeEntities.{
   RssFeedConfigEntry,
   RssReaderActorModel,
   RssReaderIncomingModel,
@@ -13,7 +13,10 @@ import org.scalatest.{Matchers, WordSpecLike}
 /**
 	* The rss integration tests
 	*/
-class RssIntegrationTest extends TestKit(ActorSystem("testSystem")) with WordSpecLike with Matchers {
+class RssIntegrationTest
+    extends TestKit(ActorSystem("testSystem"))
+    with WordSpecLike
+    with Matchers {
 
   val rssReaderActor: ActorRef = system.actorOf(Props(classOf[RssReaderActor]))
 
@@ -22,7 +25,9 @@ class RssIntegrationTest extends TestKit(ActorSystem("testSystem")) with WordSpe
   val rssReaderSenderActor: ActorRef = system.actorOf(Props(classOf[RssReaderSenderActor]))
 
   val testRssConfigEntry =
-    RssFeedConfigEntry("http://www.fbrssfeed.com/feed/5L2C8G7eoF1ihHlKpwuzvWgXPI40VdtNAyqmkjan", "token", "name")
+    RssFeedConfigEntry("http://www.fbrssfeed.com/feed/5L2C8G7eoF1ihHlKpwuzvWgXPI40VdtNAyqmkjan",
+                       "token",
+                       "name")
 
   val testRssReaderModel = RssReaderModel("title", "link", "pubDate", "description")
 

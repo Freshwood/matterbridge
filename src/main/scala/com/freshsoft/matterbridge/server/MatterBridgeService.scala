@@ -5,9 +5,9 @@ import com.freshsoft.matterbridge.client.MatterBridgeIntegration
 import com.freshsoft.matterbridge.client.codinglove.CodingLoveIntegration
 import com.freshsoft.matterbridge.client.newsriver.NewsriverIntegration
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{OutgoingResponse, SlashResponse}
-import com.freshsoft.matterbridge.entity.{OutgoingHookRequest, SlashCommandRequest}
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
+import model.MatterBridgeEntities.{OutgoingResponse, SlashResponse}
+import model.{OutgoingHookRequest, SlashCommandRequest}
 
 import scala.concurrent.Future
 

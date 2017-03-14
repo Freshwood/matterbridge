@@ -8,10 +8,10 @@ import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import akka.http.scaladsl.model._
 import akka.util.ByteString
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities._
-import com.freshsoft.matterbridge.entity.SlashCommandRequest
+import model.MatterBridgeEntities._
 import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
+import model.SlashCommandRequest
 import spray.json._
 
 import scala.concurrent.Future

@@ -6,10 +6,10 @@ import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.util.ByteString
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
-import com.freshsoft.matterbridge.entity.SlashCommandRequest
+import model.MatterBridgeEntities.SlashResponse
 import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
+import model.SlashCommandRequest
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._

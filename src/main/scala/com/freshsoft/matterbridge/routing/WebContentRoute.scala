@@ -2,7 +2,7 @@ package com.freshsoft.matterbridge.routing
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.ISlashCommandJsonSupport
+import model.MatterBridgeEntities.ISlashCommandJsonSupport
 import com.freshsoft.matterbridge.server.IntegrationService
 
 import scala.concurrent.ExecutionContext

@@ -1,6 +1,6 @@
 package com.freshsoft.matterbridge.util
 
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.RssFeedConfigEntry
+import model.MatterBridgeEntities.RssFeedConfigEntry
 import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.collection.JavaConversions._

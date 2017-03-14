@@ -6,10 +6,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.util.Timeout
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
 import com.freshsoft.matterbridge.client.rss.RssIntegration
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{
-  NineGagResolveCommand,
-  RssReaderActorModel
-}
+import model.MatterBridgeEntities.{NineGagResolveCommand, RssReaderActorModel}
 import com.freshsoft.matterbridge.routing.MatterBridgeRoute
 import com.freshsoft.matterbridge.server.{Flyway, MatterBridgeContext, MatterBridgeWebService}
 import com.freshsoft.matterbridge.util.MatterBridgeServerConfig

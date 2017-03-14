@@ -1,7 +1,7 @@
 package com.freshsoft.matterbridge.client
 
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.SlashResponse
-import com.freshsoft.matterbridge.entity.SlashCommandRequest
+import model.MatterBridgeEntities.SlashResponse
+import model.SlashCommandRequest
 
 import scala.concurrent.Future
 
@@ -10,11 +10,11 @@ import scala.concurrent.Future
 	*/
 trait IMatterBridgeResult {
 
-	/**
+  /**
 		* Get the SlashResponse result for this integration
- *
+    *
 		* @param request The SlashRequest to build the response
 		* @return A Future of SlashResponse
 		*/
-		def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]]
+  def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]]
 }

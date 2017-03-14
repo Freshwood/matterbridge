@@ -1,4 +1,4 @@
-package com.freshsoft.matterbridge.entity
+package model
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport

@@ -1,10 +1,10 @@
 package com.freshsoft.matterbridge.client
 
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.{NineGagGifResult, SlashResponse}
-import com.freshsoft.matterbridge.entity.SlashCommandRequest
+import model.MatterBridgeEntities.{NineGagGifResult, SlashResponse}
 import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
+import model.SlashCommandRequest
 
 import scala.concurrent.Future
 

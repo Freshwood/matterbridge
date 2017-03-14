@@ -2,7 +2,7 @@ package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.TestKit
-import com.freshsoft.matterbridge.entity.MatterBridgeEntities.NineGagGifResult
+import model.MatterBridgeEntities.NineGagGifResult
 import org.scalatest._
 
 import scala.collection.mutable
@@ -18,7 +18,8 @@ class NineGagReceiverTest
 
   val expectedMessage = NineGagGifResult("Sample", "Some String")
 
-  val nineGagReceiver: ActorRef = system.actorOf(Props(classOf[NineGagIntegration.NineGagGifReceiver]))
+  val nineGagReceiver: ActorRef =
+    system.actorOf(Props(classOf[NineGagIntegration.NineGagGifReceiver]))
 
   before {
     NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
