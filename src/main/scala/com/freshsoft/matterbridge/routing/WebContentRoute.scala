@@ -2,15 +2,16 @@ package com.freshsoft.matterbridge.routing
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import model.MatterBridgeEntities.ISlashCommandJsonSupport
 import com.freshsoft.matterbridge.server.IntegrationService
+import data.matterbridge.NineGagDataProvider
+import model.MatterBridgeEntities.ISlashCommandJsonSupport
 
 import scala.concurrent.ExecutionContext
 
 /**
   * The web content specific static routes
   */
-class WebContentRoute(implicit executionContext: ExecutionContext)
+class WebContentRoute(nineGagDb: NineGagDataProvider)(implicit executionContext: ExecutionContext)
     extends ISlashCommandJsonSupport {
 
   lazy val service = new IntegrationService()
