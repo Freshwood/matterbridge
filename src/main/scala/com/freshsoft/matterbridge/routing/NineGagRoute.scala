@@ -8,7 +8,7 @@ import model.DatabaseEntityJsonSupport
 import scala.concurrent.ExecutionContext
 
 /**
-  * The web content specific static routes
+  * The nine gag specific static routes
   */
 class NineGagRoute(service: NineGagService)(implicit executionContext: ExecutionContext)
     extends DatabaseEntityJsonSupport {
@@ -17,7 +17,7 @@ class NineGagRoute(service: NineGagService)(implicit executionContext: Execution
     path("9gag") {
       get {
         parameter('search.as[String]) { search =>
-          complete(search)
+          complete(service.byName(search))
         }
       }
     }

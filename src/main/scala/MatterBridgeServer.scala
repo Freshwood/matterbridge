@@ -27,7 +27,7 @@ object MatterBridgeServer
 
   val log = Logging.getLogger(system, this)
 
-  val matterBridgeRoutes = webContentRoute ~ nineGagRoutes ~ slackRoute
+  val matterBridgeRoutes = webContentRoute ~ nineGagRoute ~ slackRoute
 
   val binding = Http().bindAndHandle(matterBridgeRoutes, host, port) map { binding =>
     log.info(s"REST interface bound to ${binding.localAddress}")

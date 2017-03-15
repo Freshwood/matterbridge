@@ -14,8 +14,6 @@ trait DbEntity {
 
   def createdAt: Option[DateTime]
 
-  def updatedAt: Option[DateTime]
-
   def deletedAt: Option[DateTime]
 }
 
@@ -29,7 +27,6 @@ case class NineGagEntity(id: UUID,
                          name: String,
                          gifUrl: String,
                          createdAt: Option[DateTime],
-                         updatedAt: Option[DateTime],
                          deletedAt: Option[DateTime])
     extends GifEntity
 
@@ -37,7 +34,6 @@ case class CodingLoveEntity(id: UUID,
                             name: String,
                             gifUrl: String,
                             createdAt: Option[DateTime],
-                            updatedAt: Option[DateTime],
                             deletedAt: Option[DateTime])
     extends GifEntity
 
@@ -93,8 +89,8 @@ trait JsonProtocol extends DefaultJsonProtocol {
   */
 trait DatabaseEntityJsonSupport extends SprayJsonSupport with JsonProtocol {
 
-  implicit val nineGagEntityFormat: RootJsonFormat[NineGagEntity] = jsonFormat6(NineGagEntity)
-  implicit val codingLoveEntityFormat: RootJsonFormat[CodingLoveEntity] = jsonFormat6(
+  implicit val nineGagEntityFormat: RootJsonFormat[NineGagEntity] = jsonFormat5(NineGagEntity)
+  implicit val codingLoveEntityFormat: RootJsonFormat[CodingLoveEntity] = jsonFormat5(
     CodingLoveEntity)
 
   implicit val rssEntityFormat: RootJsonFormat[RssEntity] = jsonFormat7(RssEntity)
