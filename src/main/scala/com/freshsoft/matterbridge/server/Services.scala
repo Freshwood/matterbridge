@@ -1,7 +1,8 @@
 package com.freshsoft.matterbridge.server
 
 import akka.http.scaladsl.server.Route
-import com.freshsoft.matterbridge.routing.WebContentRoute
+import com.freshsoft.matterbridge.routing.{MatterBridgeRoute, NineGagRoute, WebContentRoute}
+import com.freshsoft.matterbridge.service.database.NineGagService
 import com.freshsoft.matterbridge.util.{DatabaseConfiguration, FlywayService}
 import data.matterbridge.NineGagDataProvider
 
@@ -15,7 +16,13 @@ trait MatterBridgeWebService extends DatabaseConfiguration {
 
   lazy val db: NineGagDataProvider = new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)
 
-  val routes: Route = new WebContentRoute(db).route
+  lazy val nineGagService: NineGagService = new NineGagService(db)
+
+  lazy val slackRoute: Route = new MatterBridgeRoute().routes
+
+  lazy val nineGagRoutes: Route = new NineGagRoute(nineGagService).route
+
+  lazy val webContentRoute: Route = new WebContentRoute(db).route
 }
 
 trait Flyway extends DatabaseConfiguration {

@@ -6,10 +6,9 @@ import akka.http.scaladsl.server.Directives._
 import akka.util.Timeout
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
 import com.freshsoft.matterbridge.client.rss.RssIntegration
-import model.MatterBridgeEntities.{NineGagResolveCommand, RssReaderActorModel}
-import com.freshsoft.matterbridge.routing.MatterBridgeRoute
 import com.freshsoft.matterbridge.server.{Flyway, MatterBridgeContext, MatterBridgeWebService}
 import com.freshsoft.matterbridge.util.MatterBridgeServerConfig
+import model.MatterBridgeEntities.{NineGagResolveCommand, RssReaderActorModel}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -28,7 +27,7 @@ object MatterBridgeServer
 
   val log = Logging.getLogger(system, this)
 
-  val matterBridgeRoutes = routes ~ new MatterBridgeRoute().routes
+  val matterBridgeRoutes = webContentRoute ~ nineGagRoutes ~ slackRoute
 
   val binding = Http().bindAndHandle(matterBridgeRoutes, host, port) map { binding =>
     log.info(s"REST interface bound to ${binding.localAddress}")
