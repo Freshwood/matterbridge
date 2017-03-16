@@ -20,6 +20,10 @@ trait NineGagDataService {
   def read(id: UUID): Future[Option[NineGagEntity]]
 
   def byName(name: String): Future[Seq[NineGagEntity]]
+
+  def count: Future[Long]
+
+  def add(name: String, gifUrl: String): Future[Boolean]
 }
 
 class NineGagService(db: NineGagDataProvider)(implicit val executionContext: ExecutionContext)
@@ -28,4 +32,8 @@ class NineGagService(db: NineGagDataProvider)(implicit val executionContext: Exe
   override def read(id: UUID): Future[Option[NineGagEntity]] = db.read(id)
 
   override def byName(name: String): Future[Seq[NineGagEntity]] = db.byName(s"%$name%")
+
+  override def count: Future[Long] = db.count
+
+  override def add(name: String, gifUrl: String): Future[Boolean] = db.insert(name, gifUrl)
 }

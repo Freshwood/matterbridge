@@ -13,11 +13,25 @@ import scala.concurrent.ExecutionContext
 class NineGagRoute(service: NineGagService)(implicit executionContext: ExecutionContext)
     extends DatabaseEntityJsonSupport {
 
-  val route: Route = logRequestResult("ninegag-service") {
+  val route: Route = logRequestResult("ninegag-route") {
     path("9gag" / Remaining) { p =>
       get {
         complete(service.byName(p))
       }
-    }
+    } ~
+      path("count") {
+        get {
+          complete {
+            service.count map (_.toString)
+          }
+        }
+      } ~
+      path("add") {
+        get {
+          complete {
+            service.add("Test", "TestUrl") map (_.toString)
+          }
+        }
+      }
   }
 }

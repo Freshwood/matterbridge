@@ -3,6 +3,7 @@ package data.matterbridge
 import java.util.UUID
 
 import model.{DbEntity, NineGagEntity}
+import org.joda.time.DateTime
 import scalikejdbc._
 import scalikejdbc.async.{AsyncConnectionPool, AsyncDB, _}
 
@@ -12,20 +13,19 @@ import scala.concurrent.{ExecutionContext, Future}
   * The data base service definition
   * A simple data access layer
   */
-trait BaseDataService {
-  type T = DbEntity
+sealed trait BaseDataService {
+  type T >: DbEntity
 
   def read(id: UUID): Future[Option[T]]
 
   def byName(name: String): Future[Seq[T]]
 
-  /*def create(entity: T): Future[T]
+  def count: Future[Long]
+}
 
-  def delete(entity: T): Future[Option[Boolean]]
+sealed trait NineGagDataService extends BaseDataService {
 
-  def update(entity: T): Future[T]
-
-  def count: Future[Long]*/
+  def insert(name: String, gifUrl: String): Future[Boolean]
 }
 
 /**
@@ -33,7 +33,7 @@ trait BaseDataService {
   */
 class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: String)(
     implicit executionContext: ExecutionContext)
-    extends BaseDataService {
+    extends NineGagDataService {
 
   AsyncConnectionPool.singleton(jdbcUrl, databaseUser, databaseSecret)
 
@@ -57,5 +57,20 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
                       row.jodaDateTimeOpt(4),
                       row.jodaDateTimeOpt(5))
       } list () future ()
+  }
+
+  override def insert(name: String, gifUrl: String): Future[Boolean] = AsyncDB.withPool {
+    implicit s =>
+      val now = DateTime.now()
+      val update = SQL[NineGagEntity](
+        "INSERT INTO ninegag(id, name, gifurl, created_at) VALUES(?, ?, ?, ?);"
+      ) bind (UUID.randomUUID(), name, gifUrl, now) update () future ()
+      update map (_ == 1)
+  }
+
+  override def count: Future[Long] = AsyncDB.withPool { implicit s =>
+    sql"SELECT count(*) as count FROM ninegag" map { row =>
+      row.long(1)
+    } single () future () map (_.getOrElse(0))
   }
 }
