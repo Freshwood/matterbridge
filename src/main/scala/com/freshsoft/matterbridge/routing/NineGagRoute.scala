@@ -32,6 +32,13 @@ class NineGagRoute(service: NineGagService)(implicit executionContext: Execution
             service.add("Test", "TestUrl") map (_.toString)
           }
         }
+      } ~
+      path("exists" / Remaining) { p =>
+        get {
+          complete(
+            service
+              .exists("https://img-9gag-fun.9cache.com/photo/aOzQ4RD_460sa.gif") map (_.toString))
+        }
       }
   }
 }

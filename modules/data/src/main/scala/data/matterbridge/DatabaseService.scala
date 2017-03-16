@@ -26,6 +26,8 @@ sealed trait BaseDataService {
 sealed trait NineGagDataService extends BaseDataService {
 
   def insert(name: String, gifUrl: String): Future[Boolean]
+
+  def exists(gifUrl: String): Future[Boolean]
 }
 
 /**
@@ -72,5 +74,14 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
     sql"SELECT count(*) as count FROM ninegag" map { row =>
       row.long(1)
     } single () future () map (_.getOrElse(0))
+  }
+
+  override def exists(gifUrl: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
+    sql"SELECT count(*) as count FROM ninegag WHERE gifurl = $gifUrl" map { row =>
+      row.long(1)
+    } single () future () map { result =>
+      val test = result.getOrElse(0)
+      if (test == 0) false else true
+    }
   }
 }

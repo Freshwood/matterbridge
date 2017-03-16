@@ -24,6 +24,8 @@ trait NineGagDataService {
   def count: Future[Long]
 
   def add(name: String, gifUrl: String): Future[Boolean]
+
+  def exists(gifUrl: String): Future[Boolean]
 }
 
 class NineGagService(db: NineGagDataProvider)(implicit val executionContext: ExecutionContext)
@@ -36,4 +38,6 @@ class NineGagService(db: NineGagDataProvider)(implicit val executionContext: Exe
   override def count: Future[Long] = db.count
 
   override def add(name: String, gifUrl: String): Future[Boolean] = db.insert(name, gifUrl)
+
+  override def exists(gifUrl: String): Future[Boolean] = db.exists(gifUrl)
 }
