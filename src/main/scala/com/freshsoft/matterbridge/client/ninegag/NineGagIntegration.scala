@@ -26,11 +26,6 @@ object NineGagIntegration
   val nineGagResolver: ActorRef =
     system.actorOf(Props(classOf[NineGagResolver]), "NineGagResolver")
 
-  var nineGagGifs: mutable.LinkedHashMap[String, String] =
-    mutable.LinkedHashMap.empty
-
-  var lastGif: NineGagGifResult = new NineGagGifResult
-
   /**
 		* The gif receiving actor which is handling the receiving of NineGagGifResult's
 		*/
@@ -38,35 +33,8 @@ object NineGagIntegration
 
     override def receive: Receive = {
       case x: NineGagGifResult =>
-        addGif(x)
-        adjustGifStore()
         nineGagService.add(x.key, x.gifUrl)
         log.info(s"Actual size [${nineGagGifs.size}]")
-    }
-  }
-
-  /**
-		* Adjust the gif store. Almost 100000 gifs should be enough to cache
-		*/
-  private def adjustGifStore() = {
-    val dropSize = nineGagGifs.size - nineGagMaximumGifStore
-    if (dropSize > 0) {
-      log.info(s"Dropping $dropSize gifs, cause the gif store limit is reached")
-      nineGagGifs = nineGagGifs.drop(dropSize)
-    }
-  }
-
-  /**
-		* Add a new NineGagGifResult for the matterbridge api
-		* Also check if it is a new gif and set is at last added gif
-		* @param gif A NineGagGifResult
-		*/
-  private def addGif(gif: NineGagGifResult) = {
-    val oldSize = nineGagGifs.size
-    nineGagGifs += (gif.key -> gif.gifUrl)
-    if (oldSize != nineGagGifs.size) {
-      log.info(s"Added new gif [${gif.key}]\n[${gif.gifUrl}]")
-      lastGif = gif
     }
   }
 
@@ -78,6 +46,8 @@ object NineGagIntegration
 
     // Search for every word to as fallback
     val words = request.text.split("\\W+")
+
+    nineGagService.byName(request.text)
 
     Future {
       nineGagGifs.filter(p =>

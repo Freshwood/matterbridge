@@ -1,7 +1,6 @@
 package com.freshsoft.matterbridge.server
 
 import akka.http.scaladsl.model.FormData
-import com.freshsoft.matterbridge.client.MatterBridgeIntegration
 import com.freshsoft.matterbridge.client.codinglove.CodingLoveIntegration
 import com.freshsoft.matterbridge.client.newsriver.NewsriverIntegration
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
@@ -42,8 +41,6 @@ class MatterBridgeService
         CodingLoveIntegration.getResult(request)
       case x if x.contains(nineGagCommand) =>
         NineGagIntegration.getResult(request)
-      case x if x.contains(matterBridgeCommand) =>
-        MatterBridgeIntegration.getResult(request)
       case x if x.contains(newsriverCommand) =>
         NewsriverIntegration.getResult(request)
       case _ => Future { None }
