@@ -1,39 +1,37 @@
 package com.freshsoft.matterbridge.client.ninegag
 
-import akka.actor.Actor
+import akka.actor.{Actor, ActorRef}
 import akka.event.{Logging, LoggingAdapter}
-import model.MatterBridgeEntities.{NineGagGifResult, NineGagResolveCommand}
-import com.freshsoft.matterbridge.server.MatterBridgeContext
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
+import model.MatterBridgeEntities.{NineGagGifResult, NineGagResolveCommand}
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 
-import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
 	* The nine gag worker which is resolving the urls
 	*/
-class NineGagWorker extends Actor with MatterBridgeContext {
+class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
 
-  val log: LoggingAdapter = Logging.getLogger(system, this)
+  val log: LoggingAdapter = Logging.getLogger(context.system, this)
+
+  implicit val executionContext: ExecutionContext = context.dispatcher
 
   override def receive: Receive = {
     case url: String =>
-      getNineGagGifs(url) onComplete {
-        case Success(result) =>
-          log.info(s"Found ${result.size} gifs from $url")
+      val from = sender
 
-          if (result.isEmpty) {
-            log.info("No gifs found, proceed with next url")
-            NineGagIntegration.nineGagResolver ! NineGagResolveCommand(self)
-          } else {
-            result.foreach(u => NineGagIntegration.nineGagGifReceiver ! u)
-          }
+      getNineGagGifs(url) map { result =>
+        log.info(s"Found ${result.size} gifs from $url")
 
-        case Failure(ex) =>
-          log.error(ex, s"Could not parse html content from url [$url]")
+        if (result.isEmpty) {
+          log.info("No gifs found, proceed with next url")
+          from ! NineGagResolveCommand()
+        } else {
+          result.foreach(u => nineGagReceiver ! u)
+        }
       }
   }
 
@@ -44,8 +42,11 @@ class NineGagWorker extends Actor with MatterBridgeContext {
 		* @return A Future list of NineGagGifResult
 		*/
   private def getNineGagGifs(url: String): Future[List[NineGagGifResult]] = {
+
     MatterBridgeHttpClient.getUrlContent(url) flatMap {
+
       case x if x.isEmpty => log.warning(s"Get no content from $url"); Future { Nil }
+
       case x if !x.isEmpty =>
         Future {
           resolveGifsFromContent(x)

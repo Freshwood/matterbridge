@@ -58,8 +58,8 @@ class MatterBridgeEntitiesTest
 
     "successful create a nine gag resolve command" in {
       val sampleActorRef = system.actorOf(Props[NineGagWorker])
-      val actual = MatterBridgeEntities.NineGagResolveCommand(sampleActorRef)
-      val expected = MatterBridgeEntities.NineGagResolveCommand(sampleActorRef)
+      val actual = MatterBridgeEntities.NineGagResolveCommand()
+      val expected = MatterBridgeEntities.NineGagResolveCommand()
       actual should be(expected)
     }
 

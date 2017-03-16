@@ -59,7 +59,7 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
       } list () future ()
   }
 
-  override def insert(name: String, gifUrl: String): Future[Boolean] = AsyncDB.withPool {
+  override def insert(name: String, gifUrl: String): Future[Boolean] = AsyncDB.localTx {
     implicit s =>
       val now = DateTime.now()
       val update = SQL[NineGagEntity](

@@ -36,12 +36,13 @@ object MatterBridgeServer
   binding.onFailure {
     case ex: Exception =>
       log.error(ex, "Failed to bind to {}:{}!", host, port)
+      system.terminate()
   }
 
   system.scheduler.schedule(0 milliseconds,
-                            15 seconds,
+                            1 seconds,
                             NineGagIntegration.nineGagResolver,
-                            NineGagResolveCommand(NineGagIntegration.nineGagWorker))
+                            NineGagResolveCommand())
 
   system.scheduler
     .schedule(0 milliseconds, 15 minutes, RssIntegration.rssReaderActor, RssReaderActorModel.Start)

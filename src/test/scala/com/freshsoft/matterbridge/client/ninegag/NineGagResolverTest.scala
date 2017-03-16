@@ -22,7 +22,7 @@ class NineGagResolverTest
       val source = system.actorOf(Props[NineGagResolver])
       val dest = system.actorOf(Props[NineGagWorker])
 
-      source ! NineGagResolveCommand(probe.testActor)
+      source ! NineGagResolveCommand()
       probe.expectMsg(expectedMessage)
       probe.forward(dest)
     }

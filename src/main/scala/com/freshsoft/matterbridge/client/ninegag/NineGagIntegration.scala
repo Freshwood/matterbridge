@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import akka.event.{Logging, LoggingAdapter}
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
 import model.MatterBridgeEntities.{NineGagGifResult, SlashResponse}
-import com.freshsoft.matterbridge.server.MatterBridgeContext
+import com.freshsoft.matterbridge.server.{MatterBridgeContext, NineGagActorService}
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
 import model.SlashCommandRequest
 
@@ -19,15 +19,12 @@ import scala.util.Random
 object NineGagIntegration
     extends IMatterBridgeResult
     with MatterBridgeConfig
-    with MatterBridgeContext {
+    with MatterBridgeContext
+    with NineGagActorService {
 
   val log: LoggingAdapter = Logging.getLogger(system, this)
-
-  val nineGagResolver: ActorRef = system.actorOf(Props(classOf[NineGagResolver]))
-
-  val nineGagWorker: ActorRef = system.actorOf(Props(classOf[NineGagWorker]))
-
-  val nineGagGifReceiver: ActorRef = system.actorOf(Props(classOf[NineGagGifReceiver]))
+  val nineGagResolver: ActorRef =
+    system.actorOf(Props(classOf[NineGagResolver]), "NineGagResolver")
 
   var nineGagGifs: mutable.LinkedHashMap[String, String] =
     mutable.LinkedHashMap.empty
@@ -43,6 +40,7 @@ object NineGagIntegration
       case x: NineGagGifResult =>
         addGif(x)
         adjustGifStore()
+        nineGagService.add(x.key, x.gifUrl)
         log.info(s"Actual size [${nineGagGifs.size}]")
     }
   }

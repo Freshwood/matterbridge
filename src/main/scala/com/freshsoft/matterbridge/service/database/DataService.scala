@@ -10,8 +10,8 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * The data service for all data base entities
   */
-trait DataService {
-  type T = DbEntity
+sealed trait DataService {
+  type T >: DbEntity
 }
 
 trait NineGagDataService {

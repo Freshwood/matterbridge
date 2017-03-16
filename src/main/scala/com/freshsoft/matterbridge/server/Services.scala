@@ -25,6 +25,14 @@ trait MatterBridgeWebService extends DatabaseConfiguration {
   lazy val webContentRoute: Route = new WebContentRoute(db).route
 }
 
+trait NineGagActorService extends DatabaseConfiguration {
+  implicit def executionContext: ExecutionContext
+
+  lazy val db: NineGagDataProvider = new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)
+
+  lazy val nineGagService: NineGagService = new NineGagService(db)
+}
+
 trait Flyway extends DatabaseConfiguration {
   lazy val flywayService = new FlywayService(jdbcUrl, dbUser, dbPassword)
   flywayService.migrateDatabaseSchema()

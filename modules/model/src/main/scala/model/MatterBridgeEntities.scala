@@ -1,6 +1,5 @@
 package model
 
-import akka.actor.ActorRef
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.DateTime
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
@@ -32,7 +31,7 @@ object MatterBridgeEntities {
 
   case class OutgoingResponse(text: String)
 
-  case class NineGagResolveCommand(worker: ActorRef)
+  case class NineGagResolveCommand(action: String = "Resolve")
 
   case class NineGagGifResult(key: String = "", gifUrl: String = "")
 

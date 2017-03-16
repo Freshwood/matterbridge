@@ -41,7 +41,6 @@ CREATE TABLE bot_resources (
   deleted_at TIMESTAMP
 );
 
-
 CREATE UNIQUE INDEX rss_name
   ON rss (name);
 CREATE UNIQUE INDEX bot_name

@@ -1,13 +1,13 @@
 package com.freshsoft.matterbridge.client.ninegag
 
-import akka.actor.Actor
+import akka.actor.{Actor, ActorRef, Props}
+import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration.NineGagGifReceiver
 import model.MatterBridgeEntities.NineGagResolveCommand
-import com.freshsoft.matterbridge.server.MatterBridgeContext
 
 /**
 	* The resolver handles the worker and communicate with it
 	*/
-class NineGagResolver extends Actor with MatterBridgeContext {
+class NineGagResolver extends Actor {
 
   private val nineGagBaseUrl = "http://9gag.com/"
 
@@ -33,10 +33,16 @@ class NineGagResolver extends Actor with MatterBridgeContext {
     .flatMap(e => Seq(nineGagBaseUrl + e) ++ Seq(nineGagBaseUrl + e + nineGagExtraCategory))
     .toList
 
+  private val receiver: ActorRef =
+    context.watch(context.actorOf(Props(classOf[NineGagGifReceiver]), "NineGagReceiver"))
+
+  private val worker: ActorRef =
+    context.watch(context.actorOf(Props(classOf[NineGagWorker], receiver), "NineGagWorker"))
+
   override def receive: Receive = {
-    case x: NineGagResolveCommand =>
+    case NineGagResolveCommand("Resolve") =>
       actualUrl = getNextNineGagUrl(actualUrl)
-      x.worker ! actualUrl
+      worker ! actualUrl
   }
 
   /**
