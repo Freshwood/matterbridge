@@ -14,11 +14,9 @@ class NineGagRoute(service: NineGagService)(implicit executionContext: Execution
     extends DatabaseEntityJsonSupport {
 
   val route: Route = logRequestResult("ninegag-service") {
-    path("9gag") {
+    path("9gag" / Remaining) { p =>
       get {
-        parameter('search.as[String]) { search =>
-          complete(service.byName(search))
-        }
+        complete(service.byName(p))
       }
     }
   }
