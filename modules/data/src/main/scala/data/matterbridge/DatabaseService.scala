@@ -85,3 +85,36 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
     }
   }
 }
+
+/** Try this out:
+  * import scalikejdbc._
+
+case class Member(id: Long, name: String, birthday: Option[LocalTime] = None)
+object Member extends SQLSyntaxSupport[Member] {
+  override tableName = "members"
+  override columnNames = Seq("id", "name", "birthday")
+
+  def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
+    val id = withSQL {
+      insert.into(Member).namedValues(
+        column.name -> name,
+        column.birthday -> birthday
+      )
+    }.updateAndReturnGeneratedKey.apply()
+    Member(id, name, birthday)
+  }
+
+  def find(id: Long)(implicit session: DBSession): Option[Member] = {
+    val m = Member.syntax("m")
+    withSQL { select.from(Member as m).where.eq(m.id, id) }
+      .map { rs =>
+        new Member(
+          // rs.get[Long] can be used with type inference instead of writing rs.long
+          id       = rs.get(m.resultName.id),
+          name     = rs.get(m.resultName.name),
+          birthday = rs.get(m.resultName.birthday)
+        )
+      }.single.apply()
+  }
+}
+  */

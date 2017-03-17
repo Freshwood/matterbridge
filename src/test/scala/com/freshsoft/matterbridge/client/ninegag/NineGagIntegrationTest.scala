@@ -6,8 +6,6 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Span}
 import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
 
-import scala.collection.mutable
-
 /**
 	* The nine gag integration test
 	*/
@@ -22,13 +20,7 @@ class NineGagIntegrationTest extends WordSpec with Matchers with ScalaFutures wi
 
   val complexRequest = new SlashCommandRequest("ninegag", "somename", "roflroflname")
 
-  before {
-    NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
-    // Add a test gif
-    NineGagIntegration.nineGagGifs += ("header" -> "key",
-    "test" -> "gifUrl",
-    "This is a big header" -> "a gif url")
-  }
+  before {}
 
   "The nine gag integration" should {
 

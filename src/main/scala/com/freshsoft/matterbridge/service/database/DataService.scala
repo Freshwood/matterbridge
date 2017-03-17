@@ -43,11 +43,11 @@ class NineGagService(db: NineGagDataProvider)(implicit val executionContext: Exe
   override def add(name: String, gifUrl: String): Future[Boolean] = {
     this.exists(gifUrl) flatMap { isExistent =>
       if (isExistent) {
-        log.info(s"Adding 9gag gif with name [$name]")
-        db.insert(name, gifUrl)
-      } else {
         log.info(s"The 9gag gif with the url [$gifUrl] already exists. Skipping entry...")
         Future.successful(false)
+      } else {
+        log.info(s"Adding 9gag gif with name [$name]")
+        db.insert(name, gifUrl)
       }
     }
   }

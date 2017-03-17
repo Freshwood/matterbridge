@@ -45,7 +45,7 @@ object CodingLoveIntegration
     Http().singleRequest(HttpRequest(uri = uri)).flatMap {
       case HttpResponse(StatusCodes.OK, _, entity, _) =>
         entity.dataBytes.runFold(ByteString(""))(_ ++ _) map { response =>
-          buildSlashResponse(response.decodeString("UTF-8"))
+          buildSlashResponse(response.decodeString("UTF-8"), request)
         }
       case HttpResponse(StatusCodes.Found, headers, _, _) =>
         val result: Future[Option[SlashResponse]] = headers.find(_.isInstanceOf[Location]) map {
@@ -56,15 +56,14 @@ object CodingLoveIntegration
     }
   }
 
-  private def buildSlashResponse: PartialFunction[String, Option[SlashResponse]] = {
-    case response if response.isEmpty =>
+  private def buildSlashResponse
+    : PartialFunction[(String, SlashCommandRequest), Option[SlashResponse]] = {
+    case (response, _) if response.isEmpty =>
       log.info(s"Got no result from coding love"); None
-    case response if response.nonEmpty =>
+    case (response, x) if response.nonEmpty =>
       log.debug(response)
       Some(
-        SlashResponse(codingLoveResponseType,
-                      getCodingLoveResponseContent(response, null),
-                      List()))
+        SlashResponse(codingLoveResponseType, getCodingLoveResponseContent(response, x), List()))
   }
 
   /**
