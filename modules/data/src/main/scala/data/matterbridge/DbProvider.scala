@@ -1,5 +1,7 @@
 package data.matterbridge
 
+import model.DbEntity
+
 import scala.concurrent.ExecutionContext
 
 /**
@@ -15,7 +17,7 @@ trait DatabaseConfiguration {
 trait DbProvider extends DatabaseConfiguration {
   implicit def executor: ExecutionContext
 
-  def db: BaseDataService
+  def db[A <: DbEntity]: BaseDataService[A]
 }
 
 trait NineGagDatabase extends DbProvider {

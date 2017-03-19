@@ -34,7 +34,7 @@ class NineGagService(db: NineGagDataProvider)(implicit val executionContext: Exe
 
   private val log = LoggerFactory.getLogger(getClass)
 
-  override def read(id: UUID): Future[Option[NineGagEntity]] = db.read(id)
+  override def read(id: UUID): Future[Option[NineGagEntity]] = db.byId(id)
 
   override def byName(name: String): Future[Seq[NineGagEntity]] = db.byName(s"%$name%")
 
