@@ -2,8 +2,13 @@ package com.freshsoft.matterbridge.service.database
 
 import java.util.UUID
 
-import data.matterbridge.{BaseDataService, CodingLoveDataProvider, NineGagDataProvider}
-import model.{CodingLoveEntity, DbEntity, NineGagEntity}
+import data.matterbridge.{
+  BaseDataService,
+  CodingLoveDataProvider,
+  NineGagDataProvider,
+  RssConfigDataProvider
+}
+import model.{CodingLoveEntity, DbEntity, NineGagEntity, RssEntity}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,6 +39,16 @@ trait CodingLoveDataService extends DataService[CodingLoveEntity] {
   def add(name: String, gifUrl: String): Future[Boolean]
 
   def exists(gifUrl: String): Future[Boolean]
+}
+
+trait RssConfigDataService extends DataService[RssEntity] {
+  implicit def executionContext: ExecutionContext
+
+  def add(name: String, rssUrl: String, incomingToken: String): Future[Boolean]
+
+  def exists(gifUrl: String): Future[Boolean]
+
+  def all: Future[Seq[RssEntity]]
 }
 
 sealed abstract class AbstractDataService[A <: DbEntity, S <: BaseDataService[A]](db: S)
@@ -89,4 +104,28 @@ class CodingLoveService(db: CodingLoveDataProvider)(
   }
 
   override def exists(gifUrl: String): Future[Boolean] = db.exists(gifUrl)
+}
+
+class RssConfigService(db: RssConfigDataProvider)(implicit val executionContext: ExecutionContext)
+    extends AbstractDataService[RssEntity, RssConfigDataProvider](db)
+    with RssConfigDataService {
+
+  override val log: Logger = LoggerFactory.getLogger(getClass)
+
+  override def add(name: String, rssUrl: String, incomingToken: String): Future[Boolean] = {
+    this.exists(rssUrl) flatMap { isExistent =>
+      if (isExistent) {
+        log.info(
+          s"The rss config with the name [$name] and url [$rssUrl] already exists. Skipping entry...")
+        Future.successful(false)
+      } else {
+        log.info(s"Adding rss config with name [$name]")
+        db.insert(name, rssUrl, incomingToken)
+      }
+    }
+  }
+
+  override def exists(gifUrl: String): Future[Boolean] = db.exists(gifUrl)
+
+  override def all: Future[Seq[RssEntity]] = db.all
 }

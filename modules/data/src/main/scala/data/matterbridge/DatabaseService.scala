@@ -2,7 +2,7 @@ package data.matterbridge
 
 import java.util.UUID
 
-import model.{CodingLoveEntity, DbEntity, NineGagEntity}
+import model.{CodingLoveEntity, DbEntity, NineGagEntity, RssEntity}
 import org.joda.time.DateTime
 import scalikejdbc._
 import scalikejdbc.async.{AsyncConnectionPool, AsyncDB, _}
@@ -63,6 +63,17 @@ sealed trait CodingLoveDataService extends AbstractDataService[CodingLoveEntity]
   def insert(name: String, gifUrl: String): Future[Boolean]
 
   def exists(gifUrl: String): Future[Boolean]
+}
+
+sealed trait RssConfigDataService extends AbstractDataService[RssEntity] {
+
+  override val table: String = "rss"
+
+  def insert(name: String, rssUrl: String, incomingToken: String): Future[Boolean]
+
+  def exists(rssUrl: String): Future[Boolean]
+
+  def all: Future[Seq[RssEntity]]
 }
 
 class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: String)(
@@ -140,5 +151,52 @@ class CodingLoveDataProvider(jdbcUrl: String, databaseUser: String, databaseSecr
       val test = result.getOrElse(0)
       if (test == 0) false else true
     }
+  }
+}
+
+class RssConfigDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: String)(
+    implicit executionContext: ExecutionContext)
+    extends RssConfigDataService {
+
+  AsyncConnectionPool.singleton(jdbcUrl, databaseUser, databaseSecret)
+
+  override val resultSetToEntity: WrappedResultSet => RssEntity = row => {
+    RssEntity(UUID.fromString(row.string(1)),
+              row.string(2),
+              row.string(3),
+              row.string(4),
+              row.jodaDateTimeOpt(5),
+              row.jodaDateTimeOpt(6),
+              row.jodaDateTimeOpt(7))
+  }
+
+  override def byName(searchName: String): Future[Seq[RssEntity]] = AsyncDB.withPool {
+    implicit s =>
+      val query = s"SELECT * FROM $table WHERE name LIKE '%$searchName%'"
+      SQL(query) map resultSetToEntity list () future ()
+  }
+
+  override def insert(name: String, rssUrl: String, incomingToken: String): Future[Boolean] =
+    AsyncDB.withPool { implicit s =>
+      val query =
+        s"INSERT INTO $table(id, name, rss_url, incoming_token, created_at) VALUES(?, ?, ?, ?, ?);"
+      val now = DateTime.now()
+      val update = SQL[RssEntity](
+        query
+      ) bind (UUID.randomUUID(), name, rssUrl, incomingToken, now) update () future ()
+      update map (_ == 1)
+    }
+
+  override def exists(rssName: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
+    val query = s"SELECT count(*) as count FROM $table WHERE name = '$rssName'"
+    SQL(query) map resultSetToCount single () future () map { result =>
+      val test = result.getOrElse(0)
+      if (test == 0) false else true
+    }
+  }
+
+  override def all: Future[Seq[RssEntity]] = AsyncDB.withPool { implicit s =>
+    val query = s"SELECT * FROM $table"
+    SQL(query) map resultSetToEntity list () future ()
   }
 }
