@@ -16,6 +16,8 @@ import scala.concurrent.{ExecutionContext, Future}
 sealed trait BaseDataService {
   type T >: DbEntity
 
+  val resultSetToCount: WrappedResultSet => Long = row => row.long(1)
+
   def read(id: UUID): Future[Option[T]]
 
   def byName(name: String): Future[Seq[T]]
@@ -39,26 +41,22 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
 
   AsyncConnectionPool.singleton(jdbcUrl, databaseUser, databaseSecret)
 
+  private val resultSetToEntity: WrappedResultSet => NineGagEntity = row => {
+    NineGagEntity(UUID.fromString(row.string(1)),
+                  row.string(2),
+                  row.string(3),
+                  row.jodaDateTimeOpt(4),
+                  row.jodaDateTimeOpt(5))
+  }
+
   override def read(id: UUID): Future[Option[NineGagEntity]] = AsyncDB.withPool { implicit s =>
-    sql"SELECT * FROM ninegag WHERE id = $id" map { row =>
-      NineGagEntity(UUID.fromString(row.string(1)),
-                    row.string(2),
-                    row.string(3),
-                    row.jodaDateTimeOpt(4),
-                    row.jodaDateTimeOpt(5))
-    } single () future ()
+    sql"SELECT * FROM ninegag WHERE id = $id" map resultSetToEntity single () future ()
   }
 
   override def byName(searchName: String): Future[Seq[NineGagEntity]] = AsyncDB.withPool {
     implicit s =>
       sql"SELECT * FROM ninegag WHERE name LIKE {search}"
-        .bindByName('search -> searchName) map { row =>
-        NineGagEntity(UUID.fromString(row.string(1)),
-                      row.string(2),
-                      row.string(3),
-                      row.jodaDateTimeOpt(4),
-                      row.jodaDateTimeOpt(5))
-      } list () future ()
+        .bindByName('search -> searchName) map resultSetToEntity list () future ()
   }
 
   override def insert(name: String, gifUrl: String): Future[Boolean] = AsyncDB.localTx {
@@ -71,50 +69,15 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
   }
 
   override def count: Future[Long] = AsyncDB.withPool { implicit s =>
-    sql"SELECT count(*) as count FROM ninegag" map { row =>
-      row.long(1)
-    } single () future () map (_.getOrElse(0))
+    sql"SELECT count(*) as count FROM ninegag" map resultSetToCount single () future () map
+      (_.getOrElse(0))
   }
 
   override def exists(gifUrl: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
-    sql"SELECT count(*) as count FROM ninegag WHERE gifurl = $gifUrl" map { row =>
-      row.long(1)
-    } single () future () map { result =>
-      val test = result.getOrElse(0)
-      if (test == 0) false else true
+    sql"SELECT count(*) as count FROM ninegag WHERE gifurl = $gifUrl" map resultSetToCount single () future () map {
+      result =>
+        val test = result.getOrElse(0)
+        if (test == 0) false else true
     }
   }
 }
-
-/** Try this out:
-  * import scalikejdbc._
-
-case class Member(id: Long, name: String, birthday: Option[LocalTime] = None)
-object Member extends SQLSyntaxSupport[Member] {
-  override tableName = "members"
-  override columnNames = Seq("id", "name", "birthday")
-
-  def create(name: String, birthday: Option[LocalTime])(implicit session: DBSession): Member = {
-    val id = withSQL {
-      insert.into(Member).namedValues(
-        column.name -> name,
-        column.birthday -> birthday
-      )
-    }.updateAndReturnGeneratedKey.apply()
-    Member(id, name, birthday)
-  }
-
-  def find(id: Long)(implicit session: DBSession): Option[Member] = {
-    val m = Member.syntax("m")
-    withSQL { select.from(Member as m).where.eq(m.id, id) }
-      .map { rs =>
-        new Member(
-          // rs.get[Long] can be used with type inference instead of writing rs.long
-          id       = rs.get(m.resultName.id),
-          name     = rs.get(m.resultName.name),
-          birthday = rs.get(m.resultName.birthday)
-        )
-      }.single.apply()
-  }
-}
-  */
