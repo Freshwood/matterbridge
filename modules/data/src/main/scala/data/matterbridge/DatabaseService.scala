@@ -24,11 +24,12 @@ trait BaseDataService[S <: DbEntity] {
   def byName(name: String): Future[Seq[S]]
 }
 
+/**
+  * Asynchronous version of the database service, uses async PostgresSQL driver underneath.
+  */
 sealed abstract class AbstractDataService[S <: DbEntity](
     implicit executionContext: ExecutionContext)
     extends BaseDataService[S] {
-
-  override val table: String = "ninegag"
 
   val resultSetToEntity: WrappedResultSet => S
 
@@ -48,6 +49,8 @@ sealed abstract class AbstractDataService[S <: DbEntity](
 
 sealed trait NineGagDataService extends AbstractDataService[NineGagEntity] {
 
+  override val table: String = "ninegag"
+
   def insert(name: String, gifUrl: String): Future[Boolean]
 
   def exists(gifUrl: String): Future[Boolean]
@@ -55,14 +58,13 @@ sealed trait NineGagDataService extends AbstractDataService[NineGagEntity] {
 
 sealed trait CodingLoveDataService extends AbstractDataService[CodingLoveEntity] {
 
+  override val table: String = "codinglove"
+
   def insert(name: String, gifUrl: String): Future[Boolean]
 
   def exists(gifUrl: String): Future[Boolean]
 }
 
-/**
-  * Asynchronous version of the database service, uses async PostgresSQL driver underneath.
-  */
 class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: String)(
     implicit executionContext: ExecutionContext)
     extends NineGagDataService {
@@ -83,7 +85,7 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
       SQL(query) map resultSetToEntity list () future ()
   }
 
-  override def insert(name: String, gifUrl: String): Future[Boolean] = AsyncDB.localTx {
+  override def insert(name: String, gifUrl: String): Future[Boolean] = AsyncDB.withPool {
     implicit s =>
       val query = s"INSERT INTO $table(id, name, gifurl, created_at) VALUES(?, ?, ?, ?);"
       val now = DateTime.now()
@@ -102,9 +104,6 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
   }
 }
 
-/**
-  * Asynchronous version of the database service, uses async PostgresSQL driver underneath.
-  */
 class CodingLoveDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: String)(
     implicit executionContext: ExecutionContext)
     extends CodingLoveDataService {
@@ -125,7 +124,7 @@ class CodingLoveDataProvider(jdbcUrl: String, databaseUser: String, databaseSecr
       SQL(query) map resultSetToEntity list () future ()
   }
 
-  override def insert(name: String, gifUrl: String): Future[Boolean] = AsyncDB.localTx {
+  override def insert(name: String, gifUrl: String): Future[Boolean] = AsyncDB.withPool {
     implicit s =>
       val query = s"INSERT INTO $table(id, name, gifurl, created_at) VALUES(?, ?, ?, ?);"
       val now = DateTime.now()

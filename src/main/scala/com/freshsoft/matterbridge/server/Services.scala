@@ -2,9 +2,9 @@ package com.freshsoft.matterbridge.server
 
 import akka.http.scaladsl.server.Route
 import com.freshsoft.matterbridge.routing.{MatterBridgeRoute, NineGagRoute, WebContentRoute}
-import com.freshsoft.matterbridge.service.database.NineGagService
+import com.freshsoft.matterbridge.service.database.{CodingLoveService, NineGagService}
 import com.freshsoft.matterbridge.util.{DatabaseConfiguration, FlywayService}
-import data.matterbridge.NineGagDataProvider
+import data.matterbridge.{CodingLoveDataProvider, NineGagDataProvider}
 
 import scala.concurrent.ExecutionContext
 
@@ -31,6 +31,14 @@ trait NineGagActorService extends DatabaseConfiguration {
   lazy val db: NineGagDataProvider = new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)
 
   lazy val nineGagService: NineGagService = new NineGagService(db)
+}
+
+trait CodingLoveActorService extends DatabaseConfiguration {
+  implicit def executionContext: ExecutionContext
+
+  lazy val db: CodingLoveDataProvider = new CodingLoveDataProvider(jdbcUrl, dbUser, dbPassword)
+
+  lazy val codingLoveService: CodingLoveService = new CodingLoveService(db)
 }
 
 trait Flyway extends DatabaseConfiguration {

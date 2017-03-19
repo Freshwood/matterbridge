@@ -2,9 +2,9 @@ package com.freshsoft.matterbridge.service.database
 
 import java.util.UUID
 
-import data.matterbridge.{BaseDataService, NineGagDataProvider}
-import model.{DbEntity, NineGagEntity}
-import org.slf4j.LoggerFactory
+import data.matterbridge.{BaseDataService, CodingLoveDataProvider, NineGagDataProvider}
+import model.{CodingLoveEntity, DbEntity, NineGagEntity}
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -28,8 +28,19 @@ trait NineGagDataService extends DataService[NineGagEntity] {
   def exists(gifUrl: String): Future[Boolean]
 }
 
+trait CodingLoveDataService extends DataService[CodingLoveEntity] {
+  implicit def executionContext: ExecutionContext
+
+  def add(name: String, gifUrl: String): Future[Boolean]
+
+  def exists(gifUrl: String): Future[Boolean]
+}
+
 sealed abstract class AbstractDataService[A <: DbEntity, S <: BaseDataService[A]](db: S)
     extends DataService[A] {
+
+  protected val log: Logger
+
   override def byId(id: UUID): Future[Option[A]] = db.byId(id)
 
   override def count: Future[Long] = db.count
@@ -41,7 +52,7 @@ class NineGagService(db: NineGagDataProvider)(implicit val executionContext: Exe
     extends AbstractDataService[NineGagEntity, NineGagDataProvider](db)
     with NineGagDataService {
 
-  private val log = LoggerFactory.getLogger(getClass)
+  override val log: Logger = LoggerFactory.getLogger(getClass)
 
   override def add(name: String, gifUrl: String): Future[Boolean] = {
     this.exists(gifUrl) flatMap { isExistent =>
@@ -50,6 +61,28 @@ class NineGagService(db: NineGagDataProvider)(implicit val executionContext: Exe
         Future.successful(false)
       } else {
         log.info(s"Adding 9gag gif with name [$name]")
+        db.insert(name, gifUrl)
+      }
+    }
+  }
+
+  override def exists(gifUrl: String): Future[Boolean] = db.exists(gifUrl)
+}
+
+class CodingLoveService(db: CodingLoveDataProvider)(
+    implicit val executionContext: ExecutionContext)
+    extends AbstractDataService[CodingLoveEntity, CodingLoveDataProvider](db)
+    with CodingLoveDataService {
+
+  override val log: Logger = LoggerFactory.getLogger(getClass)
+
+  override def add(name: String, gifUrl: String): Future[Boolean] = {
+    this.exists(gifUrl) flatMap { isExistent =>
+      if (isExistent) {
+        log.info(s"The coding love gif with the url [$gifUrl] already exists. Skipping entry...")
+        Future.successful(false)
+      } else {
+        log.info(s"Adding coding love gif with name [$name]")
         db.insert(name, gifUrl)
       }
     }

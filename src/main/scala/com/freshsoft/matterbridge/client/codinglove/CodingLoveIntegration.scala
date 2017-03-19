@@ -1,5 +1,7 @@
 package com.freshsoft.matterbridge.client.codinglove
 
+import java.util.UUID
+
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.headers.Location
@@ -7,9 +9,9 @@ import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.util.ByteString
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
 import model.MatterBridgeEntities.SlashResponse
-import com.freshsoft.matterbridge.server.MatterBridgeContext
+import com.freshsoft.matterbridge.server.{CodingLoveActorService, MatterBridgeContext}
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
-import model.SlashCommandRequest
+import model.{CodingLoveEntity, SlashCommandRequest}
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
@@ -22,7 +24,8 @@ import scala.concurrent.Future
 object CodingLoveIntegration
     extends IMatterBridgeResult
     with MatterBridgeConfig
-    with MatterBridgeContext {
+    with MatterBridgeContext
+    with CodingLoveActorService {
 
   private val log = Logging.getLogger(system, this)
 
@@ -62,23 +65,30 @@ object CodingLoveIntegration
       log.info(s"Got no result from coding love"); None
     case (response, x) if response.nonEmpty =>
       log.debug(response)
+      val codingLoveEntity = getCodingLoveResponseContent(response)
+      persistCodingLoveResult(codingLoveEntity)
       Some(
-        SlashResponse(codingLoveResponseType, getCodingLoveResponseContent(response, x), List()))
+        SlashResponse(
+          codingLoveResponseType,
+          s"${codingLoveEntity.name}\n${codingLoveEntity.gifUrl}\nSearched for ${x.text}",
+          List()))
   }
+
+  private def persistCodingLoveResult(codingLoveEntity: CodingLoveEntity): Future[Boolean] =
+    codingLoveService.add(codingLoveEntity.name, codingLoveEntity.gifUrl)
 
   /**
 		* Filter the content to fit our needs
 		*
 		* @param htmlContent The web result to retrieve the information
-		* @param request     The request to build the final response
 		* @return The response message as String
 		*/
-  private def getCodingLoveResponseContent(htmlContent: String, request: SlashCommandRequest) = {
+  private def getCodingLoveResponseContent(htmlContent: String): CodingLoveEntity = {
     val doc = browser.parseString(htmlContent)
 
     val text = doc >> element("div div h3")
     val gif = doc >> element("div div p img")
 
-    text.innerHtml + "\n" + gif.attr("src") + "\nSearched for " + request.text
+    CodingLoveEntity(UUID.randomUUID(), text.innerHtml, gif.attr("src"), None, None)
   }
 }
