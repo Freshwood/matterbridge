@@ -1,9 +1,8 @@
-package com.freshsoft.matterbridge.entity
+package modules.entity
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.ActorSystem
 import akka.http.scaladsl.model.DateTime
 import akka.testkit.TestKit
-import com.freshsoft.matterbridge.client.ninegag.NineGagWorker
 import model.MatterBridgeEntities
 import model.MatterBridgeEntities._
 import org.scalatest.{Matchers, WordSpecLike}
@@ -57,7 +56,6 @@ class MatterBridgeEntitiesTest
     }
 
     "successful create a nine gag resolve command" in {
-      val sampleActorRef = system.actorOf(Props[NineGagWorker])
       val actual = MatterBridgeEntities.NineGagResolveCommand()
       val expected = MatterBridgeEntities.NineGagResolveCommand()
       actual should be(expected)

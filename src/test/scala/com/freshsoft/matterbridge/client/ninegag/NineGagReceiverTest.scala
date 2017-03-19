@@ -28,28 +28,8 @@ class NineGagReceiverTest
     }
 
     "store a gif" in {
-      //NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
-      //NineGagIntegration.lastGif = new NineGagGifResult
       nineGagReceiver ! expectedMessage
       expectNoMsg()
-      //assert(NineGagIntegration.nineGagGifs.nonEmpty)
-      //NineGagIntegration.lastGif shouldBe a[NineGagGifResult]
-    }
-
-    "adjust the gif store" in {
-      //NineGagIntegration.nineGagGifs = mutable.LinkedHashMap.empty
-      //NineGagIntegration.lastGif = new NineGagGifResult
-      // In the test settings the maximum gif store is at 10
-      for (i <- 1 to 100) {
-        // prepare message
-        val message = NineGagGifResult(expectedMessage.key + i, expectedMessage.gifUrl)
-        nineGagReceiver ! message
-      }
-
-      val lastMessage = NineGagGifResult(expectedMessage.key + 100, expectedMessage.gifUrl)
-      expectNoMsg()
-      //NineGagIntegration.nineGagGifs.size should be(10)
-      //NineGagIntegration.lastGif should be(lastMessage)
     }
   }
 }

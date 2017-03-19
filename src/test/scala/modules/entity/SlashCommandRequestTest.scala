@@ -1,4 +1,4 @@
-package com.freshsoft.matterbridge.entity
+package modules.entity
 
 import akka.http.scaladsl.model.FormData
 import model.SlashCommandRequest

@@ -1,7 +1,7 @@
-package com.freshsoft.matterbridge.entity
+package modules.entity
 
-import model.MatterBridgeEntities._
 import com.freshsoft.matterbridge.server.MatterBridgeContext
+import model.MatterBridgeEntities._
 import org.scalatest.{Matchers, WordSpec}
 import spray.json._
 
