@@ -2,7 +2,6 @@ package com.freshsoft.matterbridge.util
 
 import com.typesafe.config.{Config, ConfigFactory}
 
-import scala.collection.JavaConversions._
 import scala.language.postfixOps
 
 /**
@@ -43,10 +42,6 @@ trait MatterBridgeConfig extends MatterBridgeServerConfig {
     config.getString("matterbridge.integrations.newsriver.command")
   val newsriverResponseType: String =
     config.getString("matterbridge.integrations.newsriver.response_type")
-  val botMap: Map[String, String] =
-    config.getConfigList("matterbridge.integrations.bot") flatMap { entry =>
-      Map(entry.getString("key") -> entry.getString("value"))
-    } toMap
 }
 
 trait DatabaseConfiguration extends MatterBridgeConfigHolder {

@@ -7,6 +7,7 @@ import model._
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
 
 /**
   * The data service for all data base entities
@@ -64,6 +65,8 @@ trait BotDataService extends DataService[BotEntity] {
   def addResource(botId: UUID, value: String): Future[Boolean]
 
   def allResources(botId: UUID): Future[Seq[BotEntityResource]]
+
+  def randomBotMessage(botId: UUID): Future[Option[BotEntityResource]]
 }
 
 sealed abstract class AbstractDataService[A <: DbEntity, S <: BaseDataService[A]](db: S)
@@ -168,4 +171,13 @@ class BotService(db: BotDataProvider)(implicit val executionContext: ExecutionCo
     db.insertResource(botId, value)
 
   override def allResources(botId: UUID): Future[Seq[BotEntityResource]] = db.allResources(botId)
+
+  override def randomBotMessage(botId: UUID): Future[Option[BotEntityResource]] =
+    db.allResources(botId) map { resources =>
+      if (resources.length > 0) {
+        Option(resources.toVector(Random.nextInt(resources.length)))
+      } else {
+        None
+      }
+    }
 }

@@ -1,12 +1,14 @@
 package com.freshsoft.matterbridge.server
 
+import java.util.UUID
+
 import akka.http.scaladsl.model.FormData
 import com.freshsoft.matterbridge.client.codinglove.CodingLoveIntegration
 import com.freshsoft.matterbridge.client.newsriver.NewsriverIntegration
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
 import model.MatterBridgeEntities.{OutgoingResponse, SlashResponse}
-import model.{OutgoingHookRequest, SlashCommandRequest}
+import model.{BotEntity, OutgoingHookRequest, SlashCommandRequest}
 
 import scala.concurrent.Future
 
@@ -22,7 +24,8 @@ trait MatterBridgeServiceIntegration {
 class MatterBridgeService
     extends MatterBridgeServiceIntegration
     with MatterBridgeConfig
-    with MatterBridgeContext {
+    with MatterBridgeContext
+    with BotActorService {
 
   /**
 		* The matterbridge slash command integrations
@@ -47,11 +50,22 @@ class MatterBridgeService
     }
 
   override def outgoingHookIntegration(formData: FormData): Future[Option[OutgoingResponse]] =
-    Future.successful {
+    proofBot(formData) flatMap randomBotMessage
+
+  private def proofBot(formData: FormData): Future[Option[BotEntity]] =
+    botService.all map { bots =>
       OutgoingHookRequest(formData) flatMap { data =>
-        botMap.keys.toList collectFirst {
-          case x if data.text contains x => OutgoingResponse(botMap(x))
-        }
+        bots find (b => data.text.contains(b.name))
       }
     }
+
+  private def randomBotMessage(bot: Option[BotEntity]): Future[Option[OutgoingResponse]] = {
+    val id = bot map (_.id) getOrElse UUID.randomUUID()
+    botService.randomBotMessage(id) map { resource =>
+      resource map { res =>
+        OutgoingResponse(res.value)
+      }
+    }
+  }
+
 }

@@ -73,6 +73,14 @@ trait RssConfigActorService extends DatabaseConfiguration {
   lazy val rssConfigService: RssConfigService = new RssConfigService(rssConfigDb)
 }
 
+trait BotActorService extends DatabaseConfiguration {
+  implicit def executionContext: ExecutionContext
+
+  lazy val botDb: BotDataProvider = new BotDataProvider(jdbcUrl, dbUser, dbPassword)
+
+  lazy val botService: BotService = new BotService(botDb)
+}
+
 trait Flyway extends DatabaseConfiguration {
   lazy val flywayService = new FlywayService(jdbcUrl, dbUser, dbPassword)
   flywayService.migrateDatabaseSchema()
