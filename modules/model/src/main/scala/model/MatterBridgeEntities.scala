@@ -1,7 +1,6 @@
 package model
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.DateTime
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 /**
@@ -47,13 +46,7 @@ object MatterBridgeEntities {
                                elements: List[NewsriverResponseEntity],
                                website: NewsriverRecoverWebsite)
 
-  case class RssFeedConfigEntry(url: String,
-                                incoming_token: String,
-                                name: String,
-                                var lastScanTime: String =
-                                  DateTime.now.minus(86400000).toRfc1123DateTimeString())
-
-  case class RssReaderIncomingModel(rssFeedConfigEntry: RssFeedConfigEntry,
+  case class RssReaderIncomingModel(rssFeedConfigEntry: RssEntity,
                                     rssReaderModels: List[RssReaderModel])
 
   case class RssReaderModel(title: String,

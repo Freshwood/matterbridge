@@ -74,6 +74,8 @@ sealed trait RssConfigDataService extends AbstractDataService[RssEntity] {
   def exists(rssUrl: String): Future[Boolean]
 
   def all: Future[Seq[RssEntity]]
+
+  def update(id: UUID): Future[Boolean]
 }
 
 class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: String)(
@@ -199,4 +201,14 @@ class RssConfigDataProvider(jdbcUrl: String, databaseUser: String, databaseSecre
     val query = s"SELECT * FROM $table"
     SQL(query) map resultSetToEntity list () future ()
   }
+
+  override def update(id: UUID): Future[Boolean] =
+    AsyncDB.withPool { implicit s =>
+      val query = s"Update $table SET updated_at = ? WHERE id = ?"
+      val now = DateTime.now()
+      val update = SQL[RssEntity](
+        query
+      ) bind (id, now) update () future ()
+      update map (_ == 1)
+    }
 }

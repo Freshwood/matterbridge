@@ -1,7 +1,6 @@
 package modules.entity
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.DateTime
 import akka.testkit.TestKit
 import model.MatterBridgeEntities
 import model.MatterBridgeEntities._
@@ -90,22 +89,6 @@ class MatterBridgeEntitiesTest
                                                             "url",
                                                             List(element),
                                                             website)
-      actual should be(expected)
-    }
-
-    "successful create a rss feed config entry" in {
-      val lastScanTimeRfcString = DateTime.now.minus(86400000).toRfc1123DateTimeString()
-      val actual = RssFeedConfigEntry("url", "token", "name", lastScanTimeRfcString)
-      val expected = RssFeedConfigEntry("url", "token", "name", lastScanTimeRfcString)
-      actual should be(expected)
-    }
-
-    "successful create a rss reader incoming model" in {
-      val lastScanTimeRfcString = DateTime.now.minus(86400000).toRfc1123DateTimeString()
-      val rssReedConfig = RssFeedConfigEntry("url", "token", "name", lastScanTimeRfcString)
-      val rssReaderModel = RssReaderModel("title", "link", "pubDate", "description")
-      val actual = RssReaderIncomingModel(rssReedConfig, List(rssReaderModel))
-      val expected = RssReaderIncomingModel(rssReedConfig, List(rssReaderModel))
       actual should be(expected)
     }
 

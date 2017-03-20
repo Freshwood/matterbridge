@@ -49,6 +49,8 @@ trait RssConfigDataService extends DataService[RssEntity] {
   def exists(gifUrl: String): Future[Boolean]
 
   def all: Future[Seq[RssEntity]]
+
+  def update(id: UUID): Future[Boolean]
 }
 
 sealed abstract class AbstractDataService[A <: DbEntity, S <: BaseDataService[A]](db: S)
@@ -128,4 +130,6 @@ class RssConfigService(db: RssConfigDataProvider)(implicit val executionContext:
   override def exists(gifUrl: String): Future[Boolean] = db.exists(gifUrl)
 
   override def all: Future[Seq[RssEntity]] = db.all
+
+  override def update(id: UUID): Future[Boolean] = db.update(id)
 }

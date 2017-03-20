@@ -3,29 +3,33 @@ package com.freshsoft.matterbridge.client.rss
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
-import akka.actor.Actor
+import akka.actor.{Actor, ActorRef, Props}
 import akka.event.{Logging, LoggingAdapter}
-import akka.http.scaladsl.model.DateTime
-import model.MatterBridgeEntities.{RssFeedConfigEntry, RssReaderIncomingModel, RssReaderModel}
-import com.freshsoft.matterbridge.server.MatterBridgeContext
+import com.freshsoft.matterbridge.server.{MatterBridgeContext, RssConfigActorService}
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
+import model.MatterBridgeEntities.{RssReaderIncomingModel, RssReaderModel}
+import model.RssEntity
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
+import org.joda.time.DateTime
 
+import scala.language.postfixOps
 import scala.xml.{NodeSeq, XML}
 
 /**
 	* The rss reader worker actor fetch the rss feed and build a Message for the rssReaderSenderActor
 	*/
-class RssReaderWorkerActor extends Actor with MatterBridgeContext {
+class RssReaderWorkerActor extends Actor with MatterBridgeContext with RssConfigActorService {
 
   val log: LoggingAdapter = Logging.getLogger(system, this)
 
+  val readerActor: ActorRef = context.actorOf(Props(classOf[RssReaderSenderActor]))
+
   override def receive: Receive = {
-    case x: RssFeedConfigEntry =>
+    case x: RssEntity =>
       retrieveRssData(x) map {
-        case Some(model) => RssIntegration.rssReaderSenderActor ! model
+        case Some(model) => readerActor ! model
         case None =>
           log.info("Got no rss items to send. No rss content was sent")
       }
@@ -37,8 +41,8 @@ class RssReaderWorkerActor extends Actor with MatterBridgeContext {
 		* @param rssConfig the rss configuration
 		* @return A rss reader incoming model or none when parsing was not successful
 		*/
-  private def retrieveRssData(rssConfig: RssFeedConfigEntry) = {
-    val rawRssData = MatterBridgeHttpClient.getUrlContent(rssConfig.url)
+  private def retrieveRssData(rssConfig: RssEntity) = {
+    val rawRssData = MatterBridgeHttpClient.getUrlContent(rssConfig.rssUrl)
     rawRssData map { rssContent =>
       if (rssContent.nonEmpty) buildRssModel(rssConfig, rssContent) else None
     }
@@ -85,7 +89,7 @@ class RssReaderWorkerActor extends Actor with MatterBridgeContext {
 		* @param content   The raw rss feed content as string
 		* @return A optional RssReaderIncomingModel
 		*/
-  private def buildRssModel(rssConfig: RssFeedConfigEntry,
+  private def buildRssModel(rssConfig: RssEntity,
                             content: String): Option[RssReaderIncomingModel] = {
 
     try {
@@ -99,10 +103,13 @@ class RssReaderWorkerActor extends Actor with MatterBridgeContext {
         if (isRssFeed) getRssFeedModels(rssConfig, items)
         else getAtomFeedModels(rssConfig, entries)
 
+      val lastTime = rssConfig.updatedAt.getOrElse(DateTime.now()) toDateTimeISO () toString
+
       val rssModels =
-        allRssModels.filter(m => isArticleNew(m.pubDate, rssConfig.lastScanTime, isRssFeed))
-      if (rssModels.nonEmpty)
-        rssConfig.lastScanTime = DateTime.now.toRfc1123DateTimeString()
+        allRssModels.filter(m => isArticleNew(m.pubDate, lastTime, isRssFeed))
+      if (rssModels.nonEmpty) {
+        rssConfigService.update(rssConfig.id)
+      }
 
       Some(RssReaderIncomingModel(rssConfig, rssModels))
 
@@ -113,7 +120,7 @@ class RssReaderWorkerActor extends Actor with MatterBridgeContext {
     }
   }
 
-  private def getRssFeedModels(rssConfig: RssFeedConfigEntry, rssNodeSeq: NodeSeq) = {
+  private def getRssFeedModels(rssConfig: RssEntity, rssNodeSeq: NodeSeq) = {
     (for {
       i <- rssNodeSeq
       title = (i \ "title").text
@@ -124,7 +131,7 @@ class RssReaderWorkerActor extends Actor with MatterBridgeContext {
     } yield RssReaderModel(title, link, pubDate, description, imageLink, rssConfig.name)).toList
   }
 
-  private def getAtomFeedModels(rssConfig: RssFeedConfigEntry, atomNodeSeq: NodeSeq) = {
+  private def getAtomFeedModels(rssConfig: RssEntity, atomNodeSeq: NodeSeq) = {
     (for {
       i <- atomNodeSeq
       title = (i \ "title").text
