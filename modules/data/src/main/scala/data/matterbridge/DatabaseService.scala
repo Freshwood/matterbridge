@@ -2,7 +2,7 @@ package data.matterbridge
 
 import java.util.UUID
 
-import model.{CodingLoveEntity, DbEntity, NineGagEntity, RssEntity}
+import model._
 import org.joda.time.DateTime
 import scalikejdbc._
 import scalikejdbc.async.{AsyncConnectionPool, AsyncDB, _}
@@ -76,6 +76,27 @@ sealed trait RssConfigDataService extends AbstractDataService[RssEntity] {
   def all: Future[Seq[RssEntity]]
 
   def update(id: UUID): Future[Boolean]
+}
+
+sealed trait BotDataService extends AbstractDataService[BotEntity] {
+
+  override val table: String = "bot"
+
+  val crossTable: String = "bot_resources"
+
+  def insert(name: String): Future[Boolean]
+
+  def exists(name: String): Future[Boolean]
+
+  def all: Future[Seq[BotEntity]]
+
+  def update(id: UUID, name: String): Future[Boolean]
+
+  def updateResource(id: UUID, value: String): Future[Boolean]
+
+  def insertResource(botId: UUID, value: String): Future[Boolean]
+
+  def allResources(botId: UUID): Future[Seq[BotEntityResource]]
 }
 
 class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: String)(
@@ -208,4 +229,90 @@ class RssConfigDataProvider(jdbcUrl: String, databaseUser: String, databaseSecre
       val query = s"Update $table SET updated_at = '$now' WHERE id = '$id'"
       SQL(query) update () future () map (_ == 1)
     }
+}
+
+class BotDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: String)(
+    implicit executionContext: ExecutionContext)
+    extends BotDataService {
+
+  AsyncConnectionPool.singleton(jdbcUrl, databaseUser, databaseSecret)
+
+  override val resultSetToEntity: WrappedResultSet => BotEntity = row => {
+    BotEntity(UUID.fromString(row.string(1)),
+              row.string(2),
+              row.jodaDateTimeOpt(3),
+              row.jodaDateTimeOpt(4),
+              row.jodaDateTimeOpt(5))
+  }
+
+  private val resultSetToBotResourceEntity: WrappedResultSet => BotEntityResource = row => {
+    BotEntityResource(UUID.fromString(row.string(1)),
+                      UUID.fromString(row.string(2)),
+                      row.string(3),
+                      row.jodaDateTimeOpt(4),
+                      row.jodaDateTimeOpt(5),
+                      row.jodaDateTimeOpt(6))
+  }
+
+  override def byName(searchName: String): Future[Seq[BotEntity]] = AsyncDB.withPool {
+    implicit s =>
+      val query = s"SELECT * FROM $table WHERE name LIKE '%$searchName%'"
+      SQL(query) map resultSetToEntity list () future ()
+  }
+
+  override def insert(name: String): Future[Boolean] =
+    AsyncDB.withPool { implicit s =>
+      val query =
+        s"INSERT INTO $table(id, name, created_at) VALUES(?, ?, ?);"
+      val now = DateTime.now()
+      val update = SQL[BotEntity](
+        query
+      ) bind (UUID.randomUUID(), name, now) update () future ()
+      update map (_ == 1)
+    }
+
+  override def exists(botName: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
+    val query = s"SELECT count(*) as count FROM $table WHERE name = '$botName'"
+    SQL(query) map resultSetToCount single () future () map { result =>
+      val test = result.getOrElse(0)
+      if (test == 0) false else true
+    }
+  }
+
+  override def all: Future[Seq[BotEntity]] = AsyncDB.withPool { implicit s =>
+    val query = s"SELECT * FROM $table"
+    SQL(query) map resultSetToEntity list () future ()
+  }
+
+  override def update(id: UUID, name: String): Future[Boolean] =
+    AsyncDB.withPool { implicit s =>
+      val now = DateTime.now()
+      val query = s"Update $table SET updated_at = '$now', name = '$name' WHERE id = '$id'"
+      SQL(query) update () future () map (_ == 1)
+    }
+
+  override def updateResource(id: UUID, value: String): Future[Boolean] = AsyncDB.withPool {
+    implicit s =>
+      val now = DateTime.now()
+      val query = s"Update $crossTable SET updated_at = '$now', value = '$value' WHERE id = '$id'"
+      SQL(query) update () future () map (_ == 1)
+  }
+
+  override def insertResource(botId: UUID, value: String): Future[Boolean] = AsyncDB.withPool {
+    implicit s =>
+      val query =
+        s"INSERT INTO $crossTable(id, bot_id, value, created_at) VALUES(?, ?, ?, ?);"
+      val now = DateTime.now()
+      val update = SQL[BotEntityResource](
+        query
+      ) bind (UUID.randomUUID(), botId, value, now) update () future ()
+      update map (_ == 1)
+  }
+
+  override def allResources(botId: UUID): Future[Seq[BotEntityResource]] = AsyncDB.withPool {
+    implicit s =>
+      val query =
+        s"SELECT r.* FROM $table s INNER JOIN $crossTable r ON s.id = r.bot_id WHERE s.id = '$botId'"
+      SQL(query) map resultSetToBotResourceEntity list () future ()
+  }
 }

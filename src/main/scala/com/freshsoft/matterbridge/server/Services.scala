@@ -1,19 +1,20 @@
 package com.freshsoft.matterbridge.server
 
 import akka.http.scaladsl.server.Route
-import com.freshsoft.matterbridge.routing.{
-  MatterBridgeRoute,
-  NineGagRoute,
-  RssConfigRoute,
-  WebContentRoute
-}
+import com.freshsoft.matterbridge.routing._
 import com.freshsoft.matterbridge.service.database.{
+  BotService,
   CodingLoveService,
   NineGagService,
   RssConfigService
 }
 import com.freshsoft.matterbridge.util.{DatabaseConfiguration, FlywayService}
-import data.matterbridge.{CodingLoveDataProvider, NineGagDataProvider, RssConfigDataProvider}
+import data.matterbridge.{
+  BotDataProvider,
+  CodingLoveDataProvider,
+  NineGagDataProvider,
+  RssConfigDataProvider
+}
 
 import scala.concurrent.ExecutionContext
 
@@ -28,15 +29,21 @@ trait MatterBridgeWebService extends DatabaseConfiguration {
   lazy val rssConfigDb: RssConfigDataProvider =
     new RssConfigDataProvider(jdbcUrl, dbUser, dbPassword)
 
+  lazy val botDb: BotDataProvider = new BotDataProvider(jdbcUrl, dbUser, dbPassword)
+
   lazy val nineGagService: NineGagService = new NineGagService(nineGagDb)
 
   lazy val rssConfigService: RssConfigService = new RssConfigService(rssConfigDb)
+
+  lazy val botService: BotService = new BotService(botDb)
 
   lazy val slackRoute: Route = new MatterBridgeRoute().routes
 
   lazy val nineGagRoute: Route = new NineGagRoute(nineGagService).route
 
   lazy val rssConfigRoute: Route = new RssConfigRoute(rssConfigService).route
+
+  lazy val botRoute: Route = new BotRoute(botService).route
 
   lazy val webContentRoute: Route = new WebContentRoute(nineGagDb).route
 }

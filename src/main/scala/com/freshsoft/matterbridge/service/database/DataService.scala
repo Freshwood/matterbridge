@@ -2,13 +2,8 @@ package com.freshsoft.matterbridge.service.database
 
 import java.util.UUID
 
-import data.matterbridge.{
-  BaseDataService,
-  CodingLoveDataProvider,
-  NineGagDataProvider,
-  RssConfigDataProvider
-}
-import model.{CodingLoveEntity, DbEntity, NineGagEntity, RssEntity}
+import data.matterbridge._
+import model._
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -51,6 +46,24 @@ trait RssConfigDataService extends DataService[RssEntity] {
   def all: Future[Seq[RssEntity]]
 
   def update(id: UUID): Future[Boolean]
+}
+
+trait BotDataService extends DataService[BotEntity] {
+  implicit def executionContext: ExecutionContext
+
+  def add(name: String): Future[Boolean]
+
+  def exists(botName: String): Future[Boolean]
+
+  def all: Future[Seq[BotEntity]]
+
+  def update(id: UUID, name: String): Future[Boolean]
+
+  def updateResource(id: UUID, value: String): Future[Boolean]
+
+  def addResource(botId: UUID, value: String): Future[Boolean]
+
+  def allResources(botId: UUID): Future[Seq[BotEntityResource]]
 }
 
 sealed abstract class AbstractDataService[A <: DbEntity, S <: BaseDataService[A]](db: S)
@@ -132,4 +145,27 @@ class RssConfigService(db: RssConfigDataProvider)(implicit val executionContext:
   override def all: Future[Seq[RssEntity]] = db.all
 
   override def update(id: UUID): Future[Boolean] = db.update(id)
+}
+
+class BotService(db: BotDataProvider)(implicit val executionContext: ExecutionContext)
+    extends AbstractDataService[BotEntity, BotDataProvider](db)
+    with BotDataService {
+
+  override val log: Logger = LoggerFactory.getLogger(getClass)
+
+  override def add(name: String): Future[Boolean] = db.insert(name)
+
+  override def exists(botName: String): Future[Boolean] = db.exists(botName)
+
+  override def all: Future[Seq[BotEntity]] = db.all
+
+  override def update(id: UUID, name: String): Future[Boolean] = db.update(id, name)
+
+  override def updateResource(id: UUID, value: String): Future[Boolean] =
+    db.updateResource(id, value)
+
+  override def addResource(botId: UUID, value: String): Future[Boolean] =
+    db.insertResource(botId, value)
+
+  override def allResources(botId: UUID): Future[Seq[BotEntityResource]] = db.allResources(botId)
 }
