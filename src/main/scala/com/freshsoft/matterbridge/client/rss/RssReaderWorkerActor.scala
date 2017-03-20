@@ -61,9 +61,9 @@ class RssReaderWorkerActor extends Actor with MatterBridgeContext with RssConfig
     val atomFeedTime = (x: String) => OffsetDateTime.parse(x, DateTimeFormatter.ISO_DATE_TIME)
 
     if (isRssFeed) {
-      rssFeedTime(actualPubDate).isAfter(rssFeedTime(lastScanDate))
+      rssFeedTime(actualPubDate).isAfter(atomFeedTime(lastScanDate))
     } else {
-      atomFeedTime(actualPubDate).isAfter(rssFeedTime(lastScanDate))
+      atomFeedTime(actualPubDate).isAfter(atomFeedTime(lastScanDate))
     }
   }
 
@@ -103,7 +103,8 @@ class RssReaderWorkerActor extends Actor with MatterBridgeContext with RssConfig
         if (isRssFeed) getRssFeedModels(rssConfig, items)
         else getAtomFeedModels(rssConfig, entries)
 
-      val lastTime = rssConfig.updatedAt.getOrElse(DateTime.now()) toDateTimeISO () toString
+      val lastTime =
+        rssConfig.updatedAt.getOrElse(DateTime.now().minusDays(3)) toDateTimeISO () toString
 
       val rssModels =
         allRssModels.filter(m => isArticleNew(m.pubDate, lastTime, isRssFeed))

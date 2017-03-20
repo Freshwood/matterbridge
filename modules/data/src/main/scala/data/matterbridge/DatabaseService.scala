@@ -204,11 +204,8 @@ class RssConfigDataProvider(jdbcUrl: String, databaseUser: String, databaseSecre
 
   override def update(id: UUID): Future[Boolean] =
     AsyncDB.withPool { implicit s =>
-      val query = s"Update $table SET updated_at = ? WHERE id = ?"
       val now = DateTime.now()
-      val update = SQL[RssEntity](
-        query
-      ) bind (id, now) update () future ()
-      update map (_ == 1)
+      val query = s"Update $table SET updated_at = '$now' WHERE id = '$id'"
+      SQL(query) update () future () map (_ == 1)
     }
 }
