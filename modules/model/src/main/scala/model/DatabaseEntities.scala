@@ -26,6 +26,7 @@ trait GifEntity extends DbEntity {
 case class NineGagEntity(id: UUID,
                          name: String,
                          gifUrl: String,
+                         categoryId: UUID,
                          createdAt: Option[DateTime],
                          deletedAt: Option[DateTime])
     extends GifEntity
@@ -61,6 +62,13 @@ case class BotEntityResource(id: UUID,
                              deletedAt: Option[DateTime])
     extends DbEntity
 
+case class CategoryEntity(id: UUID,
+                          name: String,
+                          createdAt: Option[DateTime],
+                          updatedAt: Option[DateTime],
+                          deletedAt: Option[DateTime])
+    extends DbEntity
+
 trait JsonProtocol extends DefaultJsonProtocol {
   implicit val uuidJsonFormat: JsonFormat[UUID] = new JsonFormat[UUID] {
     override def write(x: UUID): JsValue = JsString(x.toString)
@@ -89,7 +97,7 @@ trait JsonProtocol extends DefaultJsonProtocol {
   */
 trait DatabaseEntityJsonSupport extends SprayJsonSupport with JsonProtocol {
 
-  implicit val nineGagEntityFormat: RootJsonFormat[NineGagEntity] = jsonFormat5(NineGagEntity)
+  implicit val nineGagEntityFormat: RootJsonFormat[NineGagEntity] = jsonFormat6(NineGagEntity)
   implicit val codingLoveEntityFormat: RootJsonFormat[CodingLoveEntity] = jsonFormat5(
     CodingLoveEntity)
 
@@ -97,4 +105,5 @@ trait DatabaseEntityJsonSupport extends SprayJsonSupport with JsonProtocol {
   implicit val botEntityFormat: RootJsonFormat[BotEntity] = jsonFormat5(BotEntity)
   implicit val botEntityResourceFormat: RootJsonFormat[BotEntityResource] = jsonFormat6(
     BotEntityResource)
+  implicit val categoryEntityFormat: RootJsonFormat[CategoryEntity] = jsonFormat5(CategoryEntity)
 }

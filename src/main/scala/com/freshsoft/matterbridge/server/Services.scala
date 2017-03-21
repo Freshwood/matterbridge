@@ -2,19 +2,9 @@ package com.freshsoft.matterbridge.server
 
 import akka.http.scaladsl.server.Route
 import com.freshsoft.matterbridge.routing._
-import com.freshsoft.matterbridge.service.database.{
-  BotService,
-  CodingLoveService,
-  NineGagService,
-  RssConfigService
-}
+import com.freshsoft.matterbridge.service.database._
 import com.freshsoft.matterbridge.util.{DatabaseConfiguration, FlywayService}
-import data.matterbridge.{
-  BotDataProvider,
-  CodingLoveDataProvider,
-  NineGagDataProvider,
-  RssConfigDataProvider
-}
+import data.matterbridge._
 
 import scala.concurrent.ExecutionContext
 
@@ -26,16 +16,20 @@ trait MatterBridgeWebService extends DatabaseConfiguration {
 
   lazy val nineGagDb: NineGagDataProvider = new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)
 
+  lazy val categoryDb: CategoryDataProvider = new CategoryDataProvider(jdbcUrl, dbUser, dbPassword)
+
   lazy val rssConfigDb: RssConfigDataProvider =
     new RssConfigDataProvider(jdbcUrl, dbUser, dbPassword)
 
   lazy val botDb: BotDataProvider = new BotDataProvider(jdbcUrl, dbUser, dbPassword)
 
-  lazy val nineGagService: NineGagService = new NineGagService(nineGagDb)
+  lazy val nineGagService: NineGagService = new NineGagService(nineGagDb, categoryDb)
 
   lazy val rssConfigService: RssConfigService = new RssConfigService(rssConfigDb)
 
   lazy val botService: BotService = new BotService(botDb)
+
+  lazy val categoryService: CategoryService = new CategoryService(categoryDb)
 
   lazy val slackRoute: Route = new MatterBridgeRoute().routes
 
@@ -53,7 +47,11 @@ trait NineGagActorService extends DatabaseConfiguration {
 
   lazy val db: NineGagDataProvider = new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)
 
-  lazy val nineGagService: NineGagService = new NineGagService(db)
+  lazy val categoryDb: CategoryDataProvider = new CategoryDataProvider(jdbcUrl, dbUser, dbPassword)
+
+  lazy val nineGagService: NineGagService = new NineGagService(db, categoryDb)
+
+  lazy val categoryService: CategoryService = new CategoryService(categoryDb)
 }
 
 trait CodingLoveActorService extends DatabaseConfiguration {

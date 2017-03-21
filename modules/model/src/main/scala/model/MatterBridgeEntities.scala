@@ -32,7 +32,7 @@ object MatterBridgeEntities {
 
   case class NineGagResolveCommand(action: String = "Resolve")
 
-  case class NineGagGifResult(key: String = "", gifUrl: String = "")
+  case class NineGagGifResult(key: String, gifUrl: String, categoryName: String)
 
   case class NewsriverRecoverWebsite(domainName: String, rankingGlobal: Int)
 
@@ -79,7 +79,7 @@ object MatterBridgeEntities {
       jsonFormat2(NewsriverResponseEntity)
     implicit val newsriverResponseFormat: RootJsonFormat[NewsriverResponse] = jsonFormat7(
       NewsriverResponse)
-    implicit val nineGagGifResultResponseFormat: RootJsonFormat[NineGagGifResult] = jsonFormat2(
+    implicit val nineGagGifResultResponseFormat: RootJsonFormat[NineGagGifResult] = jsonFormat3(
       NineGagGifResult)
   }
 }

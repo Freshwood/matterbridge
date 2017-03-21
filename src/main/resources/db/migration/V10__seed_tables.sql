@@ -2,6 +2,7 @@ CREATE TABLE ninegag (
   id         UUID PRIMARY KEY,
   name       VARCHAR   NOT NULL,
   gifurl     VARCHAR   NOT NULL,
+  category_id UUID,
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
   deleted_at TIMESTAMP
 );
@@ -41,13 +42,25 @@ CREATE TABLE bot_resources (
   deleted_at TIMESTAMP
 );
 
+CREATE TABLE category (
+  id         UUID PRIMARY KEY,
+  name           VARCHAR   NOT NULL,
+  created_at TIMESTAMP    NOT NULL,
+  updated_at TIMESTAMP,
+  deleted_at TIMESTAMP
+);
+
 CREATE UNIQUE INDEX rss_name
   ON rss (name);
 CREATE UNIQUE INDEX bot_name
   ON bot (name);
+CREATE UNIQUE INDEX category_name
+  ON category (name);
 
 ALTER TABLE bot_resources
   ADD CONSTRAINT bot_resources_fk FOREIGN KEY (bot_id) REFERENCES bot (id) ON UPDATE RESTRICT ON DELETE CASCADE;
+ALTER TABLE ninegag
+  ADD CONSTRAINT ninegag_category_fk FOREIGN KEY (category_id) REFERENCES category (id) ON UPDATE RESTRICT ON DELETE CASCADE;
 
 CREATE INDEX ninegag_index_id
   ON ninegag (id);

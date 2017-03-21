@@ -24,7 +24,7 @@ sealed trait DataService[S <: DbEntity] {
 trait NineGagDataService extends DataService[NineGagEntity] {
   implicit def executionContext: ExecutionContext
 
-  def add(name: String, gifUrl: String): Future[Boolean]
+  def add(name: String, gifUrl: String, categoryId: UUID): Future[Boolean]
 
   def exists(gifUrl: String): Future[Boolean]
 }
@@ -69,6 +69,16 @@ trait BotDataService extends DataService[BotEntity] {
   def randomBotMessage(botId: UUID): Future[Option[BotEntityResource]]
 }
 
+trait CategoryDataService extends DataService[CategoryEntity] {
+  implicit def executionContext: ExecutionContext
+
+  def add(categoryName: String): Future[Boolean]
+
+  def exists(categoryName: String): Future[Boolean]
+
+  def all: Future[Seq[CategoryEntity]]
+}
+
 sealed abstract class AbstractDataService[A <: DbEntity, S <: BaseDataService[A]](db: S)
     extends DataService[A] {
 
@@ -81,20 +91,21 @@ sealed abstract class AbstractDataService[A <: DbEntity, S <: BaseDataService[A]
   override def byName(name: String): Future[Seq[A]] = db.byName(name)
 }
 
-class NineGagService(db: NineGagDataProvider)(implicit val executionContext: ExecutionContext)
+class NineGagService(db: NineGagDataProvider, categoryDb: CategoryDataProvider)(
+    implicit val executionContext: ExecutionContext)
     extends AbstractDataService[NineGagEntity, NineGagDataProvider](db)
     with NineGagDataService {
 
   override val log: Logger = LoggerFactory.getLogger(getClass)
 
-  override def add(name: String, gifUrl: String): Future[Boolean] = {
+  override def add(name: String, gifUrl: String, categoryId: UUID): Future[Boolean] = {
     this.exists(gifUrl) flatMap { isExistent =>
       if (isExistent) {
         log.info(s"The 9gag gif with the url [$gifUrl] already exists. Skipping entry...")
         Future.successful(false)
       } else {
         log.info(s"Adding 9gag gif with name [$name]")
-        db.insert(name, gifUrl)
+        db.insert(name, gifUrl, categoryId)
       }
     }
   }
@@ -174,10 +185,22 @@ class BotService(db: BotDataProvider)(implicit val executionContext: ExecutionCo
 
   override def randomBotMessage(botId: UUID): Future[Option[BotEntityResource]] =
     db.allResources(botId) map { resources =>
-      if (resources.length > 0) {
+      if (resources.nonEmpty) {
         Option(resources.toVector(Random.nextInt(resources.length)))
       } else {
         None
       }
     }
+}
+
+class CategoryService(db: CategoryDataProvider)(implicit val executionContext: ExecutionContext)
+    extends AbstractDataService[CategoryEntity, CategoryDataProvider](db)
+    with CategoryDataService {
+  override protected val log: Logger = LoggerFactory.getLogger(getClass)
+
+  override def add(categoryName: String): Future[Boolean] = db.insert(categoryName)
+
+  override def exists(categoryName: String): Future[Boolean] = db.exists(categoryName)
+
+  override def all: Future[Seq[CategoryEntity]] = db.all
 }

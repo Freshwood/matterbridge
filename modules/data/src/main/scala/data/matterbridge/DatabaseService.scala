@@ -51,7 +51,7 @@ sealed trait NineGagDataService extends AbstractDataService[NineGagEntity] {
 
   override val table: String = "ninegag"
 
-  def insert(name: String, gifUrl: String): Future[Boolean]
+  def insert(name: String, gifUrl: String, categoryId: UUID): Future[Boolean]
 
   def exists(gifUrl: String): Future[Boolean]
 }
@@ -99,6 +99,17 @@ sealed trait BotDataService extends AbstractDataService[BotEntity] {
   def allResources(botId: UUID): Future[Seq[BotEntityResource]]
 }
 
+sealed trait CategoryDataService extends AbstractDataService[CategoryEntity] {
+
+  override val table: String = "category"
+
+  def insert(name: String): Future[Boolean]
+
+  def exists(categoryName: String): Future[Boolean]
+
+  def all: Future[Seq[CategoryEntity]]
+}
+
 class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: String)(
     implicit executionContext: ExecutionContext)
     extends NineGagDataService {
@@ -109,8 +120,9 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
     NineGagEntity(UUID.fromString(row.string(1)),
                   row.string(2),
                   row.string(3),
-                  row.jodaDateTimeOpt(4),
-                  row.jodaDateTimeOpt(5))
+                  UUID.fromString(row.string(4)),
+                  row.jodaDateTimeOpt(5),
+                  row.jodaDateTimeOpt(6))
   }
 
   override def byName(searchName: String): Future[Seq[NineGagEntity]] = AsyncDB.withPool {
@@ -119,15 +131,16 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
       SQL(query) map resultSetToEntity list () future ()
   }
 
-  override def insert(name: String, gifUrl: String): Future[Boolean] = AsyncDB.withPool {
-    implicit s =>
-      val query = s"INSERT INTO $table(id, name, gifurl, created_at) VALUES(?, ?, ?, ?);"
+  override def insert(name: String, gifUrl: String, categoryId: UUID): Future[Boolean] =
+    AsyncDB.withPool { implicit s =>
+      val query =
+        s"INSERT INTO $table(id, name, gifurl, category_id, created_at) VALUES(?, ?, ?, ?, ?);"
       val now = DateTime.now()
       val update = SQL[NineGagEntity](
         query
-      ) bind (UUID.randomUUID(), name, gifUrl, now) update () future ()
+      ) bind (UUID.randomUUID(), name, gifUrl, categoryId, now) update () future ()
       update map (_ == 1)
-  }
+    }
 
   override def exists(gifUrl: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
     val query = s"SELECT count(*) as count FROM $table WHERE gifurl = '$gifUrl'"
@@ -314,5 +327,50 @@ class BotDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: Str
       val query =
         s"SELECT r.* FROM $table s INNER JOIN $crossTable r ON s.id = r.bot_id WHERE s.id = '$botId'"
       SQL(query) map resultSetToBotResourceEntity list () future ()
+  }
+}
+
+class CategoryDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: String)(
+    implicit executionContext: ExecutionContext)
+    extends CategoryDataService {
+
+  AsyncConnectionPool.singleton(jdbcUrl, databaseUser, databaseSecret)
+
+  override val resultSetToEntity: WrappedResultSet => CategoryEntity = row => {
+    CategoryEntity(UUID.fromString(row.string(1)),
+                   row.string(2),
+                   row.jodaDateTimeOpt(3),
+                   row.jodaDateTimeOpt(4),
+                   row.jodaDateTimeOpt(5))
+  }
+
+  override def byName(searchName: String): Future[Seq[CategoryEntity]] = AsyncDB.withPool {
+    implicit s =>
+      val query = s"SELECT * FROM $table WHERE name LIKE '%$searchName%'"
+      SQL(query) map resultSetToEntity list () future ()
+  }
+
+  override def insert(categoryName: String): Future[Boolean] =
+    AsyncDB.withPool { implicit s =>
+      val query =
+        s"INSERT INTO $table(id, name, created_at) VALUES(?, ?, ?);"
+      val now = DateTime.now()
+      val update = SQL[NineGagEntity](
+        query
+      ) bind (UUID.randomUUID(), categoryName, now) update () future ()
+      update map (_ == 1)
+    }
+
+  override def exists(categoryName: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
+    val query = s"SELECT count(*) as count FROM $table WHERE name = '$categoryName'"
+    SQL(query) map resultSetToCount single () future () map { result =>
+      val test = result.getOrElse(0)
+      if (test == 0) false else true
+    }
+  }
+
+  override def all: Future[Seq[CategoryEntity]] = AsyncDB.withPool { implicit s =>
+    val query = s"SELECT * FROM $table"
+    SQL(query) map resultSetToEntity list () future ()
   }
 }

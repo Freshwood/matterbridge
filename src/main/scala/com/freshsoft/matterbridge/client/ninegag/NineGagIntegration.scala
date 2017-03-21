@@ -31,9 +31,13 @@ object NineGagIntegration
 
     override def receive: Receive = {
       case x: NineGagGifResult =>
-        nineGagService.add(x.key, x.gifUrl) map {
-          case true => log.info(s"Added 9 Gag gif '${x.key}' with url '${x.gifUrl}'")
-          case _ => log.info(s"Could not add 9 Gag guf with the name [${x.key}]")
+        categoryDb.all map { cats =>
+          cats find (_.name == x.categoryName) map { result =>
+            nineGagService.add(x.key, x.gifUrl, result.id) map {
+              case true => log.info(s"Added 9 Gag gif '${x.key}' with url '${x.gifUrl}'")
+              case _ => log.info(s"Could not add 9 Gag guf with the name [${x.key}]")
+            }
+          }
         }
     }
   }
