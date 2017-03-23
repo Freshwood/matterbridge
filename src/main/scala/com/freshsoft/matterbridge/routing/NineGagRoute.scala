@@ -1,5 +1,7 @@
 package com.freshsoft.matterbridge.routing
 
+import java.util.UUID
+
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.freshsoft.matterbridge.service.database.NineGagService
@@ -29,7 +31,7 @@ class NineGagRoute(service: NineGagService)(implicit executionContext: Execution
       path("add") {
         get {
           complete {
-            service.add("Test", "TestUrl") map (_.toString)
+            service.add("Test", "TestUrl", UUID.fromString("5952bc4c-2985-418c-a436-2a9eb49b679e")) map (_.toString)
           }
         }
       } ~

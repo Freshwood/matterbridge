@@ -2,6 +2,7 @@ package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.{Actor, ActorRef}
 import akka.event.{Logging, LoggingAdapter}
+import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration.NineGagWorkerCommand
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
 import model.MatterBridgeEntities.{NineGagGifResult, NineGagResolveCommand}
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
@@ -20,11 +21,11 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
   implicit val executionContext: ExecutionContext = context.dispatcher
 
   override def receive: Receive = {
-    case url: String =>
+    case command: NineGagWorkerCommand =>
       val from = sender
 
-      getNineGagGifs(url) map { result =>
-        log.info(s"Found ${result.size} gifs from $url")
+      getNineGagGifs(command) map { result =>
+        log.info(s"Found ${result.size} gifs from $command")
 
         if (result.isEmpty) {
           log.info("No gifs found, proceed with next url")
@@ -38,19 +39,16 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
   /**
 		* Get concurrent the List of gifs from NineGag
 		*
-		* @param url The url to retrieve the gifs
+		* @param command The url to retrieve the gifs
 		* @return A Future list of NineGagGifResult
 		*/
-  private def getNineGagGifs(url: String): Future[List[NineGagGifResult]] = {
+  private def getNineGagGifs(command: NineGagWorkerCommand): Future[List[NineGagGifResult]] = {
 
-    MatterBridgeHttpClient.getUrlContent(url) flatMap {
+    MatterBridgeHttpClient.getUrlContent(command.nineGagUrl) map {
 
-      case x if x.isEmpty => log.warning(s"Get no content from $url"); Future { Nil }
+      case x if x.isEmpty => log.warning(s"Get no content from ${command.nineGagUrl}"); Nil
 
-      case x if !x.isEmpty =>
-        Future {
-          resolveGifsFromContent(x)
-        }
+      case x if !x.isEmpty => resolveGifsFromContent(x, command.relatedCategory)
     }
   }
 
@@ -61,7 +59,7 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
 		* @return A list of NineGagGifResult
 		*/
   @throws[Exception]
-  private def resolveGifsFromContent(htmlContent: String) = {
+  private def resolveGifsFromContent(htmlContent: String, category: String) = {
     val browser = JsoupBrowser()
     val doc = browser.parseString(htmlContent)
 
@@ -73,6 +71,6 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
       gifSrc <- (article >> elementList("div a div") >?> attr("data-image")("div")).flatten
     } yield (headline, gifSrc)
 
-    gifResults.map(r => NineGagGifResult(r._1, r._2)).toList
+    gifResults.map(r => NineGagGifResult(r._1, r._2, category)).toList
   }
 }

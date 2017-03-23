@@ -29,7 +29,7 @@ class AsyncDb(jdbcUrl: String, dbUser: String, dbPassword: String)(implicit ec: 
 
   override def firstNineGag: Future[Seq[NineGagGifResult]] = AsyncDB.withPool { implicit s =>
     sql"SELECT name, gifurl FROM ninegag" map { row =>
-      NineGagGifResult(row.string(1), row.string(2))
+      NineGagGifResult(row.string(1), row.string(2), "test")
     } toList () future ()
   }
 }
@@ -50,7 +50,7 @@ class SyncDb(jdbcUrl: String, dbUser: String, dbPassword: String, driver: String
   override def firstNineGag: Future[Seq[NineGagGifResult]] = Future {
     DB.readOnly { implicit s =>
       sql"SELECT name, gifurl FROM ninegag" map { row =>
-        NineGagGifResult(row.string(1), row.string(2))
+        NineGagGifResult(row.string(1), row.string(2), "test")
       } toList () apply ()
     }
   }

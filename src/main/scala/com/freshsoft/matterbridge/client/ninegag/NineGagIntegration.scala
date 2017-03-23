@@ -20,6 +20,8 @@ object NineGagIntegration
     with MatterBridgeContext
     with NineGagActorService {
 
+  case class NineGagWorkerCommand(nineGagUrl: String, relatedCategory: String)
+
   val log: LoggingAdapter = Logging.getLogger(system, this)
   val nineGagResolver: ActorRef =
     system.actorOf(Props(classOf[NineGagResolver]), "NineGagResolver")

@@ -61,8 +61,8 @@ class MatterBridgeEntitiesTest
     }
 
     "successful create a nine gag gif result" in {
-      val actual = MatterBridgeEntities.NineGagGifResult("Test", "Text")
-      val expected = MatterBridgeEntities.NineGagGifResult("Test", "Text")
+      val actual = MatterBridgeEntities.NineGagGifResult("Test", "Text", "Test")
+      val expected = MatterBridgeEntities.NineGagGifResult("Test", "Text", "Test")
       actual should be(expected)
     }
 

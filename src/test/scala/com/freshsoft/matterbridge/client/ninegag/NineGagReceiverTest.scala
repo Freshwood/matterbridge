@@ -14,7 +14,7 @@ class NineGagReceiverTest
     with Matchers
     with BeforeAndAfter {
 
-  val expectedMessage = NineGagGifResult("Sample", "Some String")
+  val expectedMessage = NineGagGifResult("Sample", "Some String", "Test")
 
   val nineGagReceiver: ActorRef =
     system.actorOf(Props(classOf[NineGagIntegration.NineGagGifReceiver]))

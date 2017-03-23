@@ -1,7 +1,10 @@
 package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.{Actor, ActorRef, Props}
-import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration.NineGagGifReceiver
+import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration.{
+  NineGagGifReceiver,
+  NineGagWorkerCommand
+}
 import model.MatterBridgeEntities.NineGagResolveCommand
 
 /**
@@ -13,21 +16,37 @@ class NineGagResolver extends Actor {
 
   private var actualUrl = nineGagBaseUrl
 
-  private val nineGagCategories = Seq("funny/",
-                                      "wtf/",
-                                      "gif/",
-                                      "gaming/",
-                                      "anime-manga/",
-                                      "movie-tv/",
-                                      "cute/",
-                                      "girl/",
-                                      "awesome/",
-                                      "cosplay/",
-                                      "sport/",
-                                      "food/",
-                                      "timely/")
+  private val nineGagCategories = Seq(
+    "funny",
+    "relationship",
+    "science",
+    "funlegacy",
+    "savage",
+    "superhero",
+    "girly",
+    "horror",
+    "imadedis",
+    "politics",
+    "school",
+    "timely",
+    "wtf",
+    "gif",
+    "nsfw",
+    "gaming",
+    "anime-manga",
+    "movie-tv",
+    "cute",
+    "girl",
+    "awesome",
+    "cosplay",
+    "sport",
+    "food",
+    "ask9gag",
+    "darkhumor",
+    "country"
+  )
 
-  private val nineGagExtraCategory = "fresh/"
+  private val nineGagExtraCategory = "/fresh/"
 
   private val nineGagUrls = Seq(nineGagBaseUrl) ++ nineGagCategories
     .flatMap(e => Seq(nineGagBaseUrl + e) ++ Seq(nineGagBaseUrl + e + nineGagExtraCategory))
@@ -42,7 +61,12 @@ class NineGagResolver extends Actor {
   override def receive: Receive = {
     case NineGagResolveCommand("Resolve") =>
       actualUrl = getNextNineGagUrl(actualUrl)
-      worker ! actualUrl
+      worker ! buildNineGagWorkerCommand(actualUrl)
+  }
+
+  private def buildNineGagWorkerCommand(url: String): NineGagWorkerCommand = {
+    val category = nineGagCategories find (url contains _) getOrElse nineGagCategories.head
+    NineGagWorkerCommand(url, category)
   }
 
   /**
