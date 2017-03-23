@@ -39,6 +39,8 @@ trait MatterBridgeWebService extends DatabaseConfiguration {
 
   lazy val botRoute: Route = new BotRoute(botService).route
 
+  lazy val categoryRoute: Route = new CategoryRoute(categoryService).route
+
   lazy val webContentRoute: Route = new WebContentRoute(nineGagDb).route
 }
 
