@@ -33,6 +33,9 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
         } else {
           result.foreach(u => nineGagReceiver ! u)
         }
+      } recover {
+        case ex =>
+          log.error(ex, s"Could not retrieve 9gag images from ${command.nineGagUrl}")
       }
   }
 
