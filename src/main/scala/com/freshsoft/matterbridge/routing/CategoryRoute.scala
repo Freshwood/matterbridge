@@ -3,7 +3,7 @@ package com.freshsoft.matterbridge.routing
 import akka.http.scaladsl.server.Directives.{path, _}
 import akka.http.scaladsl.server.Route
 import com.freshsoft.matterbridge.service.database.CategoryService
-import model.DatabaseEntityJsonSupport
+import model.{BotOrCategoryUpload, DatabaseEntityJsonSupport}
 
 import scala.concurrent.ExecutionContext
 
@@ -28,15 +28,22 @@ class CategoryRoute(service: CategoryService)(implicit executionContext: Executi
           }
         } ~
         path("add") {
-          get {
-            complete {
-              service.add("Bot neu") map (_.toString)
+          post {
+            entity(as[BotOrCategoryUpload]) { entity =>
+              complete {
+                service.add(entity.name) map (_.toString)
+              }
             }
           }
         } ~
         path("exists" / Remaining) { search =>
           get {
             complete(service.exists(search) map (_.toString))
+          }
+        } ~
+        path(JavaUUID) { uuid =>
+          get {
+            complete(service.byId(uuid))
           }
         }
     }

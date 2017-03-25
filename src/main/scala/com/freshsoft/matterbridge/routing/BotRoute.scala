@@ -8,7 +8,7 @@ import model.{BotOrCategoryUpload, DatabaseEntityJsonSupport}
 import scala.concurrent.ExecutionContext
 
 /**
-  * The nine gag specific static routes
+  * The bot specific service routes
   */
 class BotRoute(service: BotService)(implicit executionContext: ExecutionContext)
     extends DatabaseEntityJsonSupport {

@@ -154,7 +154,7 @@ class RssConfigService(db: RssConfigDataProvider)(implicit val executionContext:
     }
   }
 
-  override def exists(gifUrl: String): Future[Boolean] = db.exists(gifUrl)
+  override def exists(rssName: String): Future[Boolean] = db.exists(rssName)
 
   override def all: Future[Seq[RssEntity]] = db.all
 

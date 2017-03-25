@@ -1,11 +1,9 @@
 package com.freshsoft.matterbridge.routing
 
-import java.util.UUID
-
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.freshsoft.matterbridge.service.database.NineGagService
-import model.DatabaseEntityJsonSupport
+import model.{DatabaseEntityJsonSupport, NineGagUpload}
 
 import scala.concurrent.ExecutionContext
 
@@ -16,11 +14,7 @@ class NineGagRoute(service: NineGagService)(implicit executionContext: Execution
     extends DatabaseEntityJsonSupport {
 
   val route: Route = logRequestResult("ninegag-route") {
-    path("9gag" / Remaining) { p =>
-      get {
-        complete(service.byName(p))
-      }
-    } ~
+    pathPrefix("9gag") {
       path("count") {
         get {
           complete {
@@ -28,19 +22,30 @@ class NineGagRoute(service: NineGagService)(implicit executionContext: Execution
           }
         }
       } ~
-      path("add") {
-        get {
-          complete {
-            service.add("Test", "TestUrl", UUID.fromString("5952bc4c-2985-418c-a436-2a9eb49b679e")) map (_.toString)
+        path("add") {
+          post {
+            entity(as[NineGagUpload]) { entity =>
+              complete {
+                service.add(entity.name, entity.gifUrl, entity.categoryId) map (_.toString)
+              }
+            }
+          }
+        } ~
+        path("exists" / Remaining) { p =>
+          get {
+            complete(service.exists(p) map (_.toString))
+          }
+        } ~
+        path(JavaUUID) { uuid =>
+          get {
+            complete(service.byId(uuid))
+          }
+        } ~
+        path(Remaining) { name =>
+          get {
+            complete(service.byName(name))
           }
         }
-      } ~
-      path("exists" / Remaining) { p =>
-        get {
-          complete(
-            service
-              .exists("https://img-9gag-fun.9cache.com/photo/aOzQ4RD_460sa.gif") map (_.toString))
-        }
-      }
+    }
   }
 }

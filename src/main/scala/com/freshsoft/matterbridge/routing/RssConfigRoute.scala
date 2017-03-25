@@ -3,7 +3,7 @@ package com.freshsoft.matterbridge.routing
 import akka.http.scaladsl.server.Directives.{path, _}
 import akka.http.scaladsl.server.Route
 import com.freshsoft.matterbridge.service.database.RssConfigService
-import model.DatabaseEntityJsonSupport
+import model.{DatabaseEntityJsonSupport, RssUpload}
 
 import scala.concurrent.ExecutionContext
 
@@ -14,36 +14,43 @@ class RssConfigRoute(service: RssConfigService)(implicit executionContext: Execu
     extends DatabaseEntityJsonSupport {
 
   val route: Route = logRequestResult("rss-config-route") {
-    path("rss" / Remaining) { p =>
-      get {
-        complete(service.byName(p))
-      }
-    } ~
-      path("count") {
-        get {
-          complete {
-            service.count map (_.toString)
-          }
-        }
-      } ~
-      path("add") {
-        get {
-          complete {
-            service.add("Test", "TestUrl", "token") map (_.toString)
-          }
-        }
-      } ~
-      path("exists" / Remaining) { p =>
-        get {
-          complete(
-            service
-              .exists("https://img-9gag-fun.9cache.com/photo/aOzQ4RD_460sa.gif") map (_.toString))
-        }
-      } ~
-      path("all") {
+    pathPrefix("rss") {
+      pathEndOrSingleSlash {
         get {
           complete(service.all)
         }
-      }
+      } ~
+        path("count") {
+          get {
+            complete {
+              service.count map (_.toString)
+            }
+          }
+        } ~
+        path("add") {
+          post {
+            entity(as[RssUpload]) { entity =>
+              complete {
+                service.add(entity.name, entity.rssUrl, entity.incomingToken) map (_.toString)
+              }
+            }
+          }
+        } ~
+        path("exists" / Remaining) { p =>
+          get {
+            complete(service.exists(p) map (_.toString))
+          }
+        } ~
+        path(Remaining) { p =>
+          get {
+            complete(service.byName(p))
+          }
+        } ~
+        path(JavaUUID) { uuid =>
+          get {
+            complete(service.byId(uuid))
+          }
+        }
+    }
   }
 }

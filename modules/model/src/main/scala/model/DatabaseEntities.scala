@@ -75,7 +75,9 @@ case class BotResourceUpload(botId: UUID, name: String)
 
 case class RssUpload(name: String, rssUrl: String, incomingToken: String)
 
-case class GifUpload(name: String, gifUrl: String)
+case class CodingLoveUpload(name: String, gifUrl: String)
+
+case class NineGagUpload(name: String, gifUrl: String, categoryId: UUID)
 
 trait JsonProtocol extends DefaultJsonProtocol {
   implicit val uuidJsonFormat: JsonFormat[UUID] = new JsonFormat[UUID] {
@@ -120,5 +122,7 @@ trait DatabaseEntityJsonSupport extends SprayJsonSupport with JsonProtocol {
   implicit val botResourceUploadFormat: RootJsonFormat[BotResourceUpload] = jsonFormat2(
     BotResourceUpload)
   implicit val rssUploadFormat: RootJsonFormat[RssUpload] = jsonFormat3(RssUpload)
-  implicit val gifUploadFormat: RootJsonFormat[GifUpload] = jsonFormat2(GifUpload)
+  implicit val codingLoveUploadFormat: RootJsonFormat[CodingLoveUpload] = jsonFormat2(
+    CodingLoveUpload)
+  implicit val nineGagUploadFormat: RootJsonFormat[NineGagUpload] = jsonFormat3(NineGagUpload)
 }
