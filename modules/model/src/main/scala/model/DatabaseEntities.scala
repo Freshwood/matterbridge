@@ -69,6 +69,14 @@ case class CategoryEntity(id: UUID,
                           deletedAt: Option[DateTime])
     extends DbEntity
 
+case class BotOrCategoryUpload(name: String)
+
+case class BotResourceUpload(botId: UUID, name: String)
+
+case class RssUpload(name: String, rssUrl: String, incomingToken: String)
+
+case class GifUpload(name: String, gifUrl: String)
+
 trait JsonProtocol extends DefaultJsonProtocol {
   implicit val uuidJsonFormat: JsonFormat[UUID] = new JsonFormat[UUID] {
     override def write(x: UUID): JsValue = JsString(x.toString)
@@ -106,4 +114,11 @@ trait DatabaseEntityJsonSupport extends SprayJsonSupport with JsonProtocol {
   implicit val botEntityResourceFormat: RootJsonFormat[BotEntityResource] = jsonFormat6(
     BotEntityResource)
   implicit val categoryEntityFormat: RootJsonFormat[CategoryEntity] = jsonFormat5(CategoryEntity)
+
+  implicit val botOrCategoryUploadFormat: RootJsonFormat[BotOrCategoryUpload] = jsonFormat1(
+    BotOrCategoryUpload)
+  implicit val botResourceUploadFormat: RootJsonFormat[BotResourceUpload] = jsonFormat2(
+    BotResourceUpload)
+  implicit val rssUploadFormat: RootJsonFormat[RssUpload] = jsonFormat3(RssUpload)
+  implicit val gifUploadFormat: RootJsonFormat[GifUpload] = jsonFormat2(GifUpload)
 }

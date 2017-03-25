@@ -36,7 +36,7 @@ sealed abstract class AbstractDataService[S <: DbEntity](
   val resultSetToCount: WrappedResultSet => Long = row => row.long(1)
 
   override def byId(id: UUID): Future[Option[S]] = AsyncDB.withPool { implicit s =>
-    val query = s"SELECT * FROM $table WHERE id = $id"
+    val query = s"SELECT * FROM $table WHERE id = '$id'"
     SQL(query) map resultSetToEntity single () future ()
   }
 
