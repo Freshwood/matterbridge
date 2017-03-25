@@ -8,7 +8,7 @@ import model.{DatabaseEntityJsonSupport, NineGagUpload}
 import scala.concurrent.ExecutionContext
 
 /**
-  * The nine gag specific static routes
+  * The nine gag specific service routes
   */
 class NineGagRoute(service: NineGagService)(implicit executionContext: ExecutionContext)
     extends DatabaseEntityJsonSupport {

@@ -8,7 +8,7 @@ import model.{DatabaseEntityJsonSupport, RssUpload}
 import scala.concurrent.ExecutionContext
 
 /**
-  * The nine gag specific static routes
+  * The rss config specific routes
   */
 class RssConfigRoute(service: RssConfigService)(implicit executionContext: ExecutionContext)
     extends DatabaseEntityJsonSupport {
