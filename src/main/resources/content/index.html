@@ -6,35 +6,43 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/png" href='images/favicon.png'>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/spectre.min.css">
+    <link rel="stylesheet" href="css/spectre-exp.min.css">
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <script type="text/javascript" src="js/jquery-2.2.4.min.js" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/vue.min.js"></script>
 
 </head>
 
 <body>
-<nav class="navbar navbar-collapse">
-    <div class="container">
-        <div class="navbar-header col-md-4">
-            <a class="navbar-brand" href="/">
-                <span class="glyphicon fa fa-user"></span>Matterbridge Service
-            </a>
-        </div>
-    </div>
-</nav>
 
-<div class="container" id="content">
-    <p>Matterbridge Service is up and running</p>
+<div class="container grid-960" id="content">
+
+    <header class="navbar">
+        <section class="navbar-primary">
+            <a href="#" class="navbar-brand mr-10">Matterbridge Service</a>
+        </section>
+        <section class="navbar-section">
+            <a href="#" class="btn btn-link">Docs</a>
+            <a href="https://github.com/picturepan2/spectre" class="btn btn-link">GitHub</a>
+        </section>
+        <section class="navbar-section">
+            <div class="input-group input-inline">
+                <input class="form-input" type="text" placeholder="search" />
+                <button class="btn btn-primary input-group-btn">Search</button>
+            </div>
+        </section>
+    </header>
+
+    <h1>Matterbridge Service is up and running</h1>
 </div>
 
 </body>
 
-<footer class="footer navbar navbar-collapse">
-    <div class="container">
-        <div class="lead small pull-right">
-            Matterbridge Service &hearts;
+<footer class="panel-footer">
+    <div class="container grid-960">
+        <div class="pull-right">
+            <h3>Matterbridge Service &hearts;</h3>
         </div>
     </div>
 </footer>
