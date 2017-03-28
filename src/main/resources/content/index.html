@@ -11,30 +11,30 @@
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <script type="text/javascript" src="js/jquery-2.2.4.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript" src="js/vue.min.js"></script>
+    <script type="text/javascript" src="js/core.js"></script>
 
 </head>
 
 <body>
 
-<div class="container grid-960" id="content">
+<div class="container grid-960" id="contentVue">
 
     <header class="navbar">
         <section class="navbar-primary">
-            <a href="#" class="navbar-brand mr-10">Matterbridge Service</a>
+            <a href="#" v-on:click="switchNavigation(MB.core.navs.home)" class="navbar-brand mr-10">Matterbridge Service</a>
         </section>
         <section class="navbar-section">
-            <a href="#" class="btn btn-link">Docs</a>
-            <a href="https://github.com/picturepan2/spectre" class="btn btn-link">GitHub</a>
+            <a href="#" v-on:click="switchNavigation(MB.core.navs.nineGag)" class="btn btn-link">9Gag</a>
+            <a href="#" v-on:click="switchNavigation(MB.core.navs.codingLove)" class="btn btn-link">Coding Love</a>
         </section>
         <section class="navbar-section">
-            <div class="input-group input-inline">
-                <input class="form-input" type="text" placeholder="search" />
-                <button class="btn btn-primary input-group-btn">Search</button>
-            </div>
+            <a href="#" v-on:click="switchNavigation(MB.core.navs.rss)" class="btn btn-link">RSS config</a>
+            <a href="#" v-on:click="switchNavigation(MB.core.navs.bot)" class="btn btn-link">Bots</a>
         </section>
     </header>
 
     <h1>Matterbridge Service is up and running</h1>
+    <p>Navigation is set to: <strong>{{navigation}}</strong></p>
 </div>
 
 </body>
@@ -42,9 +42,15 @@
 <footer class="panel-footer">
     <div class="container grid-960">
         <div class="pull-right">
-            <h3>Matterbridge Service &hearts;</h3>
+            <h3>Matterbridge Service &hearts;<small>(a Mattermost service)</small></h3>
         </div>
     </div>
 </footer>
 
 </html>
+
+<script type="text/javascript">
+    $(function() {
+        MB.core.init();
+    });
+</script>
