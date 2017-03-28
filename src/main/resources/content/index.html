@@ -13,6 +13,14 @@
     <script type="text/javascript" src="js/vue.min.js"></script>
     <script type="text/javascript" src="js/core.js"></script>
 
+    <script id="home-template" type="text/x-template">
+
+    <div>
+        <p>{{text}}</p>
+    </div>
+
+    </script>
+
 </head>
 
 <body>
@@ -21,20 +29,26 @@
 
     <header class="navbar">
         <section class="navbar-primary">
-            <a href="#" v-on:click="switchNavigation(MB.core.navs.home)" class="navbar-brand mr-10">Matterbridge Service</a>
+            <a href="#" v-on:click="switchNavigation(MB.core.navs.home)"
+               class="navbar-brand mr-10" :class="isHome() ? 'active' : ''">Matterbridge Service</a>
         </section>
         <section class="navbar-section">
-            <a href="#" v-on:click="switchNavigation(MB.core.navs.nineGag)" class="btn btn-link">9Gag</a>
-            <a href="#" v-on:click="switchNavigation(MB.core.navs.codingLove)" class="btn btn-link">Coding Love</a>
+            <a href="#" v-on:click="switchNavigation(MB.core.navs.nineGag)"
+               class="btn btn-link" :class="isNineGag() ? 'active' : ''">9Gag</a>
+            <a href="#" v-on:click="switchNavigation(MB.core.navs.codingLove)"
+               class="btn btn-link" :class="isCodingLove() ? 'active' : ''">Coding Love</a>
         </section>
         <section class="navbar-section">
-            <a href="#" v-on:click="switchNavigation(MB.core.navs.rss)" class="btn btn-link">RSS config</a>
-            <a href="#" v-on:click="switchNavigation(MB.core.navs.bot)" class="btn btn-link">Bots</a>
+            <a href="#" v-on:click="switchNavigation(MB.core.navs.rss)"
+               class="btn btn-link" :class="isRss() ? 'active' : ''">RSS config</a>
+            <a href="#" v-on:click="switchNavigation(MB.core.navs.bot)"
+               class="btn btn-link" :class="isBot() ? 'active' : ''">Bots</a>
         </section>
     </header>
 
-    <h1>Matterbridge Service is up and running</h1>
+    <h5>Matterbridge Service is up and running</h5>
     <p>Navigation is set to: <strong>{{navigation}}</strong></p>
+    <landing v-bind:url="url"></landing>
 </div>
 
 </body>
@@ -50,6 +64,7 @@
 </html>
 
 <script type="text/javascript">
+    $(document).ajaxError(MB.errorHandler);
     $(function() {
         MB.core.init();
     });
