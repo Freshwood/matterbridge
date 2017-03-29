@@ -1,7 +1,9 @@
 package com.freshsoft.matterbridge.routing
 
+import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import akka.stream.scaladsl.{Flow, Source}
 import com.freshsoft.matterbridge.server.IntegrationService
 import data.matterbridge.NineGagDataProvider
 import model.MatterBridgeEntities.ISlashCommandJsonSupport
@@ -18,6 +20,10 @@ class WebContentRoute(nineGagDb: NineGagDataProvider)(implicit executionContext:
 
   private val index: Route = get {
     getFromResource("content/index.html")
+  }
+
+  private val socketConnection: Flow[Message, Message, Any] = Flow[Message] collect {
+    case tm: TextMessage => TextMessage(Source.single("Hello") ++ tm.textStream)
   }
 
   val route: Route = path("index.html") {
@@ -46,7 +52,13 @@ class WebContentRoute(nineGagDb: NineGagDataProvider)(implicit executionContext:
       get {
         getFromResourceDirectory("content/fonts")
       }
-    } ~ pathSingleSlash {
-    index
-  }
+    } ~
+    pathPrefix("socket") {
+      get {
+        handleWebSocketMessages(socketConnection)
+      }
+    } ~
+    pathSingleSlash {
+      index
+    }
 }

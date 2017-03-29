@@ -76,5 +76,22 @@ MB.core = {
                                    }
                                }
                            });
+
+        var ws = new WebSocket("ws://" + location.host + "/socket");
+
+        ws.isClosed
+
+        ws.onopen = function () {
+            console.log("web socket connection open");
+            ws.send("Socket is open")
+        };
+
+        ws.onmessage = function (message) {
+            console.log(message.data);
+        };
+
+        ws.onclose = function () {
+            console.log("socket closed");
+        }
     }
 };
