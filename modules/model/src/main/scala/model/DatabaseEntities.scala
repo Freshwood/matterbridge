@@ -69,6 +69,12 @@ case class CategoryEntity(id: UUID,
                           deletedAt: Option[DateTime])
     extends DbEntity
 
+case class EntityStatistic(nineGagCount: Long,
+                           codingLoveCount: Long,
+                           rssCount: Long,
+                           botCount: Long,
+                           categoryCount: Long)
+
 case class BotOrCategoryUpload(name: String)
 
 case class BotResourceUpload(botId: UUID, name: String)
@@ -125,4 +131,7 @@ trait DatabaseEntityJsonSupport extends SprayJsonSupport with JsonProtocol {
   implicit val codingLoveUploadFormat: RootJsonFormat[CodingLoveUpload] = jsonFormat2(
     CodingLoveUpload)
   implicit val nineGagUploadFormat: RootJsonFormat[NineGagUpload] = jsonFormat3(NineGagUpload)
+
+  implicit val entityStatisticFormat: RootJsonFormat[EntityStatistic] = jsonFormat5(
+    EntityStatistic)
 }

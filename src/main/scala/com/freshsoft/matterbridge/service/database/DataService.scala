@@ -79,6 +79,12 @@ trait CategoryDataService extends DataService[CategoryEntity] {
   def all: Future[Seq[CategoryEntity]]
 }
 
+trait WebDataService {
+  implicit def executionContext: ExecutionContext
+
+  def overallCount: Future[EntityStatistic]
+}
+
 sealed abstract class AbstractDataService[A <: DbEntity, S <: BaseDataService[A]](db: S)
     extends DataService[A] {
 
@@ -203,4 +209,23 @@ class CategoryService(db: CategoryDataProvider)(implicit val executionContext: E
   override def exists(categoryName: String): Future[Boolean] = db.exists(categoryName)
 
   override def all: Future[Seq[CategoryEntity]] = db.all
+}
+
+class WebService(
+    nineGagDataProvider: NineGagDataProvider,
+    codingLoveDataProvider: CodingLoveDataProvider,
+    rssConfigDataProvider: RssConfigDataProvider,
+    botDataProvider: BotDataProvider,
+    categoryDataProvider: CategoryDataProvider)(implicit val executionContext: ExecutionContext)
+    extends WebDataService {
+
+  override def overallCount: Future[EntityStatistic] =
+    for {
+      nineGagCount <- nineGagDataProvider.count
+      codingLoveCount <- codingLoveDataProvider.count
+      rssCount <- rssConfigDataProvider.count
+      botCount <- botDataProvider.count
+      categoryCount <- categoryDataProvider.count
+    } yield EntityStatistic(nineGagCount, codingLoveCount, rssCount, botCount, categoryCount)
+
 }

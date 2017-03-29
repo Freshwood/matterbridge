@@ -4,19 +4,16 @@ import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.{Flow, Source}
-import com.freshsoft.matterbridge.server.IntegrationService
-import data.matterbridge.NineGagDataProvider
-import model.MatterBridgeEntities.ISlashCommandJsonSupport
+import com.freshsoft.matterbridge.service.database.WebService
+import model.DatabaseEntityJsonSupport
 
 import scala.concurrent.ExecutionContext
 
 /**
   * The web content specific static routes
   */
-class WebContentRoute(nineGagDb: NineGagDataProvider)(implicit executionContext: ExecutionContext)
-    extends ISlashCommandJsonSupport {
-
-  lazy val service = new IntegrationService()
+class WebContentRoute(webService: WebService)(implicit executionContext: ExecutionContext)
+    extends DatabaseEntityJsonSupport {
 
   private val index: Route = get {
     getFromResource("content/index.html")
@@ -28,10 +25,6 @@ class WebContentRoute(nineGagDb: NineGagDataProvider)(implicit executionContext:
 
   val route: Route = path("index.html") {
     index
-  } ~ path("test") {
-    get {
-      complete(service.nineGag)
-    }
   } ~
     pathPrefix("js") {
       get {
@@ -56,6 +49,13 @@ class WebContentRoute(nineGagDb: NineGagDataProvider)(implicit executionContext:
     pathPrefix("socket") {
       get {
         handleWebSocketMessages(socketConnection)
+      }
+    } ~
+    pathPrefix("service") {
+      pathPrefix("count") {
+        get {
+          complete(webService.overallCount)
+        }
       }
     } ~
     pathSingleSlash {

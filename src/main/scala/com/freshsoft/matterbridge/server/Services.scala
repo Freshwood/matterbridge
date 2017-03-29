@@ -16,6 +16,9 @@ trait MatterBridgeWebService extends DatabaseConfiguration {
 
   lazy val nineGagDb: NineGagDataProvider = new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)
 
+  lazy val codingLoveDb: CodingLoveDataProvider =
+    new CodingLoveDataProvider(jdbcUrl, dbUser, dbPassword)
+
   lazy val categoryDb: CategoryDataProvider = new CategoryDataProvider(jdbcUrl, dbUser, dbPassword)
 
   lazy val rssConfigDb: RssConfigDataProvider =
@@ -25,15 +28,22 @@ trait MatterBridgeWebService extends DatabaseConfiguration {
 
   lazy val nineGagService: NineGagService = new NineGagService(nineGagDb, categoryDb)
 
+  lazy val codingLoveService: CodingLoveService = new CodingLoveService(codingLoveDb)
+
   lazy val rssConfigService: RssConfigService = new RssConfigService(rssConfigDb)
 
   lazy val botService: BotService = new BotService(botDb)
 
   lazy val categoryService: CategoryService = new CategoryService(categoryDb)
 
+  lazy val webService: WebService =
+    new WebService(nineGagDb, codingLoveDb, rssConfigDb, botDb, categoryDb)
+
   lazy val slackRoute: Route = new MatterBridgeRoute().routes
 
   lazy val nineGagRoute: Route = new NineGagRoute(nineGagService).route
+
+  lazy val codingLoveRoute: Route = new CodingLoveRoute(codingLoveService).route
 
   lazy val rssConfigRoute: Route = new RssConfigRoute(rssConfigService).route
 
@@ -41,7 +51,7 @@ trait MatterBridgeWebService extends DatabaseConfiguration {
 
   lazy val categoryRoute: Route = new CategoryRoute(categoryService).route
 
-  lazy val webContentRoute: Route = new WebContentRoute(nineGagDb).route
+  lazy val webContentRoute: Route = new WebContentRoute(webService).route
 }
 
 trait NineGagActorService extends DatabaseConfiguration {

@@ -35,6 +35,8 @@ Vue.component('landing', {
 
 MB.core = {
 
+    wsUrl: "ws://" + location.host + "/socket",
+
     navs: {
         home: "HOME",
         nineGag: "9GAG",
@@ -77,9 +79,7 @@ MB.core = {
                                }
                            });
 
-        var ws = new WebSocket("ws://" + location.host + "/socket");
-
-        ws.isClosed
+        var ws = new WebSocket(this.wsUrl);
 
         ws.onopen = function () {
             console.log("web socket connection open");
