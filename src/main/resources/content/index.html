@@ -30,7 +30,7 @@
                             <p class="tile-subtitle">Shows the actual 9gag gif count</p>
                         </div>
                         <div class="tile-action">
-                            <h2 class="text-ellipsis">{{nineGagCount}}</h2>
+                            <h2 class="text-ellipsis" :class="showBold ? 'text-bold' : ''">{{nineGagCount}}</h2>
                         </div>
                     </div>
                 </div>
@@ -129,8 +129,6 @@
         </section>
     </header>
 
-    <h5>Matterbridge Service is up and running</h5>
-    <p>Navigation is set to: <strong>{{navigation}}</strong></p>
     <landing v-if="isHome()" v-bind:url="url"></landing>
 </div>
 

@@ -20,7 +20,8 @@ Vue.component('landing', {
             codingLoveCount: 0,
             rssCount: 0,
             botCount: 0,
-            categoryCount: 0
+            categoryCount: 0,
+            showBold: false
         }
     },
     methods: {
@@ -59,6 +60,15 @@ Vue.component('landing', {
             this.ws.onmessage = this.onMessage;
 
             this.ws.onclose = this.onClose;
+        }
+    },
+    watch: {
+        nineGagCount: function(value, oldValue) {
+            var vm = this;
+            vm.showBold = true;
+            setTimeout(function () {
+                vm.showBold = false;
+            }, 1000);
         }
     },
     created: function () {
