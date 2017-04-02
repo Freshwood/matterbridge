@@ -104,6 +104,24 @@
 
     </script>
 
+    <script id="ninegag-config-template" type="text/x-template">
+        <span>
+            <p>How to configure nine gag integration?</p>
+            <p>You need an slash command configuration</p>
+
+            <span>Insert this url in the url option:</span>
+
+            <pre class="code">
+                <code>
+                    <span class="atv">{{location}}</span>
+                </code>
+            </pre>
+
+            <p>After a successful configuration the service is looking for a stored 9Gag gif</p>
+
+        </span>
+    </script>
+
 </head>
 
 <body>
@@ -129,7 +147,8 @@
         </section>
     </header>
 
-    <landing v-if="isHome()" v-bind:url="url"></landing>
+    <landing v-show="isHome()" v-bind:url="url"></landing>
+    <ninegag-config v-if="isNineGag()"></ninegag-config>
 </div>
 
 </body>

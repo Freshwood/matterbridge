@@ -4,6 +4,15 @@ var MB = MB || {
         }
     };
 
+Vue.component('ninegag-config', {
+    template: '#ninegag-config-template',
+    data: function() {
+        return {
+            location: "http://" + window.location.host + "/api/matterbridge"
+        }
+    }
+});
+
 Vue.component('landing', {
     template: '#home-template',
     props: {
@@ -63,7 +72,7 @@ Vue.component('landing', {
         }
     },
     watch: {
-        nineGagCount: function(value, oldValue) {
+        nineGagCount: function() {
             var vm = this;
             vm.showBold = true;
             setTimeout(function () {
