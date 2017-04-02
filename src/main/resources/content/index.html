@@ -9,15 +9,98 @@
     <link rel="stylesheet" href="css/spectre.min.css">
     <link rel="stylesheet" href="css/spectre-exp.min.css">
     <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/main.css">
     <script type="text/javascript" src="js/jquery-2.2.4.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript" src="js/vue.min.js"></script>
     <script type="text/javascript" src="js/core.js"></script>
 
     <script id="home-template" type="text/x-template">
 
-    <div>
-        <p>{{text}}</p>
-    </div>
+        <div class="container">
+            <div class="columns">
+                <div class="column col-12">
+                    <div class="tile text-center">
+                        <div class="tile-icon">
+                            <div class="example-tile-icon">
+                                <img class="icon centered" src="images/9GAG.svg">
+                            </div>
+                        </div>
+                        <div class="tile-content">
+                            <p class="tile-title">9Gag gifs</p>
+                            <p class="tile-subtitle">Shows the actual 9gag gif count</p>
+                        </div>
+                        <div class="tile-action">
+                            <h2 class="text-ellipsis">{{nineGagCount}}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="column col-12">
+                    <div class="tile text-center">
+                        <div class="tile-icon">
+                            <div class="example-tile-icon">
+                                <img class="icon centered coding-love-image" src="images/thecodinglove.png">
+                            </div>
+                        </div>
+                        <div class="tile-content">
+                            <p class="tile-title">The coding love gifs</p>
+                            <p class="tile-subtitle">Shows the actual coding love gif count</p>
+                        </div>
+                        <div class="tile-action">
+                            <h2 class="text-ellipsis">{{codingLoveCount}}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="column col-4 col-sm-12">
+                    <div class="tile text-center">
+                        <div class="tile-icon">
+                            <div class="example-tile-icon">
+                                <span class="fa fa-rss fa-4x"></span>
+                            </div>
+                        </div>
+                        <div class="tile-content">
+                            <p class="tile-title">Rss configurations</p>
+                            <p class="tile-subtitle">Shows the actual rss configuration count</p>
+                        </div>
+                        <div class="tile-action">
+                            <h2 class="text-ellipsis">{{rssCount}}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="column col-4 col-sm-12">
+                    <div class="tile text-center">
+                        <div class="tile-icon">
+                            <div class="example-tile-icon">
+                                <span class="fa fa-android fa-4x"></span>
+                            </div>
+                        </div>
+                        <div class="tile-content">
+                            <p class="tile-title">Bot count</p>
+                            <p class="tile-subtitle">Shows the actual configured bot count</p>
+                        </div>
+                        <div class="tile-action">
+                            <h2 class="text-ellipsis">{{botCount}}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="column col-4 col-sm-12">
+                    <div class="tile text-center">
+                        <div class="tile-icon">
+                            <div class="example-tile-icon">
+                                <span class="fa fa-table fa-4x"></span>
+                            </div>
+                        </div>
+                        <div class="tile-content">
+                            <p class="tile-title">Active categories</p>
+                            <p class="tile-subtitle">Shows the gif category count</p>
+                        </div>
+                        <div class="tile-action">
+                            <h2 class="text-ellipsis">{{categoryCount}}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
     </script>
 

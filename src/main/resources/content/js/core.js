@@ -14,10 +14,13 @@ Vue.component('landing', {
     },
     data: function () {
         return {
-            text: "This is a sample text",
             categories: [],
             ws: {},
-            overallStatus: {}
+            nineGagCount: 0,
+            codingLoveCount: 0,
+            rssCount: 0,
+            botCount: 0,
+            categoryCount: 0
         }
     },
     methods: {
@@ -39,7 +42,11 @@ Vue.component('landing', {
 
             try {
                 jsonData = JSON.parse(msg.data);
-                this.overallStatus = jsonData;
+                this.nineGagCount = jsonData.nineGagCount;
+                this.codingLoveCount = jsonData.codingLoveCount;
+                this.rssCount = jsonData.rssCount;
+                this.botCount = jsonData.botCount;
+                this.categoryCount = jsonData.categoryCount;
             } catch(ex) {
                 console.error(ex);
             }
