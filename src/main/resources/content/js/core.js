@@ -15,13 +15,43 @@ Vue.component('landing', {
     data: function () {
         return {
             text: "This is a sample text",
-            categories: []
+            categories: [],
+            ws: {},
+            overallStatus: {}
         }
     },
     methods: {
         saveCategories: function (categories) {
             this.categories = categories;
             console.log(categories);
+        },
+        onOpen: function() {
+            console.log("web socket connection open");
+            this.ws.send("Start");
+        },
+        onClose: function() {
+            console.log("socket closed");
+        },
+        onMessage: function(msg) {
+            console.log(msg.data);
+
+            var jsonData = {};
+
+            try {
+                jsonData = JSON.parse(msg.data);
+                this.overallStatus = jsonData;
+            } catch(ex) {
+                console.error(ex);
+            }
+        },
+        connectToSocket: function() {
+            this.ws = new WebSocket(MB.core.wsUrl);
+
+            this.ws.onopen = this.onOpen;
+
+            this.ws.onmessage = this.onMessage;
+
+            this.ws.onclose = this.onClose;
         }
     },
     created: function () {
@@ -29,7 +59,9 @@ Vue.component('landing', {
         $.get({
                   url: vm.url + 'category',
                   success: vm.saveCategories
-              })
+              });
+
+        vm.connectToSocket();
     }
 });
 
@@ -78,20 +110,5 @@ MB.core = {
                                    }
                                }
                            });
-
-        var ws = new WebSocket(this.wsUrl);
-
-        ws.onopen = function () {
-            console.log("web socket connection open");
-            ws.send("Start")
-        };
-
-        ws.onmessage = function (message) {
-            console.log(message.data);
-        };
-
-        ws.onclose = function () {
-            console.log("socket closed");
-        }
     }
 };

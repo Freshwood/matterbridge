@@ -48,7 +48,7 @@
 
     <h5>Matterbridge Service is up and running</h5>
     <p>Navigation is set to: <strong>{{navigation}}</strong></p>
-    <landing v-bind:url="url"></landing>
+    <landing v-if="isHome()" v-bind:url="url"></landing>
 </div>
 
 </body>
