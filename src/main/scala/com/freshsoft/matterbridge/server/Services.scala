@@ -1,6 +1,8 @@
 package com.freshsoft.matterbridge.server
 
+import akka.actor.ActorSystem
 import akka.http.scaladsl.server.Route
+import akka.stream.Materializer
 import com.freshsoft.matterbridge.routing._
 import com.freshsoft.matterbridge.service.database._
 import com.freshsoft.matterbridge.util.{DatabaseConfiguration, FlywayService}
@@ -13,6 +15,10 @@ import scala.concurrent.ExecutionContext
   */
 trait MatterBridgeWebService extends DatabaseConfiguration {
   implicit def executionContext: ExecutionContext
+
+  implicit val materializer: Materializer
+
+  implicit val system: ActorSystem
 
   lazy val nineGagDb: NineGagDataProvider = new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)
 

@@ -83,7 +83,7 @@ MB.core = {
 
         ws.onopen = function () {
             console.log("web socket connection open");
-            ws.send("Socket is open")
+            ws.send("Start")
         };
 
         ws.onmessage = function (message) {
