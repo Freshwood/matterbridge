@@ -2,15 +2,15 @@ package com.freshsoft.matterbridge.routing
 
 import akka.NotUsed
 import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
-import akka.http.scaladsl.model.ws.{Message, TextMessage}
+import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
+import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{Materializer, OverflowStrategy}
-import com.freshsoft.matterbridge.routing.TestActor.{Connected, OutgoingMessage, Tick}
+import com.freshsoft.matterbridge.routing.UserActor.{Connected, OutgoingMessage, Tick}
 import com.freshsoft.matterbridge.service.database.WebService
 import model.DatabaseEntityJsonSupport
-import org.reactivestreams.Publisher
+import spray.json.{JsValue, _}
 
 import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
@@ -27,50 +27,28 @@ class WebContentRoute(webService: WebService)(implicit executionContext: Executi
     getFromResource("content/index.html")
   }
 
-  private val socketConnection: Flow[Message, Message, Any] = Flow[Message] collect {
-    case tm: TextMessage => TextMessage(Source.single("Hello") ++ tm.textStream)
-  }
-
-  private def connection: (ActorRef, Publisher[Message]) =
-    Source
-      .actorRef(16, OverflowStrategy.dropTail)
-      .toMat(Sink.asPublisher[Message](fanout = false))(Keep.both)
-      .run()
-
-  // source is what comes in: browser ws events -> play -> publisher -> userActor
-  // sink is what comes out:  userActor -> websocketOut -> play -> browser ws events
-  /*def flow(): Flow[Message, Message, Any] = {
-    val (webSocketOut: ActorRef, webSocketIn: Publisher[Message]) = connection
-
-    val actor: ActorRef =
-      system.actorOf(Props(new TestActor(webSocketOut, webService)), "WebSocketActor")
-
-    val sink = Sink.actorRef(actor, akka.actor.Status.Success(()))
-
-    val source = Source.fromPublisher(webSocketIn)
-
-    Flow.fromSinkAndSource(sink, source).watchTermination() { (_, future) =>
-      future.foreach { _ =>
-        system.stop(actor)
-      }
-      NotUsed
-    }
-  }*/
-
   def flow: Flow[Message, Message, NotUsed] = {
 
-    val actor: ActorRef = system.actorOf(Props(new TestActor(webService)))
+    val actor: ActorRef = system.actorOf(Props(new UserActor(webService)))
 
     val incomingMessages: Sink[Message, NotUsed] = Flow[Message] map {
-      case TextMessage.Strict(msg) => TestActor.Tick(msg)
+      // transform websocket message to domain message
+      case TextMessage.Strict(msg) => UserActor.Tick(msg)
+      case bm: BinaryMessage =>
+        // ignore binary messages but drain content to avoid the stream being clogged
+        bm.dataStream.runWith(Sink.ignore)
+        Nil
+      case _ => NotUsed
     } to Sink.actorRef(actor, PoisonPill)
 
     val outGoingMessages: Source[Message, NotUsed] = Source
       .actorRef[OutgoingMessage](16, OverflowStrategy.dropTail) mapMaterializedValue { outActor =>
+      // give the User actor a way to send messages out
       actor ! Connected(outActor)
       NotUsed
     } map { someMessage =>
-      TextMessage(someMessage.msg)
+      // transform domain message to web socket message
+      TextMessage(someMessage.data.toString)
     }
 
     Flow.fromSinkAndSource(incomingMessages, outGoingMessages)
@@ -116,7 +94,9 @@ class WebContentRoute(webService: WebService)(implicit executionContext: Executi
     }
 }
 
-class TestActor(service: WebService)(implicit executionContext: ExecutionContext) extends Actor {
+class UserActor(service: WebService)(implicit executionContext: ExecutionContext)
+    extends Actor
+    with DatabaseEntityJsonSupport {
 
   import scala.concurrent.duration._
 
@@ -127,13 +107,12 @@ class TestActor(service: WebService)(implicit executionContext: ExecutionContext
   def connected(outgoing: ActorRef): Receive = {
     case Tick(_) =>
       context.system.scheduler.scheduleOnce(5 second, self, Tick("Start"))
-      service.overallCount.map(result => outgoing ! OutgoingMessage(result.toString))
-    case "Start" => self ! Tick("Hallo")
+      service.overallCount.map(result => outgoing ! OutgoingMessage(result.toJson))
   }
 }
 
-object TestActor {
+object UserActor {
   case class Tick(msg: String)
   case class Connected(outActor: ActorRef)
-  case class OutgoingMessage(msg: String)
+  case class OutgoingMessage(data: JsValue)
 }
