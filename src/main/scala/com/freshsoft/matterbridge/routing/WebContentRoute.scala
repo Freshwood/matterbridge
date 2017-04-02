@@ -1,16 +1,16 @@
 package com.freshsoft.matterbridge.routing
 
 import akka.NotUsed
-import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
+import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{Materializer, OverflowStrategy}
-import com.freshsoft.matterbridge.routing.UserActor.{Connected, OutgoingMessage, Tick}
 import com.freshsoft.matterbridge.service.database.WebService
+import com.freshsoft.matterbridge.socket.UserActor
+import com.freshsoft.matterbridge.socket.UserActor.{Connected, OutgoingMessage}
 import model.DatabaseEntityJsonSupport
-import spray.json.{JsValue, _}
 
 import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
@@ -27,7 +27,7 @@ class WebContentRoute(webService: WebService)(implicit executionContext: Executi
     getFromResource("content/index.html")
   }
 
-  def flow: Flow[Message, Message, NotUsed] = {
+  private def flow: Flow[Message, Message, NotUsed] = {
 
     val actor: ActorRef = system.actorOf(Props(new UserActor(webService)))
 
@@ -41,7 +41,7 @@ class WebContentRoute(webService: WebService)(implicit executionContext: Executi
       case _ => NotUsed
     } to Sink.actorRef(actor, PoisonPill)
 
-    val outGoingMessages: Source[Message, NotUsed] = Source
+    val outgoingMessages: Source[Message, NotUsed] = Source
       .actorRef[OutgoingMessage](16, OverflowStrategy.dropTail) mapMaterializedValue { outActor =>
       // give the User actor a way to send messages out
       actor ! Connected(outActor)
@@ -51,7 +51,7 @@ class WebContentRoute(webService: WebService)(implicit executionContext: Executi
       TextMessage(someMessage.data.toString)
     }
 
-    Flow.fromSinkAndSource(incomingMessages, outGoingMessages)
+    Flow.fromSinkAndSource(incomingMessages, outgoingMessages)
   }
 
   val route: Route = path("index.html") {
@@ -92,27 +92,4 @@ class WebContentRoute(webService: WebService)(implicit executionContext: Executi
     pathSingleSlash {
       index
     }
-}
-
-class UserActor(service: WebService)(implicit executionContext: ExecutionContext)
-    extends Actor
-    with DatabaseEntityJsonSupport {
-
-  import scala.concurrent.duration._
-
-  override def receive: Receive = {
-    case Connected(out) => context.become(connected(out))
-  }
-
-  def connected(outgoing: ActorRef): Receive = {
-    case Tick(_) =>
-      context.system.scheduler.scheduleOnce(5 second, self, Tick("Start"))
-      service.overallCount.map(result => outgoing ! OutgoingMessage(result.toJson))
-  }
-}
-
-object UserActor {
-  case class Tick(msg: String)
-  case class Connected(outActor: ActorRef)
-  case class OutgoingMessage(data: JsValue)
 }
