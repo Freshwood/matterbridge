@@ -54,6 +54,10 @@ sealed trait NineGagDataService extends AbstractDataService[NineGagEntity] {
   def insert(name: String, gifUrl: String, categoryId: UUID): Future[Boolean]
 
   def exists(gifUrl: String): Future[Boolean]
+
+  def last: Future[Seq[NineGagEntity]]
+
+  def delete(id: UUID): Future[Boolean]
 }
 
 sealed trait CodingLoveDataService extends AbstractDataService[CodingLoveEntity] {
@@ -148,6 +152,17 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
       val test = result.getOrElse(0)
       if (test == 0) false else true
     }
+  }
+
+  override def last: Future[Seq[NineGagEntity]] = AsyncDB.withPool { implicit s =>
+    val query = s"SELECT * FROM $table ORDER BY created_at DESC LIMIT 100"
+    SQL(query) map resultSetToEntity list () future ()
+  }
+
+  override def delete(id: UUID): Future[Boolean] = AsyncDB.withPool { implicit s =>
+    val now = DateTime.now()
+    val query = s"Update $table SET deleted_at = '$now' WHERE id = '$id'"
+    SQL(query) update () future () map (_ == 1)
   }
 }
 

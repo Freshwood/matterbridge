@@ -6,10 +6,33 @@ var MB = MB || {
 
 Vue.component('ninegag-config', {
     template: '#ninegag-config-template',
+    props: {
+        url: {
+            type: String,
+            required: true
+        }
+    },
     data: function() {
         return {
-            location: "http://" + window.location.host + "/api/matterbridge"
+            location: "http://" + window.location.host + "/api/matterbridge",
+            lastGifs: []
         }
+    },
+    methods: {
+        storeLastNineGagGifs: function (gifs) {
+            this.lastGifs = gifs;
+        }
+    },
+    filters: {
+      toDate: function (value) {
+          if (!value) return '';
+          var date = new Date(value);
+          return date.toLocaleDateString();
+      }
+    },
+    created: function () {
+        var vm = this;
+        $.get({url: vm.url + "9gag/last", success: vm.storeLastNineGagGifs});
     }
 });
 

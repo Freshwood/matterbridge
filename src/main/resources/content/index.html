@@ -106,18 +106,46 @@
 
     <script id="ninegag-config-template" type="text/x-template">
         <span>
-            <p>How to configure nine gag integration?</p>
-            <p>You need an slash command configuration</p>
+            <h2>How to configure nine gag integration?</h2>
+            <p>You need an <strong>slash command</strong> configuration</p>
 
-            <span>Insert this url in the url option:</span>
+            <span>Insert this <strong>url</strong> in the url option:</span>
 
-            <pre class="code">
-                <code>
-                    <span class="atv">{{location}}</span>
-                </code>
-            </pre>
+
+            <code><span class="atv">{{location}}</span></code>
+
 
             <p>After a successful configuration the service is looking for a stored 9Gag gif</p>
+
+            <!-- divider element -->
+            <div class="divider"></div>
+
+            <div class="columns" v-if="lastGifs.length">
+
+                <h1 class="column col-12 text-center">The last 100 9GAG gifs</h1>
+
+                <div v-for="gif in lastGifs" v-bind:key="gif.id" class="column col-4 col-sm-12">
+
+                    <div class="card">
+                        <div class="card-header">
+                          <div class="card-title">{{gif.name}}</div>
+                          <div class="card-subtitle">{{gif.createdAt | toDate}}</div>
+                        </div>
+                        <div class="card-body">
+                          {{gif.gifUrl}}
+                        </div>
+                        <div class="card-image">
+                          <img class="img-responsive" :src="gif.gifUrl">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div v-else>
+                <h3>Oops, there are no gifs available yet...</h3>
+                <img src="images/9GAG.svg">
+            </div>
 
         </span>
     </script>
@@ -148,13 +176,14 @@
     </header>
 
     <landing v-show="isHome()" v-bind:url="url"></landing>
-    <ninegag-config v-if="isNineGag()"></ninegag-config>
+    <ninegag-config v-if="isNineGag()" v-bind:url="url"></ninegag-config>
 </div>
 
 </body>
 
 <footer class="panel-footer">
     <div class="container grid-960">
+        <hr>
         <div class="pull-right">
             <h3>Matterbridge Service &hearts;<small>(a Mattermost service)</small></h3>
         </div>

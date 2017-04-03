@@ -27,6 +27,10 @@ trait NineGagDataService extends DataService[NineGagEntity] {
   def add(name: String, gifUrl: String, categoryId: UUID): Future[Boolean]
 
   def exists(gifUrl: String): Future[Boolean]
+
+  def last: Future[Seq[NineGagEntity]]
+
+  def delete(id: UUID): Future[Boolean]
 }
 
 trait CodingLoveDataService extends DataService[CodingLoveEntity] {
@@ -117,6 +121,10 @@ class NineGagService(db: NineGagDataProvider, categoryDb: CategoryDataProvider)(
   }
 
   override def exists(gifUrl: String): Future[Boolean] = db.exists(gifUrl)
+
+  override def last: Future[Seq[NineGagEntity]] = db.last
+
+  override def delete(id: UUID): Future[Boolean] = db.delete(id)
 }
 
 class CodingLoveService(db: CodingLoveDataProvider)(

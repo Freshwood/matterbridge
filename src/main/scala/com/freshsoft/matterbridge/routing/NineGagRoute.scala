@@ -39,6 +39,14 @@ class NineGagRoute(service: NineGagService)(implicit executionContext: Execution
         path(JavaUUID) { uuid =>
           get {
             complete(service.byId(uuid))
+          } ~
+            delete {
+              complete(service.delete(uuid) map (_.toString))
+            }
+        } ~
+        path("last") {
+          get {
+            complete(service.last)
           }
         } ~
         path(Remaining) { name =>
