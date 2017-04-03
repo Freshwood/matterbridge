@@ -67,6 +67,8 @@ sealed trait CodingLoveDataService extends AbstractDataService[CodingLoveEntity]
   def insert(name: String, gifUrl: String): Future[Boolean]
 
   def exists(gifUrl: String): Future[Boolean]
+
+  def last: Future[Seq[CodingLoveEntity]]
 }
 
 sealed trait RssConfigDataService extends AbstractDataService[RssEntity] {
@@ -202,6 +204,11 @@ class CodingLoveDataProvider(jdbcUrl: String, databaseUser: String, databaseSecr
       val test = result.getOrElse(0)
       if (test == 0) false else true
     }
+  }
+
+  override def last: Future[Seq[CodingLoveEntity]] = AsyncDB.withPool { implicit s =>
+    val query = s"SELECT * FROM $table ORDER BY created_at DESC LIMIT 100"
+    SQL(query) map resultSetToEntity list () future ()
   }
 }
 

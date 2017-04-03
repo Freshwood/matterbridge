@@ -150,6 +150,52 @@
         </span>
     </script>
 
+    <script id="coding-love-config-template" type="text/x-template">
+        <span>
+            <h2>How to configure the coding love integration?</h2>
+            <p>You need an <strong>slash command</strong> configuration</p>
+
+            <span>Insert this <strong>url</strong> in the url option:</span>
+
+
+            <code><span class="atv">{{location}}</span></code>
+
+
+            <p>After a successful configuration the service is looking for a random coding love gif</p>
+
+            <!-- divider element -->
+            <div class="divider"></div>
+
+            <div class="columns" v-if="lastGifs.length">
+
+                <h1 class="column col-12 text-center">The last 100 Coding Love gifs</h1>
+
+                <div v-for="gif in lastGifs" v-bind:key="gif.id" class="column col-4 col-sm-12">
+
+                    <div class="card">
+                        <div class="card-header">
+                          <div class="card-title">{{gif.name}}</div>
+                          <div class="card-subtitle">{{gif.createdAt | toDate}}</div>
+                        </div>
+                        <div class="card-body">
+                          {{gif.gifUrl}}
+                        </div>
+                        <div class="card-image">
+                          <img class="img-responsive" :src="gif.gifUrl">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div v-else>
+                <h3>Oops, there are no gifs available yet...</h3>
+                <img src="images/thecodinglove.png">
+            </div>
+
+        </span>
+    </script>
+
 </head>
 
 <body>
@@ -177,6 +223,7 @@
 
     <landing v-show="isHome()" v-bind:url="url"></landing>
     <ninegag-config v-if="isNineGag()" v-bind:url="url"></ninegag-config>
+    <coding-love-config v-if="isCodingLove()" v-bind:url="url"></coding-love-config>
 </div>
 
 </body>

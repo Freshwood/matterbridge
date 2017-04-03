@@ -39,6 +39,8 @@ trait CodingLoveDataService extends DataService[CodingLoveEntity] {
   def add(name: String, gifUrl: String): Future[Boolean]
 
   def exists(gifUrl: String): Future[Boolean]
+
+  def last: Future[Seq[CodingLoveEntity]]
 }
 
 trait RssConfigDataService extends DataService[RssEntity] {
@@ -147,6 +149,8 @@ class CodingLoveService(db: CodingLoveDataProvider)(
   }
 
   override def exists(gifUrl: String): Future[Boolean] = db.exists(gifUrl)
+
+  override def last: Future[Seq[CodingLoveEntity]] = db.last
 }
 
 class RssConfigService(db: RssConfigDataProvider)(implicit val executionContext: ExecutionContext)

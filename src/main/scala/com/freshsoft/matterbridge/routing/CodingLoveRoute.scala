@@ -41,6 +41,11 @@ class CodingLoveRoute(service: CodingLoveService)(implicit executionContext: Exe
             complete(service.byId(uuid))
           }
         } ~
+        path("last") {
+          get {
+            complete(service.last)
+          }
+        } ~
         path(Remaining) { name =>
           get {
             complete(service.byName(name))

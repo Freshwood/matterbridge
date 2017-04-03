@@ -1,8 +1,47 @@
 var MB = MB || {
         errorHandler: function (event, jqxhr, settings, thrownError) {
             console.log("Could not communicate: " + thrownError);
-        }
+        },
+        toDateFilter: function(value) {
+            var retVal = '';
+            if (!value) return retVal;
+            try {
+                var date = new Date(value);
+            } catch(ex) {
+                return retVal;
+            }
+            return date.toLocaleDateString();
+        },
+        apiLocation: "http://" + window.location.host + "/api/matterbridge"
     };
+
+Vue.component('coding-love-config', {
+    template: '#coding-love-config-template',
+    props: {
+        url: {
+            type: String,
+            required: true
+        }
+    },
+    data: function() {
+        return {
+            location: MB.apiLocation,
+            lastGifs: []
+        }
+    },
+    methods: {
+        storeCodingLoveGifs: function (gifs) {
+            this.lastGifs = gifs;
+        }
+    },
+    filters: {
+        toDate: MB.toDateFilter
+    },
+    created: function () {
+        var vm = this;
+        $.get({url: vm.url + "codingLove/last", success: vm.storeCodingLoveGifs});
+    }
+});
 
 Vue.component('ninegag-config', {
     template: '#ninegag-config-template',
@@ -14,7 +53,7 @@ Vue.component('ninegag-config', {
     },
     data: function() {
         return {
-            location: "http://" + window.location.host + "/api/matterbridge",
+            location: MB.apiLocation,
             lastGifs: []
         }
     },
@@ -24,11 +63,7 @@ Vue.component('ninegag-config', {
         }
     },
     filters: {
-      toDate: function (value) {
-          if (!value) return '';
-          var date = new Date(value);
-          return date.toLocaleDateString();
-      }
+      toDate: MB.toDateFilter
     },
     created: function () {
         var vm = this;
