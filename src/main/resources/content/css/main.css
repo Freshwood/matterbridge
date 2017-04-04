@@ -3,6 +3,16 @@
     max-height: 100px;
 }
 
-body {
-    background-color: #f6faff;
+
+#background-image::after {
+    content: "";
+    position: fixed;
+    width: 100%;
+    z-index: -1;
+    height: 100%;
+    opacity: 0.05;
+    background-size: 40em;
+    background-image: url(/images/MatterBridge.svg);
+    background-repeat: no-repeat;
+    background-position: 50%;
 }
