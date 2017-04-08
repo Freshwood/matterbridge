@@ -2,18 +2,48 @@ var MB = MB || {
         errorHandler: function (event, jqxhr, settings, thrownError) {
             console.log("Could not communicate: " + thrownError);
         },
-        toDateFilter: function(value) {
+        toDateFilter: function (value) {
             var retVal = '';
-            if (!value) return retVal;
+            if (!value) {
+                return retVal;
+            }
             try {
                 var date = new Date(value);
-            } catch(ex) {
+            } catch (ex) {
                 return retVal;
             }
             return date.toLocaleDateString();
         },
         apiLocation: "http://" + window.location.host + "/api/matterbridge"
     };
+
+Vue.component('rss-config', {
+    template: '#rss-config-template',
+    props: {
+        url: {
+            type: String,
+            required: true
+        }
+    },
+    data: function () {
+        return {
+            rssEntries: []
+        }
+    },
+    methods: {
+        storeRssEntries: function (rssEntries) {
+            this.rssEntries = rssEntries;
+        }
+    },
+    filters: {
+        toDate: MB.toDateFilter
+    },
+    created: function () {
+        var vm = this;
+        $.get({url: vm.url + "rss/", success: vm.storeRssEntries});
+    }
+
+});
 
 Vue.component('coding-love-config', {
     template: '#coding-love-config-template',
@@ -23,7 +53,7 @@ Vue.component('coding-love-config', {
             required: true
         }
     },
-    data: function() {
+    data: function () {
         return {
             location: MB.apiLocation,
             lastGifs: []
@@ -51,7 +81,7 @@ Vue.component('ninegag-config', {
             required: true
         }
     },
-    data: function() {
+    data: function () {
         return {
             location: MB.apiLocation,
             lastGifs: []
@@ -63,7 +93,7 @@ Vue.component('ninegag-config', {
         }
     },
     filters: {
-      toDate: MB.toDateFilter
+        toDate: MB.toDateFilter
     },
     created: function () {
         var vm = this;
@@ -96,14 +126,14 @@ Vue.component('landing', {
             this.categories = categories;
             console.log(categories);
         },
-        onOpen: function() {
+        onOpen: function () {
             console.log("web socket connection open");
             this.ws.send("Start");
         },
-        onClose: function() {
+        onClose: function () {
             console.log("socket closed");
         },
-        onMessage: function(msg) {
+        onMessage: function (msg) {
             console.log(msg.data);
 
             var jsonData = {};
@@ -115,11 +145,11 @@ Vue.component('landing', {
                 this.rssCount = jsonData.rssCount;
                 this.botCount = jsonData.botCount;
                 this.categoryCount = jsonData.categoryCount;
-            } catch(ex) {
+            } catch (ex) {
                 console.error(ex);
             }
         },
-        connectToSocket: function() {
+        connectToSocket: function () {
             this.ws = new WebSocket(MB.core.wsUrl);
 
             this.ws.onopen = this.onOpen;
@@ -130,7 +160,7 @@ Vue.component('landing', {
         }
     },
     watch: {
-        nineGagCount: function() {
+        nineGagCount: function () {
             var vm = this;
             vm.showBold = true;
             setTimeout(function () {
