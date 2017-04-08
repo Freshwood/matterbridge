@@ -9,36 +9,36 @@ import scala.language.postfixOps
 	*/
 trait MatterBridgeConfigHolder {
 
-  val config: Config = ConfigFactory.load()
+  lazy val config: Config = ConfigFactory.load()
 }
 
 /**
 	* The matter bridge server configuration
 	*/
 trait MatterBridgeServerConfig extends MatterBridgeConfigHolder {
-  val host: String = config.getString("http.host")
-  val port: Int = config.getInt("http.port")
+  lazy val host: String = config.getString("http.host")
+  lazy val port: Int = config.getInt("http.port")
 }
 
 /**
 	* The trait which includes all matterbridge integration configurations
 	*/
 trait MatterBridgeConfig extends MatterBridgeServerConfig {
-  val codingLoveCommand: String =
+  lazy val codingLoveCommand: String =
     config.getString("matterbridge.integrations.codinglove.command")
-  val codingLoveResponseType: String =
+  lazy val codingLoveResponseType: String =
     config.getString("matterbridge.integrations.codinglove.response_type")
-  val nineGagCommand: String =
+  lazy val nineGagCommand: String =
     config.getString("matterbridge.integrations.ninegag.command")
-  val nineGagResponseType: String =
+  lazy val nineGagResponseType: String =
     config.getString("matterbridge.integrations.ninegag.response_type")
-  val newsriverApiToken: String =
+  lazy val newsriverApiToken: String =
     config.getString("matterbridge.integrations.newsriver.api_token")
-  val newsriverIncomingTokenUrl: String =
+  lazy val newsriverIncomingTokenUrl: String =
     config.getString("matterbridge.integrations.newsriver.incoming_token")
-  val newsriverCommand: String =
+  lazy val newsriverCommand: String =
     config.getString("matterbridge.integrations.newsriver.command")
-  val newsriverResponseType: String =
+  lazy val newsriverResponseType: String =
     config.getString("matterbridge.integrations.newsriver.response_type")
 }
 

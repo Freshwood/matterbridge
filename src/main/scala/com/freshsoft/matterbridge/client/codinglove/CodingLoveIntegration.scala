@@ -48,7 +48,7 @@ object CodingLoveIntegration
     Http().singleRequest(HttpRequest(uri = uri)).flatMap {
       case HttpResponse(StatusCodes.OK, _, entity, _) =>
         entity.dataBytes.runFold(ByteString(""))(_ ++ _) map { response =>
-          buildSlashResponse(response.decodeString("UTF-8"), request)
+          buildSlashResponse((response.decodeString("UTF-8"), request))
         }
       case HttpResponse(StatusCodes.Found, headers, _, _) =>
         val result: Future[Option[SlashResponse]] = headers.find(_.isInstanceOf[Location]) map {

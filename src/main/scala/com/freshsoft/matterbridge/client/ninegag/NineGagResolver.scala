@@ -12,7 +12,7 @@ import model.MatterBridgeEntities.NineGagResolveCommand
 	*/
 class NineGagResolver extends Actor {
 
-  private val nineGagBaseUrl = "http://9gag.com/"
+  private val nineGagBaseUrl = "https://9gag.com/"
 
   private var actualUrl = nineGagBaseUrl
 

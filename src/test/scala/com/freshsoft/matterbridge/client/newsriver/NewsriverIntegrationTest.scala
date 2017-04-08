@@ -23,9 +23,9 @@ class NewsriverIntegrationTest
     "Return a slash response when a friendly request was sent" in {
       val result = NewsriverIntegration.getResult(rightRequest)
 
-      result onSuccess {
+      result foreach {
         case Some(x) => x shouldBe a[SlashResponse]
-        case None => fail("There should be `SlashResponse` available")
+        case _ => fail("There should be `SlashResponse` available")
       }
     }
 

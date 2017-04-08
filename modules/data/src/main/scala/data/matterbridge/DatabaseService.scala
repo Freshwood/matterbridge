@@ -150,10 +150,7 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
 
   override def exists(gifUrl: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
     val query = s"SELECT count(*) as count FROM $table WHERE gifurl = '$gifUrl'"
-    SQL(query) map resultSetToCount single () future () map { result =>
-      val test = result.getOrElse(0)
-      if (test == 0) false else true
-    }
+    SQL(query) map resultSetToCount single () future () map { _.getOrElse(0l) > 0l }
   }
 
   override def last: Future[Seq[NineGagEntity]] = AsyncDB.withPool { implicit s =>
@@ -200,10 +197,7 @@ class CodingLoveDataProvider(jdbcUrl: String, databaseUser: String, databaseSecr
 
   override def exists(gifUrl: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
     val query = s"SELECT count(*) as count FROM $table WHERE gifurl = '$gifUrl'"
-    SQL(query) map resultSetToCount single () future () map { result =>
-      val test = result.getOrElse(0)
-      if (test == 0) false else true
-    }
+    SQL(query) map resultSetToCount single () future () map { _.getOrElse(0l) > 0l }
   }
 
   override def last: Future[Seq[CodingLoveEntity]] = AsyncDB.withPool { implicit s =>
@@ -247,10 +241,7 @@ class RssConfigDataProvider(jdbcUrl: String, databaseUser: String, databaseSecre
 
   override def exists(rssName: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
     val query = s"SELECT count(*) as count FROM $table WHERE name = '$rssName'"
-    SQL(query) map resultSetToCount single () future () map { result =>
-      val test = result.getOrElse(0)
-      if (test == 0) false else true
-    }
+    SQL(query) map resultSetToCount single () future () map { _.getOrElse(0l) > 0l }
   }
 
   override def all: Future[Seq[RssEntity]] = AsyncDB.withPool { implicit s =>
@@ -308,10 +299,7 @@ class BotDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: Str
 
   override def exists(botName: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
     val query = s"SELECT count(*) as count FROM $table WHERE name = '$botName'"
-    SQL(query) map resultSetToCount single () future () map { result =>
-      val test = result.getOrElse(0)
-      if (test == 0) false else true
-    }
+    SQL(query) map resultSetToCount single () future () map { _.getOrElse(0l) > 0l }
   }
 
   override def all: Future[Seq[BotEntity]] = AsyncDB.withPool { implicit s =>
@@ -385,10 +373,7 @@ class CategoryDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret
 
   override def exists(categoryName: String): Future[Boolean] = AsyncDB.withPool { implicit s =>
     val query = s"SELECT count(*) as count FROM $table WHERE name = '$categoryName'"
-    SQL(query) map resultSetToCount single () future () map { result =>
-      val test = result.getOrElse(0)
-      if (test == 0) false else true
-    }
+    SQL(query) map resultSetToCount single () future () map { _.getOrElse(0l) > 0l }
   }
 
   override def all: Future[Seq[CategoryEntity]] = AsyncDB.withPool { implicit s =>

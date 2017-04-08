@@ -17,8 +17,9 @@ class CodingLoveIntegrationTest extends WordSpec with Matchers with MatterBridge
     "Return a slash response when a friendly request was sent" in {
       val result = CodingLoveIntegration.getResult(rightRequest)
 
-      result onSuccess {
+      result foreach {
         case Some(x) => x shouldBe a[SlashResponse]
+        case _ => fail("There should be `SlashResponse` available")
       }
     }
   }

@@ -18,8 +18,8 @@ val database: Seq[ModuleID] = Seq(
 
 val testLibs: Seq[ModuleID] = Seq(
   "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % "test",
-  "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
-  "org.scalamock" %% "scalamock-scalatest-support" % scalaMockVersion % "test"
+  "org.scalatest" % "scalatest_2.11" % scalaTestVersion % "test",
+  "org.scalamock" % "scalamock-scalatest-support_2.11" % scalaMockVersion % "test"
 )
 
 val serviceLibs = Seq(
@@ -28,16 +28,38 @@ val serviceLibs = Seq(
   "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
-  "net.ruippeixotog" %% "scala-scraper" % scalaScrapperVersion
+  "net.ruippeixotog" % "scala-scraper_2.11" % scalaScrapperVersion
 )
 
-def settings(projectName: String) = Seq(
-  organization := "freshsoft",
-  name := projectName,
-  version := "1.5.0",
-  scalaVersion := "2.11.8",
-  resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+lazy val codeQualitySettings = Seq(
+  ivyLoggingLevel := UpdateLogging.DownloadOnly,
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-encoding",
+    "UTF-8", // yes, this is 2 args
+    "-feature",
+    "-unchecked",
+    "-Ywarn-numeric-widen",
+    //"-Ywarn-value-discard",
+    "-Xfatal-warnings",
+    "-Xlint",
+    "-Yno-adapted-args",
+    "-Xfuture"
+  ),
+  coverageEnabled in Test := true,
+  coverageMinimum in Test := 80,
+  coverageFailOnMinimum in Test := false,
+  coverageHighlighting in Test := true
 )
+
+def settings(projectName: String) =
+  Seq(
+    organization := "freshsoft",
+    name := projectName,
+    version := "1.5.0",
+    scalaVersion := "2.12.1",
+    resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+  ) ++ codeQualitySettings
 
 lazy val model = (project in file("modules/model"))
   .settings(settings("matter-bridge-model"), libraryDependencies ++= serviceLibs)
