@@ -200,17 +200,66 @@
 
         <span>
 
+            <div>
+              <!-- form input control -->
+              <div class="form-group">
+                <label class="form-label" for="rss-config-name">Name</label>
+                <input class="form-input" type="text" id="rss-config-name" v-model="rssModel.name" />
+              </div>
 
+              <div class="form-group">
+                <label class="form-label" for="rss-config-url">RSS url</label>
+                <input class="form-input" type="text" id="rss-config-url" v-model="rssModel.rssUrl" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="rss-config-token">Incoming token</label>
+                <input class="form-input" type="text" id="rss-config-token" v-model="rssModel.incomingToken"  />
+              </div>
+
+              <div class="form-group">
+                  <button class="btn btn-primary" type="submit" :disabled="!formOk" v-on:click="submitForm()">Submit</button>
+                  <button class="btn btn-link" type="reset">Cancel</button>
+              </div>
+
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="columns" v-if="rssEntries.length">
+
+                <h1 class="column col-12 text-center">Actual rss reader configurations</h1>
+
+                <div v-for="rss in rssEntries" v-bind:key="rss.id" class="column col-4 col-sm-12">
+
+                    <div class="card">
+                        <div class="card-header">
+                          <div class="card-title">{{rss.name}}</div>
+                          <div class="card-subtitle">{{rss.rssUrl}}</div>
+                        </div>
+                        <div class="card-body">
+                          <p>Token: <span class="text-bold">{{rss.incomingToken | truncate}}</span></p>
+                          <p>Last run: <span class="text-bold">{{rss.updatedAt | toDate}}</span></p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div v-else>
+                <h3>Oops, there are no rss configurations to display ...</h3>
+                <span class="fa fa-rss fa-4x"></span>
+            </div>
 
         </span>
-
-
 
     </script>
 
 </head>
 
 <body>
+
+
 
 <div id="background-image"></div>
 
@@ -238,6 +287,7 @@
     <landing v-show="isHome()" v-bind:url="url"></landing>
     <ninegag-config v-if="isNineGag()" v-bind:url="url"></ninegag-config>
     <coding-love-config v-if="isCodingLove()" v-bind:url="url"></coding-love-config>
+    <rss-config v-if="isRss()" v-bind:url="url"></rss-config>
 </div>
 
 </body>

@@ -27,16 +27,48 @@ Vue.component('rss-config', {
     },
     data: function () {
         return {
-            rssEntries: []
+            rssEntries: [],
+            rssModel: {
+                name: 'RSS name',
+                rssUrl: "RSS url",
+                incomingToken: '...'
+            }
         }
     },
     methods: {
         storeRssEntries: function (rssEntries) {
             this.rssEntries = rssEntries;
+        },
+        submitForm: function () {
+            var vm = this;
+            $.post({
+                url: vm.url + 'rss/add',
+                contentType: 'application/json',
+                data: JSON.stringify(vm.rssModel),
+                success: vm.rssEntryAdded
+                   });
+        },
+        rssEntryAdded: function(result) {
+            alert(result);
         }
     },
+    computed: {
+      formOk: function() {
+          var model = this.rssModel;
+          return model.name.length > 3 && model.rssUrl.indexOf('http') !== -1 && model.incomingToken.length > 5;
+      }
+    },
     filters: {
-        toDate: MB.toDateFilter
+        toDate: MB.toDateFilter,
+        truncate: function(value) {
+            var retVal = value;
+
+            if (retVal.length > 20) {
+                retVal = retVal.substring(0, 20) + '...';
+            }
+
+            return retVal;
+        }
     },
     created: function () {
         var vm = this;
