@@ -39,11 +39,11 @@ object MatterBridgeServer
       system.terminate()
   }
 
-  system.scheduler.schedule(0 milliseconds,
+  system.scheduler.schedule(1 seconds,
                             15 seconds,
                             NineGagIntegration.nineGagResolver,
                             NineGagResolveCommand())
 
   system.scheduler
-    .schedule(0 milliseconds, 15 minutes, RssIntegration.rssReaderActor, RssReaderActorModel.Start)
+    .schedule(5 seconds, 15 minutes, RssIntegration.rssReaderActor, RssReaderActorModel.Start)
 }

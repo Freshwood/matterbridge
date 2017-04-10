@@ -36,6 +36,10 @@ Vue.component('rss-config', {
         }
     },
     methods: {
+        loadRssEntries: function() {
+            var vm = this;
+            $.get({url: vm.url + "rss/", success: vm.storeRssEntries});
+        },
         storeRssEntries: function (rssEntries) {
             this.rssEntries = rssEntries;
         },
@@ -48,8 +52,8 @@ Vue.component('rss-config', {
                 success: vm.rssEntryAdded
                    });
         },
-        rssEntryAdded: function(result) {
-            alert(result);
+        rssEntryAdded: function() {
+            this.loadRssEntries();
         }
     },
     computed: {
@@ -63,16 +67,15 @@ Vue.component('rss-config', {
         truncate: function(value) {
             var retVal = value;
 
-            if (retVal.length > 20) {
-                retVal = retVal.substring(0, 20) + '...';
+            if (retVal.length > 25) {
+                retVal = retVal.substring(0, 25) + '...';
             }
 
             return retVal;
         }
     },
     created: function () {
-        var vm = this;
-        $.get({url: vm.url + "rss/", success: vm.storeRssEntries});
+        this.loadRssEntries();
     }
 
 });
