@@ -17,6 +17,59 @@ var MB = MB || {
         apiLocation: "http://" + window.location.host + "/api/matterbridge"
     };
 
+Vue.component('bot-config', {
+    template: '#bot-config-template',
+    props: {
+        url: {
+            type: String,
+            required: true
+        }
+    },
+    data: function () {
+        return {
+            bots: [],
+            botResources: [],
+            activeBotId: ''
+        }
+    },
+    methods: {
+        loadBots: function() {
+            var vm = this;
+            $.get({url: vm.url + "bot/", success: vm.storeBots});
+        },
+        loadResources: function () {
+            var vm = this;
+            $.get({url: vm.url + "bot/allResources", success: vm.storeResources});
+        },
+        storeBots: function (bots) {
+            this.bots = bots;
+        },
+        storeResources: function (resources) {
+            this.botResources = resources;
+        },
+        updateBotId: function (botId) {
+            this.activeBotId = botId;
+        }
+    },
+    computed: {
+        resources: function() {
+            var vm = this;
+            var resources = this.botResources.filter(function(element) {
+                return element.botId === vm.activeBotId;
+            });
+
+            return resources;
+        }
+    },
+    filters: {
+        toDate: MB.toDateFilter
+    },
+    created: function () {
+        this.loadBots();
+        this.loadResources();
+    }
+});
+
 Vue.component('rss-config', {
     template: '#rss-config-template',
     props: {
@@ -77,7 +130,6 @@ Vue.component('rss-config', {
     created: function () {
         this.loadRssEntries();
     }
-
 });
 
 Vue.component('coding-love-config', {

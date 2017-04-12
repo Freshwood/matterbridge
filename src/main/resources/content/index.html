@@ -255,6 +255,49 @@
 
     </script>
 
+    <script id="bot-config-template" type="text/x-template">
+        <span>
+
+            <div v-if="bots.length" class="columns">
+
+                <div class="column col-4 col-xs-12" v-for="bot in bots" :key="bot.id">
+                    <div class="panel bot-panel" v-on:click="updateBotId(bot.id)">
+                        <div class="panel-header text-center">
+                          <figure class="avatar avatar-lg">
+                            <span class="fa fa-android fa-2x"></span>
+                          </figure>
+                          <div class="panel-title mt-10">{{bot.name}}</div>
+                          <div class="panel-subtitle">{{bot.createdAt | toDate}}</div>
+                        </div>
+                      <div class="panel-body">
+                        <div v-for="resource in resources" :key="resource.id" class="tile tile-centered">
+                            <div class="tile-content">
+                              <div class="tile-title">{{resource.value}}</div>
+                              <div class="tile-subtitle">{{resource.createdAt | toDate}}</div>
+                            </div>
+                            <div class="tile-action">
+                              <button class="btn btn-link btn-action btn-lg"><i class="fa fa-trash"></i></button>
+                            </div>
+                        </div>
+                      </div>
+                        <div class="panel-footer">
+                          <div class="input-group">
+                            <input type="text" class="form-input" placeholder="Hello">
+                            <button class="btn btn-primary input-group-btn">Save</button>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-else>
+                <h3>Oops, there are no bots configured yet...</h3>
+                <span class="fa fa-android fa-4x"></span>
+            </div>
+
+        </span>
+    </script>
+
 </head>
 
 <body>
@@ -288,6 +331,7 @@
     <ninegag-config v-if="isNineGag()" v-bind:url="url"></ninegag-config>
     <coding-love-config v-if="isCodingLove()" v-bind:url="url"></coding-love-config>
     <rss-config v-if="isRss()" v-bind:url="url"></rss-config>
+    <bot-config v-if="isBot()" v-bind:url="url"></bot-config>
 </div>
 
 </body>

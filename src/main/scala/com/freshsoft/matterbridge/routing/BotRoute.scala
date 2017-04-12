@@ -3,7 +3,7 @@ package com.freshsoft.matterbridge.routing
 import akka.http.scaladsl.server.Directives.{path, _}
 import akka.http.scaladsl.server.Route
 import com.freshsoft.matterbridge.service.database.BotService
-import model.{BotOrCategoryUpload, DatabaseEntityJsonSupport}
+import model.{BotOrCategoryUpload, BotResourceUpload, DatabaseEntityJsonSupport}
 
 import scala.concurrent.ExecutionContext
 
@@ -33,7 +33,12 @@ class BotRoute(service: BotService)(implicit executionContext: ExecutionContext)
               complete {
                 service.add(entity.name) map (_.toString)
               }
-            }
+            } ~
+              entity(as[BotResourceUpload]) { entity =>
+                complete {
+                  service.addResource(entity.botId, entity.name) map (_.toString)
+                }
+              }
           }
         } ~
         path("allResources") {

@@ -3,7 +3,6 @@
     max-height: 100px;
 }
 
-
 #background-image::after {
     content: "";
     position: fixed;
@@ -15,4 +14,8 @@
     background-image: url(/images/MatterBridge.svg);
     background-repeat: no-repeat;
     background-position: 50%;
+}
+
+.bot-panel:hover {
+    background-color: aliceblue;
 }
