@@ -41,10 +41,13 @@ class BotRoute(service: BotService)(implicit executionContext: ExecutionContext)
               }
           }
         } ~
-        path("resources" / JavaUUID) { botId =>
+        path("resources" / JavaUUID) { id =>
           get {
-            complete(service.allResources(botId))
-          }
+            complete(service.allResources(id))
+          } ~
+            delete {
+              complete(service.deleteResource(id) map (_.toString))
+            }
         } ~
         path("exists" / Remaining) { search =>
           get {
@@ -54,7 +57,10 @@ class BotRoute(service: BotService)(implicit executionContext: ExecutionContext)
         path(JavaUUID) { uuid =>
           get {
             complete(service.byId(uuid))
-          }
+          } ~
+            delete {
+              complete(service.delete(uuid) map (_.toString))
+            }
         }
     }
   }

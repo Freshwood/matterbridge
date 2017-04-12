@@ -282,7 +282,9 @@
                             <span class="fa fa-android fa-2x"></span>
                           </figure>
                             <figure v-else class="avatar avatar-lg">
-                            <button class="btn btn-link btn-action btn-lg"><i class="fa fa-trash fa-2x danger"></i></button>
+                            <button v-on:click="deleteBot(bot.id)" class="btn btn-link btn-action btn-lg">
+                                <i class="fa fa-trash fa-2x danger"></i>
+                            </button>
                           </figure>
                           <div class="panel-title mt-10">{{bot.name}}</div>
                           <div class="panel-subtitle">{{bot.createdAt | toDate}}</div>
@@ -294,7 +296,9 @@
                               <div class="tile-subtitle">{{resource.createdAt | toDate}}</div>
                             </div>
                             <div class="tile-action">
-                              <button class="btn btn-link btn-action btn-lg"><i class="fa fa-trash danger"></i></button>
+                              <button v-on:click="deleteResource(resource.id)" class="btn btn-link btn-action btn-lg">
+                                  <i class="fa fa-trash danger"></i>
+                              </button>
                             </div>
                         </div>
                         <div class="input-group">

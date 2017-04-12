@@ -97,6 +97,14 @@ Vue.component('bot-config', {
         },
         clearHoveId: function () {
             this.hoverBotId = '';
+        },
+        deleteBot: function (botId) {
+            var vm = this;
+            $.ajax({url: vm.url + 'bot/' + botId, type: 'DELETE', success: vm.loadBots});
+        },
+        deleteResource: function (resourceId) {
+            var vm = this;
+            $.ajax({url: vm.url + 'bot/resources/' + resourceId, type: 'DELETE', success: vm.loadResources});
         }
     },
     computed: {

@@ -19,6 +19,8 @@ trait BaseDataService[S <: DbEntity] {
 
   def byId(id: UUID): Future[Option[S]]
 
+  def delete(id: UUID): Future[Boolean]
+
   def count: Future[Long]
 
   def byName(name: String): Future[Seq[S]]
@@ -45,6 +47,12 @@ sealed abstract class AbstractDataService[S <: DbEntity](
     SQL(query) map resultSetToCount single () future () map
       (_.getOrElse(0))
   }
+
+  override def delete(id: UUID): Future[Boolean] = AsyncDB.withPool { implicit s =>
+    val now = DateTime.now()
+    val query = s"Update $table SET deleted_at = '$now' WHERE id = '$id'"
+    SQL(query) update () future () map (_ == 1)
+  }
 }
 
 sealed trait NineGagDataService extends AbstractDataService[NineGagEntity] {
@@ -56,8 +64,6 @@ sealed trait NineGagDataService extends AbstractDataService[NineGagEntity] {
   def exists(gifUrl: String): Future[Boolean]
 
   def last: Future[Seq[NineGagEntity]]
-
-  def delete(id: UUID): Future[Boolean]
 }
 
 sealed trait CodingLoveDataService extends AbstractDataService[CodingLoveEntity] {
@@ -103,6 +109,8 @@ sealed trait BotDataService extends AbstractDataService[BotEntity] {
   def insertResource(botId: UUID, value: String): Future[Boolean]
 
   def allResources(botId: UUID): Future[Seq[BotEntityResource]]
+
+  def deleteResource(id: UUID): Future[Boolean]
 }
 
 sealed trait CategoryDataService extends AbstractDataService[CategoryEntity] {
@@ -159,12 +167,6 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
   override def last: Future[Seq[NineGagEntity]] = AsyncDB.withPool { implicit s =>
     val query = s"SELECT * FROM $table ORDER BY created_at DESC LIMIT 100"
     SQL(query) map resultSetToEntity list () future ()
-  }
-
-  override def delete(id: UUID): Future[Boolean] = AsyncDB.withPool { implicit s =>
-    val now = DateTime.now()
-    val query = s"Update $table SET deleted_at = '$now' WHERE id = '$id'"
-    SQL(query) update () future () map (_ == 1)
   }
 }
 
@@ -315,7 +317,7 @@ class BotDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: Str
   }
 
   override def all: Future[Seq[BotEntity]] = AsyncDB.withPool { implicit s =>
-    val query = s"SELECT * FROM $table"
+    val query = s"SELECT * FROM $table WHERE deleted_at IS NULL"
     SQL(query) map resultSetToEntity list () future ()
   }
 
@@ -347,8 +349,14 @@ class BotDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret: Str
   override def allResources(botId: UUID): Future[Seq[BotEntityResource]] = AsyncDB.withPool {
     implicit s =>
       val query =
-        s"SELECT r.* FROM $table s INNER JOIN $crossTable r ON s.id = r.bot_id WHERE s.id = '$botId'"
+        s"SELECT r.* FROM $table s INNER JOIN $crossTable r ON s.id = r.bot_id WHERE s.id = '$botId' AND r.deleted_at IS NULL"
       SQL(query) map resultSetToBotResourceEntity list () future ()
+  }
+
+  override def deleteResource(id: UUID): Future[Boolean] = AsyncDB.withPool { implicit s =>
+    val now = DateTime.now()
+    val query = s"Update $crossTable SET deleted_at = '$now' WHERE id = '$id'"
+    SQL(query) update () future () map (_ == 1)
   }
 }
 

@@ -16,6 +16,8 @@ sealed trait DataService[S <: DbEntity] {
 
   def byId(id: UUID): Future[Option[S]]
 
+  def delete(id: UUID): Future[Boolean]
+
   def byName(name: String): Future[Seq[S]]
 
   def count: Future[Long]
@@ -29,8 +31,6 @@ trait NineGagDataService extends DataService[NineGagEntity] {
   def exists(gifUrl: String): Future[Boolean]
 
   def last: Future[Seq[NineGagEntity]]
-
-  def delete(id: UUID): Future[Boolean]
 }
 
 trait CodingLoveDataService extends DataService[CodingLoveEntity] {
@@ -73,6 +73,8 @@ trait BotDataService extends DataService[BotEntity] {
   def allResources(botId: UUID): Future[Seq[BotEntityResource]]
 
   def randomBotMessage(botId: UUID): Future[Option[BotEntityResource]]
+
+  def deleteResource(id: UUID): Future[Boolean]
 }
 
 trait CategoryDataService extends DataService[CategoryEntity] {
@@ -101,6 +103,8 @@ sealed abstract class AbstractDataService[A <: DbEntity, S <: BaseDataService[A]
   override def count: Future[Long] = db.count
 
   override def byName(name: String): Future[Seq[A]] = db.byName(name)
+
+  override def delete(id: UUID): Future[Boolean] = db.delete(id)
 }
 
 class NineGagService(db: NineGagDataProvider, categoryDb: CategoryDataProvider)(
@@ -125,8 +129,6 @@ class NineGagService(db: NineGagDataProvider, categoryDb: CategoryDataProvider)(
   override def exists(gifUrl: String): Future[Boolean] = db.exists(gifUrl)
 
   override def last: Future[Seq[NineGagEntity]] = db.last
-
-  override def delete(id: UUID): Future[Boolean] = db.delete(id)
 }
 
 class CodingLoveService(db: CodingLoveDataProvider)(
@@ -209,6 +211,8 @@ class BotService(db: BotDataProvider)(implicit val executionContext: ExecutionCo
         None
       }
     }
+
+  override def deleteResource(id: UUID) = db.deleteResource(id)
 }
 
 class CategoryService(db: CategoryDataProvider)(implicit val executionContext: ExecutionContext)
