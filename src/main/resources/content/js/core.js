@@ -29,17 +29,20 @@ Vue.component('bot-config', {
         return {
             bots: [],
             botResources: [],
-            activeBotId: ''
+            activeBotId: '',
+            hoverBotId: '',
+            botName: '',
+            resourceValue: ''
         }
     },
     methods: {
-        loadBots: function() {
+        loadBots: function () {
             var vm = this;
             $.get({url: vm.url + "bot/", success: vm.storeBots});
         },
         loadResources: function () {
             var vm = this;
-            $.get({url: vm.url + "bot/allResources", success: vm.storeResources});
+            $.get({url: vm.url + "bot/resources/" + vm.activeBotId, success: vm.storeResources});
         },
         storeBots: function (bots) {
             this.bots = bots;
@@ -48,17 +51,60 @@ Vue.component('bot-config', {
             this.botResources = resources;
         },
         updateBotId: function (botId) {
-            this.activeBotId = botId;
+            if (this.activeBotId !== botId) {
+                this.activeBotId = botId;
+                this.loadResources();
+            }
+        },
+        activeBody: function (botId) {
+            return botId === this.activeBotId;
+        },
+        hoverBody: function (botId) {
+            return botId === this.hoverBotId;
+        },
+        saveResource: function () {
+            var vm = this;
+            if (this.activeBotId !== undefined && this.isInputValid()) {
+                $.post(
+                    {
+                        url: vm.url + 'bot/add',
+                        contentType: 'application/json',
+                        data: JSON.stringify({botId: vm.activeBotId, name: vm.resourceValue}),
+                        success: vm.loadResources
+                    });
+            }
+        },
+        isInputValid: function () {
+            return this.resourceValue.length > 5;
+        },
+        isBotNameSet: function () {
+            return this.botName.length > 3;
+        },
+        addNewBot: function () {
+            var vm = this;
+            if (vm.isBotNameSet()) {
+                $.post(
+                    {
+                        url: vm.url + 'bot/add',
+                        contentType: 'application/json',
+                        data: JSON.stringify({name: vm.botName}),
+                        success: vm.loadBots
+                    });
+            }
+        },
+        updateHoverId: function (botId) {
+            this.hoverBotId = botId;
+        },
+        clearHoveId: function () {
+            this.hoverBotId = '';
         }
     },
     computed: {
-        resources: function() {
+        resources: function () {
             var vm = this;
-            var resources = this.botResources.filter(function(element) {
+            return this.botResources.filter(function (element) {
                 return element.botId === vm.activeBotId;
             });
-
-            return resources;
         }
     },
     filters: {
@@ -66,7 +112,6 @@ Vue.component('bot-config', {
     },
     created: function () {
         this.loadBots();
-        this.loadResources();
     }
 });
 
@@ -89,7 +134,7 @@ Vue.component('rss-config', {
         }
     },
     methods: {
-        loadRssEntries: function() {
+        loadRssEntries: function () {
             var vm = this;
             $.get({url: vm.url + "rss/", success: vm.storeRssEntries});
         },
@@ -99,25 +144,25 @@ Vue.component('rss-config', {
         submitForm: function () {
             var vm = this;
             $.post({
-                url: vm.url + 'rss/add',
-                contentType: 'application/json',
-                data: JSON.stringify(vm.rssModel),
-                success: vm.rssEntryAdded
+                       url: vm.url + 'rss/add',
+                       contentType: 'application/json',
+                       data: JSON.stringify(vm.rssModel),
+                       success: vm.rssEntryAdded
                    });
         },
-        rssEntryAdded: function() {
+        rssEntryAdded: function () {
             this.loadRssEntries();
         }
     },
     computed: {
-      formOk: function() {
-          var model = this.rssModel;
-          return model.name.length > 3 && model.rssUrl.indexOf('http') !== -1 && model.incomingToken.length > 5;
-      }
+        formOk: function () {
+            var model = this.rssModel;
+            return model.name.length > 3 && model.rssUrl.indexOf('http') !== -1 && model.incomingToken.length > 5;
+        }
     },
     filters: {
         toDate: MB.toDateFilter,
-        truncate: function(value) {
+        truncate: function (value) {
             var retVal = value;
 
             if (retVal.length > 25) {

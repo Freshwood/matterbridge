@@ -19,3 +19,7 @@
 .bot-panel:hover {
     background-color: aliceblue;
 }
+
+.danger {
+    color: #ff4538;
+}

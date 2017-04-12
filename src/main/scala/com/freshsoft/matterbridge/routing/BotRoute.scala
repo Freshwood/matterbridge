@@ -29,25 +29,21 @@ class BotRoute(service: BotService)(implicit executionContext: ExecutionContext)
         } ~
         path("add") {
           post {
-            entity(as[BotOrCategoryUpload]) { entity =>
+            entity(as[BotResourceUpload]) { entity =>
               complete {
-                service.add(entity.name) map (_.toString)
+                service.addResource(entity.botId, entity.name) map (_.toString)
               }
             } ~
-              entity(as[BotResourceUpload]) { entity =>
+              entity(as[BotOrCategoryUpload]) { entity =>
                 complete {
-                  service.addResource(entity.botId, entity.name) map (_.toString)
+                  service.add(entity.name) map (_.toString)
                 }
               }
           }
         } ~
-        path("allResources") {
+        path("resources" / JavaUUID) { botId =>
           get {
-            complete {
-              service.all flatMap { bots =>
-                service.allResources(bots.head.id)
-              }
-            }
+            complete(service.allResources(botId))
           }
         } ~
         path("exists" / Remaining) { search =>

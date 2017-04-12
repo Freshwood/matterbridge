@@ -258,34 +258,50 @@
     <script id="bot-config-template" type="text/x-template">
         <span>
 
+              <section class="empty">
+                  <span class="fa fa-android fa-4x"></span>
+                <h4 class="empty-title">Do you want to add a new bot?</h4>
+                <p class="empty-subtitle">Just type here a new bot trigger word</p>
+                <div class="empty-action input-group input-inline">
+                  <input v-on:keyup.enter="addNewBot()" type="text" class="form-input" placeholder="New bot..." v-model="botName">
+                  <button :disabled="!isBotNameSet()"
+                          class="btn btn-primary input-group-btn"
+                          v-on:click="addNewBot()">Add</button>
+                </div>
+              </section>
+
             <div v-if="bots.length" class="columns">
 
-                <div class="column col-4 col-xs-12" v-for="bot in bots" :key="bot.id">
-                    <div class="panel bot-panel" v-on:click="updateBotId(bot.id)">
+                <div class="column col-6 col-xs-12" v-for="bot in bots" :key="bot.id">
+                    <div class="panel bot-panel"
+                         v-on:click="updateBotId(bot.id)"
+                         v-on:mouseover="updateHoverId(bot.id)"
+                         v-on:mouseleave="clearHoveId()">
                         <div class="panel-header text-center">
-                          <figure class="avatar avatar-lg">
+                          <figure v-if="!hoverBody(bot.id)" class="avatar avatar-lg">
                             <span class="fa fa-android fa-2x"></span>
+                          </figure>
+                            <figure v-else class="avatar avatar-lg">
+                            <button class="btn btn-link btn-action btn-lg"><i class="fa fa-trash fa-2x danger"></i></button>
                           </figure>
                           <div class="panel-title mt-10">{{bot.name}}</div>
                           <div class="panel-subtitle">{{bot.createdAt | toDate}}</div>
                         </div>
-                      <div class="panel-body">
+                      <div class="panel-body" v-if="activeBody(bot.id)">
                         <div v-for="resource in resources" :key="resource.id" class="tile tile-centered">
                             <div class="tile-content">
                               <div class="tile-title">{{resource.value}}</div>
                               <div class="tile-subtitle">{{resource.createdAt | toDate}}</div>
                             </div>
                             <div class="tile-action">
-                              <button class="btn btn-link btn-action btn-lg"><i class="fa fa-trash"></i></button>
+                              <button class="btn btn-link btn-action btn-lg"><i class="fa fa-trash danger"></i></button>
                             </div>
                         </div>
-                      </div>
-                        <div class="panel-footer">
-                          <div class="input-group">
-                            <input type="text" class="form-input" placeholder="Hello">
-                            <button class="btn btn-primary input-group-btn">Save</button>
-                          </div>
+                        <div class="input-group">
+                            <input v-on:keyup.enter="saveResource()" type="text" class="form-input" placeholder="Bot answer..." v-model="resourceValue">
+                            <button :disabled="!isInputValid()" v-on:click="saveResource()" class="btn btn-primary input-group-btn">Save</button>
                         </div>
+                      </div>
                     </div>
                 </div>
             </div>
