@@ -28,17 +28,28 @@ Vue.component('bot-config', {
     data: function () {
         return {
             bots: [],
+            deletedBots: [],
             botResources: [],
             activeBotId: '',
             hoverBotId: '',
             botName: '',
-            resourceValue: ''
+            resourceValue: '',
+            showDeletedBots: false
         }
     },
     methods: {
         loadBots: function () {
             var vm = this;
             $.get({url: vm.url + "bot/", success: vm.storeBots});
+            vm.loadDeletedBots();
+        },
+        loadDeletedBots: function () {
+            var vm = this;
+            $.get({url: vm.url + "bot/deleted", success: vm.storeDeletedBots});
+        },
+        restoreBot: function (botId) {
+            var vm = this;
+            $.get({url: vm.url + "bot/restore/" + botId, success: vm.loadBots});
         },
         loadResources: function () {
             var vm = this;
@@ -46,6 +57,9 @@ Vue.component('bot-config', {
         },
         storeBots: function (bots) {
             this.bots = bots;
+        },
+        storeDeletedBots: function (bots) {
+            this.deletedBots = bots;
         },
         storeResources: function (resources) {
             this.botResources = resources;
@@ -100,11 +114,16 @@ Vue.component('bot-config', {
         },
         deleteBot: function (botId) {
             var vm = this;
-            $.ajax({url: vm.url + 'bot/' + botId, type: 'DELETE', success: vm.loadBots});
+            if (vm.hoverBotId === vm.activeBotId) {
+                $.ajax({url: vm.url + 'bot/' + botId, type: 'DELETE', success: vm.loadBots});
+            }
         },
         deleteResource: function (resourceId) {
             var vm = this;
             $.ajax({url: vm.url + 'bot/resources/' + resourceId, type: 'DELETE', success: vm.loadResources});
+        },
+        toggleDeletedBotsVisibility: function () {
+            this.showDeletedBots = !this.showDeletedBots;
         }
     },
     computed: {

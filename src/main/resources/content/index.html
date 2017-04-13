@@ -258,7 +258,8 @@
     <script id="bot-config-template" type="text/x-template">
         <span>
 
-              <section class="empty">
+            <div class="columns">
+              <section class="col-6 col-xs-12 empty">
                   <span class="fa fa-android fa-4x"></span>
                 <h4 class="empty-title">Do you want to add a new bot?</h4>
                 <p class="empty-subtitle">Just type here a new bot trigger word</p>
@@ -269,6 +270,27 @@
                           v-on:click="addNewBot()">Add</button>
                 </div>
               </section>
+
+              <section v-if="deletedBots.length" class="col-6 col-xs-12 empty">
+                <h4 v-on:click="toggleDeletedBotsVisibility()" class="empty-title">Do you want to restore a already deleted bot
+                    <button class="btn btn-primary btn-sm"><span class="fa fa-question"></span></button></h4>
+                <div v-if="showDeletedBots" v-for="bot in deletedBots" :key="bot.id" class="tile tile-centered">
+                    <div class="tile-content">
+                      <div class="tile-title">{{bot.name}}</div>
+                      <div class="tile-subtitle">{{bot.deletedAt | toDate}}</div>
+                    </div>
+                    <div class="tile-action">
+                      <button v-on:click="restoreBot(bot.id)"
+                              class="btn btn-link btn-action btn-lg tooltip tooltip-left"
+                              :data-tooltip="'Recycle bot ' + bot.name">
+                          <i class="fa fa-recycle success"></i>
+                      </button>
+                    </div>
+                </div>
+              </section>
+            </div>
+
+
 
             <div v-if="bots.length" class="columns">
 
@@ -312,6 +334,7 @@
 
             <div v-else>
                 <h3>Oops, there are no bots configured yet...</h3>
+                <h4 v-if="deletedBots.length">Anywhere there are <strong>{{deletedBots.length}}</strong> deleted Bots</h4>
                 <span class="fa fa-android fa-4x"></span>
             </div>
 

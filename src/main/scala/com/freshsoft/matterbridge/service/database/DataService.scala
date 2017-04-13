@@ -18,6 +18,8 @@ sealed trait DataService[S <: DbEntity] {
 
   def delete(id: UUID): Future[Boolean]
 
+  def restore(id: UUID): Future[Boolean]
+
   def byName(name: String): Future[Seq[S]]
 
   def count: Future[Long]
@@ -75,6 +77,8 @@ trait BotDataService extends DataService[BotEntity] {
   def randomBotMessage(botId: UUID): Future[Option[BotEntityResource]]
 
   def deleteResource(id: UUID): Future[Boolean]
+
+  def allDeleted: Future[Seq[BotEntity]]
 }
 
 trait CategoryDataService extends DataService[CategoryEntity] {
@@ -105,6 +109,8 @@ sealed abstract class AbstractDataService[A <: DbEntity, S <: BaseDataService[A]
   override def byName(name: String): Future[Seq[A]] = db.byName(name)
 
   override def delete(id: UUID): Future[Boolean] = db.delete(id)
+
+  override def restore(id: UUID) = db.restore(id)
 }
 
 class NineGagService(db: NineGagDataProvider, categoryDb: CategoryDataProvider)(
@@ -213,6 +219,8 @@ class BotService(db: BotDataProvider)(implicit val executionContext: ExecutionCo
     }
 
   override def deleteResource(id: UUID) = db.deleteResource(id)
+
+  override def allDeleted = db.allDeleted
 }
 
 class CategoryService(db: CategoryDataProvider)(implicit val executionContext: ExecutionContext)

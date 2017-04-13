@@ -27,6 +27,13 @@ class BotRoute(service: BotService)(implicit executionContext: ExecutionContext)
             }
           }
         } ~
+        path("deleted") {
+          get {
+            complete {
+              service.allDeleted
+            }
+          }
+        } ~
         path("add") {
           post {
             entity(as[BotResourceUpload]) { entity =>
@@ -48,6 +55,11 @@ class BotRoute(service: BotService)(implicit executionContext: ExecutionContext)
             delete {
               complete(service.deleteResource(id) map (_.toString))
             }
+        } ~
+        path("restore" / JavaUUID) { id =>
+          get {
+            complete(service.restore(id) map (_.toString))
+          }
         } ~
         path("exists" / Remaining) { search =>
           get {
