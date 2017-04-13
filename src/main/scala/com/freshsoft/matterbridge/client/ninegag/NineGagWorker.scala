@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorRef}
 import akka.event.{Logging, LoggingAdapter}
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration.NineGagWorkerCommand
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
-import model.MatterBridgeEntities.{NineGagGifResult, NineGagResolveCommand}
+import model.MatterBridgeEntities.NineGagGifResult
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
@@ -22,16 +22,13 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
 
   override def receive: Receive = {
     case command: NineGagWorkerCommand =>
-      val from = sender
-
       getNineGagGifs(command) map { result =>
         log.info(s"Found ${result.size} gifs from $command")
 
         if (result.isEmpty) {
-          log.info("No gifs found, proceed with next url")
-          from ! NineGagResolveCommand()
+          log.info(s"No gifs found from url ${command.nineGagUrl}")
         } else {
-          result.foreach(u => nineGagReceiver ! u)
+          result foreach (nineGagReceiver ! _)
         }
       } recover {
         case ex =>
