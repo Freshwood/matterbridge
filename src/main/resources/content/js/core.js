@@ -14,7 +14,8 @@ var MB = MB || {
             }
             return date.toLocaleDateString();
         },
-        apiLocation: "http://" + window.location.host + "/api/matterbridge"
+        apiLocation: "http://" + window.location.host + "/api/matterbridge",
+        apiLocationOut: "http://" + window.location.host + "/api/matterbridge/out"
     };
 
 Vue.component('bot-config', {
@@ -27,6 +28,7 @@ Vue.component('bot-config', {
     },
     data: function () {
         return {
+            location: MB.apiLocationOut,
             bots: [],
             deletedBots: [],
             botResources: [],
@@ -177,9 +179,9 @@ Vue.component('rss-config', {
         return {
             rssEntries: [],
             rssModel: {
-                name: 'RSS name',
-                rssUrl: "RSS url",
-                incomingToken: '...'
+                name: '',
+                rssUrl: '',
+                incomingToken: ''
             }
         }
     },
@@ -190,6 +192,10 @@ Vue.component('rss-config', {
         },
         storeRssEntries: function (rssEntries) {
             this.rssEntries = rssEntries;
+        },
+        deleteEntry: function (id) {
+            var vm = this;
+            $.ajax({url: vm.url + 'rss/' + id, method: 'DELETE', success: vm.loadRssEntries});
         },
         submitForm: function () {
             var vm = this;
@@ -207,7 +213,7 @@ Vue.component('rss-config', {
     computed: {
         formOk: function () {
             var model = this.rssModel;
-            return model.name.length > 3 && model.rssUrl.indexOf('http') !== -1 && model.incomingToken.length > 5;
+            return model.name.length > 5 && model.rssUrl.indexOf('http') !== -1 && model.incomingToken.length > 10;
         }
     },
     filters: {

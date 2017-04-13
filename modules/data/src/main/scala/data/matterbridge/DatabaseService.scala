@@ -265,7 +265,7 @@ class RssConfigDataProvider(jdbcUrl: String, databaseUser: String, databaseSecre
   }
 
   override def all: Future[Seq[RssEntity]] = AsyncDB.withPool { implicit s =>
-    val query = s"SELECT * FROM $table"
+    val query = s"SELECT * FROM $table WHERE deleted_at IS NULL"
     SQL(query) map resultSetToEntity list () future ()
   }
 

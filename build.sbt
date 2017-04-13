@@ -34,7 +34,7 @@ val serviceLibs = Seq(
 def settings(projectName: String) = Seq(
   organization := "freshsoft",
   name := projectName,
-  version := "1.5.0",
+  version := "2.0.0-prelease",
   scalaVersion := "2.11.8",
   resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
 )

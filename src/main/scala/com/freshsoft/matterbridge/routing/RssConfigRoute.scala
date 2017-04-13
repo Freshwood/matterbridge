@@ -49,7 +49,10 @@ class RssConfigRoute(service: RssConfigService)(implicit executionContext: Execu
         path(JavaUUID) { uuid =>
           get {
             complete(service.byId(uuid))
-          }
+          } ~
+            delete {
+              complete(service.delete(uuid) map (_.toString))
+            }
         }
     }
   }

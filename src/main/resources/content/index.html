@@ -146,7 +146,6 @@
                                     :data-tooltip="'Delete ' + gif.name + '?'">
                                 <span class="fa fa-trash"></span>
                             </button>
-                      </button>
                         </div>
                     </div>
 
@@ -211,24 +210,36 @@
     </script>
 
     <script id="rss-config-template" type="text/x-template">
-
         <span>
+            <div class="columns">
+              <section class="col-12 empty">
+                  <span class="fa fa-rss fa-4x"></span>
+                <h4 class="empty-title">Here you can find the rss/atom reader integration</h4>
+                <p class="empty-subtitle">After a successful configuration the service is polling every 15 minutes
+                    for the latest feeds</p>
+                  <p>For this integration you need an incoming web hook configuration</p>
+                  <div class="empty-action">
+                    <p>Channel: <code>#your-sample-channel</code></p>
+                    <p>Webhook URL: (Incoming Token)<code><span class="atv">e.g. https://hooks.slack.com/services/T1N5WG...</span></code></p>
+                </div>
+              </section>
+            </div>
 
             <div>
               <!-- form input control -->
               <div class="form-group">
                 <label class="form-label" for="rss-config-name">Name</label>
-                <input class="form-input" type="text" id="rss-config-name" v-model="rssModel.name" />
+                <input class="form-input" type="text" id="rss-config-name" v-model="rssModel.name" placeholder="Your config name" />
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="rss-config-url">RSS url</label>
-                <input class="form-input" type="text" id="rss-config-url" v-model="rssModel.rssUrl" />
+                <input class="form-input" type="url" id="rss-config-url" v-model="rssModel.rssUrl" placeholder="http://some.feed.com"/>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="rss-config-token">Incoming token</label>
-                <input class="form-input" type="text" id="rss-config-token" v-model="rssModel.incomingToken"  />
+                <input class="form-input" type="text" id="rss-config-token" v-model="rssModel.incomingToken" placeholder="for example" />
               </div>
 
               <div class="form-group">
@@ -255,6 +266,13 @@
                           <p>Token: <span class="text-bold">{{rss.incomingToken | truncate}}</span></p>
                           <p>Last run: <span class="text-bold">{{rss.updatedAt | toDate}}</span></p>
                         </div>
+                        <div class="card-footer">
+                            <button v-on:click="deleteEntry(rss.id)"
+                                    class="btn btn-primary tooltip tooltip-right"
+                                    :data-tooltip="'Delete ' + rss.name + '?'">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                        </div>
                     </div>
 
                 </div>
@@ -276,7 +294,8 @@
               <section class="col-6 col-xs-12 empty">
                   <span class="fa fa-android fa-4x"></span>
                 <h4 class="empty-title">Do you want to add a new bot?</h4>
-                <p class="empty-subtitle">Just type here a new bot trigger word</p>
+                <p class="empty-subtitle">Enter this url<code>{{location}}</code> in the outgoing hook configuration</p>
+                <p class="empty-subtitle">Just type here a new bot name where the web hook is looking for</p>
                 <div class="empty-action input-group input-inline">
                   <input v-on:keyup.enter="addNewBot()" type="text" class="form-input"
                          placeholder="New bot..." v-model="botName">
