@@ -150,7 +150,7 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
 
   override def byName(searchName: String): Future[Seq[NineGagEntity]] = AsyncDB.withPool {
     implicit s =>
-      val query = s"SELECT * FROM $table WHERE name LIKE '%$searchName%'"
+      val query = s"SELECT * FROM $table WHERE deleted_at IS NULL AND name LIKE '%$searchName%'"
       SQL(query) map resultSetToEntity list () future ()
   }
 
@@ -174,7 +174,7 @@ class NineGagDataProvider(jdbcUrl: String, databaseUser: String, databaseSecret:
   }
 
   override def last: Future[Seq[NineGagEntity]] = AsyncDB.withPool { implicit s =>
-    val query = s"SELECT * FROM $table ORDER BY created_at DESC LIMIT 100"
+    val query = s"SELECT * FROM $table WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 100"
     SQL(query) map resultSetToEntity list () future ()
   }
 }

@@ -270,16 +270,23 @@ Vue.component('ninegag-config', {
         }
     },
     methods: {
+        loadNineGagGifs: function () {
+            var vm = this;
+            $.get({url: vm.url + "9gag/last", success: vm.storeLastNineGagGifs});
+        },
         storeLastNineGagGifs: function (gifs) {
             this.lastGifs = gifs;
+        },
+        deleteNineGagGif: function (gifId) {
+            var vm = this;
+            $.ajax({url: vm.url + '9gag/' + gifId, method: 'DELETE', success: vm.loadNineGagGifs});
         }
     },
     filters: {
         toDate: MB.toDateFilter
     },
     created: function () {
-        var vm = this;
-        $.get({url: vm.url + "9gag/last", success: vm.storeLastNineGagGifs});
+        this.loadNineGagGifs();
     }
 });
 

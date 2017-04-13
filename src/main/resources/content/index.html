@@ -106,16 +106,19 @@
 
     <script id="ninegag-config-template" type="text/x-template">
         <span>
-            <h2>How to configure nine gag integration?</h2>
-            <p>You need an <strong>slash command</strong> configuration</p>
-
-            <span>Insert this <strong>url</strong> in the url option:</span>
-
-
-            <code><span class="atv">{{location}}</span></code>
-
-
-            <p>After a successful configuration the service is looking for a stored 9Gag gif</p>
+            <div class="columns">
+              <section class="col-12 empty">
+                  <img src="images/9GAG.svg">
+                <h4 class="empty-title">How to configure the 9 gag integration?</h4>
+                <p class="empty-subtitle">You need an <strong>slash command</strong> configuration</p>
+                <div class="empty-action">
+                    <p>Command: <code>/ninegag</code></p>
+                    <p>URL: <code><span class="atv">{{location}}</span></code></p>
+                    <p>Method: <code>POST</code></p>
+                    <p>After a successful configuration the service is looking for a stored 9Gag gif</p>
+                </div>
+              </section>
+            </div>
 
             <!-- divider element -->
             <div class="divider"></div>
@@ -137,6 +140,14 @@
                         <div class="card-image">
                           <img class="img-responsive" :src="gif.gifUrl">
                         </div>
+                        <div class="card-footer">
+                            <button v-on:click="deleteNineGagGif(gif.id)"
+                                    class="btn btn-primary tooltip tooltip-right"
+                                    :data-tooltip="'Delete ' + gif.name + '?'">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                      </button>
+                        </div>
                     </div>
 
                 </div>
@@ -152,16 +163,19 @@
 
     <script id="coding-love-config-template" type="text/x-template">
         <span>
-            <h2>How to configure the coding love integration?</h2>
-            <p>You need an <strong>slash command</strong> configuration</p>
-
-            <span>Insert this <strong>url</strong> in the url option:</span>
-
-
-            <code><span class="atv">{{location}}</span></code>
-
-
-            <p>After a successful configuration the service is looking for a random coding love gif</p>
+            <div class="columns">
+              <section class="col-12 empty">
+                  <img src="images/thecodinglove.png">
+                <h4 class="empty-title">How to configure the coding love integration?</h4>
+                <p class="empty-subtitle">You need an <strong>slash command</strong> configuration</p>
+                <div class="empty-action">
+                    <p>Command: <code>/codinglove</code></p>
+                    <p>URL: <code><span class="atv">{{location}}</span></code></p>
+                    <p>Method: <code>POST</code></p>
+                    <p>After a successful configuration the service is looking for a stored coding love gif</p>
+                </div>
+              </section>
+            </div>
 
             <!-- divider element -->
             <div class="divider"></div>
