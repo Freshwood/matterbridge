@@ -34,7 +34,9 @@ Vue.component('bot-config', {
             hoverBotId: '',
             botName: '',
             resourceValue: '',
-            showDeletedBots: false
+            showDeletedBots: false,
+            canBotBeCreated: false,
+            isWaitForExistingCheck: false
         }
     },
     methods: {
@@ -91,12 +93,9 @@ Vue.component('bot-config', {
         isInputValid: function () {
             return this.resourceValue.length > 5;
         },
-        isBotNameSet: function () {
-            return this.botName.length > 3;
-        },
         addNewBot: function () {
             var vm = this;
-            if (vm.isBotNameSet()) {
+            if (vm.canBotBeCreated) {
                 $.post(
                     {
                         url: vm.url + 'bot/add',
@@ -104,6 +103,7 @@ Vue.component('bot-config', {
                         data: JSON.stringify({name: vm.botName}),
                         success: vm.loadBots
                     });
+                vm.canBotBeCreated = false;
             }
         },
         updateHoverId: function (botId) {
@@ -133,6 +133,29 @@ Vue.component('bot-config', {
                 return element.botId === vm.activeBotId;
             });
         }
+    },
+    watch: {
+      botName: function (value) {
+          var vm = this;
+          vm.canBotBeCreated = false;
+
+          clearTimeout(vm.timer);
+
+          if (value.length > 3) {
+              // Just a debounce
+              vm.timer = setTimeout(function () {
+                  $.get({url: vm.url + 'bot/exists/' + value, success: function (response) {
+                      if (response === 'false') {
+                          vm.canBotBeCreated = true;
+                      }
+                  }});
+                  vm.isWaitForExistingCheck = false;
+              }, 500);
+              vm.isWaitForExistingCheck = true;
+          } else {
+              vm.isWaitForExistingCheck = false;
+          }
+      }
     },
     filters: {
         toDate: MB.toDateFilter
