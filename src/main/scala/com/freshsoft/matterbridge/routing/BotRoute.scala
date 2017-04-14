@@ -13,67 +13,66 @@ import scala.concurrent.ExecutionContext
 class BotRoute(service: BotService)(implicit executionContext: ExecutionContext)
     extends DatabaseEntityJsonSupport {
 
-  val route: Route = logRequestResult("bot-route") {
-    pathPrefix("bot") {
-      pathEndOrSingleSlash {
+  val route: Route = pathPrefix("bot") {
+    pathEndOrSingleSlash {
+      get {
+        complete(service.all)
+      }
+    } ~
+      path("count") {
         get {
-          complete(service.all)
+          complete {
+            service.count map (_.toString)
+          }
         }
       } ~
-        path("count") {
-          get {
-            complete {
-              service.count map (_.toString)
-            }
+      path("deleted") {
+        get {
+          complete {
+            service.allDeleted
           }
-        } ~
-        path("deleted") {
-          get {
+        }
+      } ~
+      path("add") {
+        post {
+          entity(as[BotResourceUpload]) { entity =>
             complete {
-              service.allDeleted
+              service.addResource(entity.botId, entity.name) map (_.toString)
             }
-          }
-        } ~
-        path("add") {
-          post {
-            entity(as[BotResourceUpload]) { entity =>
+          } ~
+            entity(as[BotOrCategoryUpload]) { entity =>
               complete {
-                service.addResource(entity.botId, entity.name) map (_.toString)
+                service.add(entity.name) map (_.toString)
               }
-            } ~
-              entity(as[BotOrCategoryUpload]) { entity =>
-                complete {
-                  service.add(entity.name) map (_.toString)
-                }
-              }
-          }
-        } ~
-        path("resources" / JavaUUID) { id =>
-          get {
-            complete(service.allResources(id))
-          } ~
-            delete {
-              complete(service.deleteResource(id) map (_.toString))
-            }
-        } ~
-        path("restore" / JavaUUID) { id =>
-          get {
-            complete(service.restore(id) map (_.toString))
-          }
-        } ~
-        path("exists" / Remaining) { search =>
-          get {
-            complete(service.exists(search) map (_.toString))
-          }
-        } ~
-        path(JavaUUID) { uuid =>
-          get {
-            complete(service.byId(uuid))
-          } ~
-            delete {
-              complete(service.delete(uuid) map (_.toString))
             }
         }
-    }
+      } ~
+      path("resources" / JavaUUID) { id =>
+        get {
+          complete(service.allResources(id))
+        } ~
+          delete {
+            complete(service.deleteResource(id) map (_.toString))
+          }
+      } ~
+      path("restore" / JavaUUID) { id =>
+        get {
+          complete(service.restore(id) map (_.toString))
+        }
+      } ~
+      path("exists" / Remaining) { search =>
+        get {
+          complete(service.exists(search) map (_.toString))
+        }
+      } ~
+      path(JavaUUID) { uuid =>
+        get {
+          complete(service.byId(uuid))
+        } ~
+          delete {
+            complete(service.delete(uuid) map (_.toString))
+          }
+      }
   }
+
 }

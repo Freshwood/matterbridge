@@ -13,39 +13,37 @@ import scala.concurrent.ExecutionContext
 class CategoryRoute(service: CategoryService)(implicit executionContext: ExecutionContext)
     extends DatabaseEntityJsonSupport {
 
-  val route: Route = logRequestResult("category-route") {
-    pathPrefix("category") {
-      pathEndOrSingleSlash {
+  val route: Route = pathPrefix("category") {
+    pathEndOrSingleSlash {
+      get {
+        complete(service.all)
+      }
+    } ~
+      path("count") {
         get {
-          complete(service.all)
+          complete {
+            service.count map (_.toString)
+          }
         }
       } ~
-        path("count") {
-          get {
+      path("add") {
+        post {
+          entity(as[BotOrCategoryUpload]) { entity =>
             complete {
-              service.count map (_.toString)
+              service.add(entity.name) map (_.toString)
             }
-          }
-        } ~
-        path("add") {
-          post {
-            entity(as[BotOrCategoryUpload]) { entity =>
-              complete {
-                service.add(entity.name) map (_.toString)
-              }
-            }
-          }
-        } ~
-        path("exists" / Remaining) { search =>
-          get {
-            complete(service.exists(search) map (_.toString))
-          }
-        } ~
-        path(JavaUUID) { uuid =>
-          get {
-            complete(service.byId(uuid))
           }
         }
-    }
+      } ~
+      path("exists" / Remaining) { search =>
+        get {
+          complete(service.exists(search) map (_.toString))
+        }
+      } ~
+      path(JavaUUID) { uuid =>
+        get {
+          complete(service.byId(uuid))
+        }
+      }
   }
 }

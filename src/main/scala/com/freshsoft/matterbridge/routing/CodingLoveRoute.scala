@@ -13,44 +13,43 @@ import scala.concurrent.ExecutionContext
 class CodingLoveRoute(service: CodingLoveService)(implicit executionContext: ExecutionContext)
     extends DatabaseEntityJsonSupport {
 
-  val route: Route = logRequestResult("coding-love-route") {
-    pathPrefix("codingLove") {
-      path("count") {
-        get {
-          complete {
-            service.count map (_.toString)
+  val route: Route = pathPrefix("codingLove") {
+    path("count") {
+      get {
+        complete {
+          service.count map (_.toString)
+        }
+      }
+    } ~
+      path("add") {
+        post {
+          entity(as[CodingLoveUpload]) { entity =>
+            complete {
+              service.add(entity.name, entity.gifUrl) map (_.toString)
+            }
           }
         }
       } ~
-        path("add") {
-          post {
-            entity(as[CodingLoveUpload]) { entity =>
-              complete {
-                service.add(entity.name, entity.gifUrl) map (_.toString)
-              }
-            }
-          }
-        } ~
-        path("exists" / Remaining) { p =>
-          get {
-            complete(service.exists(p) map (_.toString))
-          }
-        } ~
-        path(JavaUUID) { uuid =>
-          get {
-            complete(service.byId(uuid))
-          }
-        } ~
-        path("last") {
-          get {
-            complete(service.last)
-          }
-        } ~
-        path(Remaining) { name =>
-          get {
-            complete(service.byName(name))
-          }
+      path("exists" / Remaining) { p =>
+        get {
+          complete(service.exists(p) map (_.toString))
         }
-    }
+      } ~
+      path(JavaUUID) { uuid =>
+        get {
+          complete(service.byId(uuid))
+        }
+      } ~
+      path("last") {
+        get {
+          complete(service.last)
+        }
+      } ~
+      path(Remaining) { name =>
+        get {
+          complete(service.byName(name))
+        }
+      }
   }
+
 }

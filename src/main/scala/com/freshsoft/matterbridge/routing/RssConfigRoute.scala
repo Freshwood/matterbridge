@@ -13,47 +13,45 @@ import scala.concurrent.ExecutionContext
 class RssConfigRoute(service: RssConfigService)(implicit executionContext: ExecutionContext)
     extends DatabaseEntityJsonSupport {
 
-  val route: Route = logRequestResult("rss-config-route") {
-    pathPrefix("rss") {
-      pathEndOrSingleSlash {
+  val route: Route = pathPrefix("rss") {
+    pathEndOrSingleSlash {
+      get {
+        complete(service.all)
+      }
+    } ~
+      path("count") {
         get {
-          complete(service.all)
+          complete {
+            service.count map (_.toString)
+          }
         }
       } ~
-        path("count") {
-          get {
+      path("add") {
+        post {
+          entity(as[RssUpload]) { entity =>
             complete {
-              service.count map (_.toString)
+              service.add(entity.name, entity.rssUrl, entity.incomingToken) map (_.toString)
             }
           }
-        } ~
-        path("add") {
-          post {
-            entity(as[RssUpload]) { entity =>
-              complete {
-                service.add(entity.name, entity.rssUrl, entity.incomingToken) map (_.toString)
-              }
-            }
-          }
-        } ~
-        path("exists" / Remaining) { p =>
-          get {
-            complete(service.exists(p) map (_.toString))
-          }
-        } ~
-        path(Remaining) { p =>
-          get {
-            complete(service.byName(p))
-          }
-        } ~
-        path(JavaUUID) { uuid =>
-          get {
-            complete(service.byId(uuid))
-          } ~
-            delete {
-              complete(service.delete(uuid) map (_.toString))
-            }
         }
-    }
+      } ~
+      path("exists" / Remaining) { p =>
+        get {
+          complete(service.exists(p) map (_.toString))
+        }
+      } ~
+      path(Remaining) { p =>
+        get {
+          complete(service.byName(p))
+        }
+      } ~
+      path(JavaUUID) { uuid =>
+        get {
+          complete(service.byId(uuid))
+        } ~
+          delete {
+            complete(service.delete(uuid) map (_.toString))
+          }
+      }
   }
 }
