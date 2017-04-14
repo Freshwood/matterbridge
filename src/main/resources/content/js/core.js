@@ -306,21 +306,19 @@ Vue.component('landing', {
     },
     data: function () {
         return {
-            categories: [],
             ws: {},
             nineGagCount: 0,
             codingLoveCount: 0,
             rssCount: 0,
             botCount: 0,
             categoryCount: 0,
-            showBold: false
+            showNineGagBold: false,
+            showCodingLoveBold: false,
+            showRssBold: false,
+            showBotBold: false
         }
     },
     methods: {
-        saveCategories: function (categories) {
-            this.categories = categories;
-            console.log(categories);
-        },
         onOpen: function () {
             console.log("web socket connection open");
             this.ws.send("Start");
@@ -357,20 +355,35 @@ Vue.component('landing', {
     watch: {
         nineGagCount: function () {
             var vm = this;
-            vm.showBold = true;
+            vm.showNineGagBold = true;
             setTimeout(function () {
-                vm.showBold = false;
+                vm.showNineGagBold = false;
+            }, 1000);
+        },
+        codingLoveCount: function () {
+            var vm = this;
+            vm.showCodingLoveBold = true;
+            setTimeout(function () {
+                vm.showCodingLoveBold = false;
+            }, 1000);
+        },
+        rssCount: function () {
+            var vm = this;
+            vm.showRssBold = true;
+            setTimeout(function () {
+                vm.showRssBold = false;
+            }, 1000);
+        },
+        botCount: function () {
+            var vm = this;
+            vm.showBotBold = true;
+            setTimeout(function () {
+                vm.showBotBold = false;
             }, 1000);
         }
     },
     created: function () {
-        var vm = this;
-        $.get({
-                  url: vm.url + 'category',
-                  success: vm.saveCategories
-              });
-
-        vm.connectToSocket();
+        this.connectToSocket();
     }
 });
 

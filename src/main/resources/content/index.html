@@ -15,92 +15,48 @@
     <script type="text/javascript" src="js/core.js"></script>
 
     <script id="home-template" type="text/x-template">
-
         <div class="container">
+
             <div class="columns">
-                <div class="column col-12">
-                    <div class="tile text-center">
-                        <div class="tile-icon">
-                            <div class="example-tile-icon">
-                                <img class="icon centered" src="images/9GAG.svg">
-                            </div>
-                        </div>
-                        <div class="tile-content">
-                            <p class="tile-title">9Gag gifs</p>
-                            <p class="tile-subtitle">Shows the actual 9gag gif count</p>
-                        </div>
-                        <div class="tile-action">
-                            <h2 class="text-ellipsis" :class="showBold ? 'text-bold' : ''">{{nineGagCount}}</h2>
-                        </div>
+
+                <section class="col-6 col-xs-12 empty">
+                    <img class="icon centered" src="images/9GAG.svg">
+                    <h4 class="empty-title">Gag gifs</h4>
+                    <p class="empty-subtitle">Shows the actual 9gag gif count</p>
+                    <div class="empty-action">
+                        <h2 class="text-ellipsis" :class="showNineGagBold ? 'text-bold' : ''">{{nineGagCount}}</h2>
                     </div>
-                </div>
-                <div class="column col-12">
-                    <div class="tile text-center">
-                        <div class="tile-icon">
-                            <div class="example-tile-icon">
-                                <img class="icon centered coding-love-image" src="images/thecodinglove.png">
-                            </div>
-                        </div>
-                        <div class="tile-content">
-                            <p class="tile-title">The coding love gifs</p>
-                            <p class="tile-subtitle">Shows the actual coding love gif count</p>
-                        </div>
-                        <div class="tile-action">
-                            <h2 class="text-ellipsis">{{codingLoveCount}}</h2>
-                        </div>
+                </section>
+
+                <section class="col-6 col-xs-12 empty">
+                    <img class="icon centered coding-love-image" src="images/thecodinglove.png">
+                    <h4 class="empty-title">The coding love gifs</h4>
+                    <p class="empty-subtitle">Shows the actual coding love gif count</p>
+                    <div class="empty-action">
+                        <h2 class="text-ellipsis" :class="showCodingLoveBold ? 'text-bold' : ''">{{codingLoveCount}}</h2>
                     </div>
-                </div>
-                <div class="column col-4 col-sm-12">
-                    <div class="tile text-center">
-                        <div class="tile-icon">
-                            <div class="example-tile-icon">
-                                <span class="fa fa-rss fa-4x"></span>
-                            </div>
-                        </div>
-                        <div class="tile-content">
-                            <p class="tile-title">Rss configurations</p>
-                            <p class="tile-subtitle">Shows the actual rss configuration count</p>
-                        </div>
-                        <div class="tile-action">
-                            <h2 class="text-ellipsis">{{rssCount}}</h2>
-                        </div>
+                </section>
+
+                <section class="col-6 col-xs-12 empty">
+                    <span class="fa fa-rss fa-4x"></span>
+                    <h4 class="empty-title">Rss configurations</h4>
+                    <p class="empty-subtitle">Shows the actual rss configuration count</p>
+                    <div class="empty-action">
+                        <h2 class="text-ellipsis" :class="showRssBold ? 'text-bold' : ''">{{rssCount}}</h2>
                     </div>
-                </div>
-                <div class="column col-4 col-sm-12">
-                    <div class="tile text-center">
-                        <div class="tile-icon">
-                            <div class="example-tile-icon">
-                                <span class="fa fa-android fa-4x"></span>
-                            </div>
-                        </div>
-                        <div class="tile-content">
-                            <p class="tile-title">Bot count</p>
-                            <p class="tile-subtitle">Shows the actual configured bot count</p>
-                        </div>
-                        <div class="tile-action">
-                            <h2 class="text-ellipsis">{{botCount}}</h2>
-                        </div>
+                </section>
+
+                <section class="col-6 col-xs-12 empty">
+                    <span class="fa fa-android fa-4x"></span>
+                    <h4 class="empty-title">Bot count</h4>
+                    <p class="empty-subtitle">Shows the actual configured bot count</p>
+                    <div class="empty-action">
+                        <h2 class="text-ellipsis" :class="showBotBold ? 'text-bold' : ''">{{botCount}}</h2>
                     </div>
-                </div>
-                <div class="column col-4 col-sm-12">
-                    <div class="tile text-center">
-                        <div class="tile-icon">
-                            <div class="example-tile-icon">
-                                <span class="fa fa-table fa-4x"></span>
-                            </div>
-                        </div>
-                        <div class="tile-content">
-                            <p class="tile-title">Active categories</p>
-                            <p class="tile-subtitle">Shows the gif category count</p>
-                        </div>
-                        <div class="tile-action">
-                            <h2 class="text-ellipsis">{{categoryCount}}</h2>
-                        </div>
-                    </div>
-                </div>
+                </section>
+
             </div>
         </div>
-
 
     </script>
 
@@ -390,19 +346,22 @@
     <header class="navbar">
         <section class="navbar-primary">
             <a href="#" v-on:click="switchNavigation(MB.core.navs.home)"
-               class="navbar-brand mr-10" :class="isHome() ? 'active' : ''">Matterbridge Service</a>
+               class="navbar-brand mr-10" :class="isHome() ? 'active' : ''">
+                <img class="logo-image" src="/images/MatterBridge.svg"> Matterbridge Service</a>
         </section>
         <section class="navbar-section">
             <a href="#" v-on:click="switchNavigation(MB.core.navs.nineGag)"
-               class="btn btn-link" :class="isNineGag() ? 'active' : ''">9Gag</a>
+               class="btn btn-link" :class="isNineGag() ? 'active' : ''">
+                <img class="logo-image" src="images/9GAG.svg"> 9Gag</a>
             <a href="#" v-on:click="switchNavigation(MB.core.navs.codingLove)"
-               class="btn btn-link" :class="isCodingLove() ? 'active' : ''">Coding Love</a>
-        </section>
-        <section class="navbar-section">
+               class="btn btn-link" :class="isCodingLove() ? 'active' : ''">
+                <img class="logo-image" src="images/thecodinglove.png"> Coding Love</a>
             <a href="#" v-on:click="switchNavigation(MB.core.navs.rss)"
-               class="btn btn-link" :class="isRss() ? 'active' : ''">RSS config</a>
+               class="btn btn-link" :class="isRss() ? 'active' : ''">
+                <span class="fa fa-rss"></span> RSS config</a>
             <a href="#" v-on:click="switchNavigation(MB.core.navs.bot)"
-               class="btn btn-link" :class="isBot() ? 'active' : ''">Bots</a>
+               class="btn btn-link" :class="isBot() ? 'active' : ''">
+                <span class="fa fa-android"></span> Bots</a>
         </section>
     </header>
 
@@ -418,8 +377,8 @@
 <footer class="panel-footer">
     <div class="container grid-960">
         <hr>
-        <div class="pull-right">
-            <h3>Matterbridge Service &hearts;<small>(a Mattermost service)</small></h3>
+        <div class="text-center">
+            <h3>Matterbridge Service <small>(Slack & Mattermost integration)</small></h3>
         </div>
     </div>
 </footer>
