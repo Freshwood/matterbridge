@@ -45,7 +45,7 @@ sealed abstract class AbstractDataService[S <: DbEntity](
   }
 
   override def count: Future[Long] = AsyncDB.withPool { implicit s =>
-    val query = s"SELECT count(*) as count FROM $table"
+    val query = s"SELECT count(*) as count FROM $table WHERE deleted_at IS NULL"
     SQL(query) map resultSetToCount single () future () map
       (_.getOrElse(0))
   }
