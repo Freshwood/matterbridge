@@ -31,29 +31,29 @@ The service is supporting all types of web hooks:
 
 #### Landing page
 ![](docs/home.PNG)
--- Gives you a quick overview of all stored entities
+* Gives you a quick overview of all stored entities
 
 #### 9Gag page
 ![](docs/ninegag.PNG)
--- Here you can view the latest 9Gag gifs
--- You can also delete a gif, which will never be searched
+* Here you can view the latest 9Gag gifs
+* You can also delete a gif, which will never be searched
 #### Coding Love integration
 ![](docs/codinglove.PNG)
--- Here you can view the latest coding love gifs
--- Keep in mind the services is always looking for a random gif from the coding love
--- Only the result will be stored in the database
+* Here you can view the latest coding love gifs
+* Keep in mind the services is always looking for a random gif from the coding love
+* Only the result will be stored in the database
 
 #### RSS integration
 ![](docs/rss.PNG)
--- Here you can configure a new rss integration
--- Every 15 minutes the service is looking for the latest feeds
--- At this time RSS and ATOM feeds are supported
+* Here you can configure a new rss integration
+* Every 15 minutes the service is looking for the latest feeds
+* At this time RSS and ATOM feeds are supported
 
 #### Bots integration
 ![](docs/bots.PNG)
--- Here you can configure multiple bots
--- The bot name is the trigger keyword from the outgoing response message
--- The configured answers will be randmoly send. The same behaviour as the slack bot does.
+* Here you can configure multiple bots
+* The bot name is the trigger keyword from the outgoing response message
+* The configured answers will be randmoly send. The same behaviour as the slack bot does.
 ****
 
 ## Deployment
@@ -70,7 +70,7 @@ The service is supporting all types of web hooks:
   `host = "0.0.0.0"`
   `port = 9000`
 `}`
--- Bind here the host and your port
+* Bind here the host and your port
 
 `database {`
   `url = "jdbc:postgresql://localhost/matterbridgedb"`
@@ -82,7 +82,7 @@ The service is supporting all types of web hooks:
   `driver = org.postgresql.Driver`
 `}`
 
--- Setup the database name and user
+* Setup the database name and user
 
 `matterbridge {`
   `integrations {`
@@ -103,6 +103,6 @@ The service is supporting all types of web hooks:
   `}`
 ` }`
 
--- Here you can override the default slash commands
+* Here you can override the default slash commands
 * For example /ninegag and /codinglove
 
