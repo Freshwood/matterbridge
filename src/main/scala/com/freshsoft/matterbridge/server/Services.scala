@@ -20,17 +20,23 @@ trait MatterBridgeWebService extends DatabaseConfiguration {
 
   implicit val system: ActorSystem
 
-  lazy val nineGagDb: NineGagDataProvider = new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)
+  lazy val databaseDispatcher: ExecutionContext =
+    system.dispatchers.lookup("database-dispatcher")
+
+  lazy val nineGagDb: NineGagDataProvider =
+    new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)(databaseDispatcher)
 
   lazy val codingLoveDb: CodingLoveDataProvider =
-    new CodingLoveDataProvider(jdbcUrl, dbUser, dbPassword)
+    new CodingLoveDataProvider(jdbcUrl, dbUser, dbPassword)(databaseDispatcher)
 
-  lazy val categoryDb: CategoryDataProvider = new CategoryDataProvider(jdbcUrl, dbUser, dbPassword)
+  lazy val categoryDb: CategoryDataProvider =
+    new CategoryDataProvider(jdbcUrl, dbUser, dbPassword)(databaseDispatcher)
 
   lazy val rssConfigDb: RssConfigDataProvider =
-    new RssConfigDataProvider(jdbcUrl, dbUser, dbPassword)
+    new RssConfigDataProvider(jdbcUrl, dbUser, dbPassword)(databaseDispatcher)
 
-  lazy val botDb: BotDataProvider = new BotDataProvider(jdbcUrl, dbUser, dbPassword)
+  lazy val botDb: BotDataProvider =
+    new BotDataProvider(jdbcUrl, dbUser, dbPassword)(databaseDispatcher)
 
   lazy val nineGagService: NineGagService = new NineGagService(nineGagDb, categoryDb)
 
@@ -61,11 +67,19 @@ trait MatterBridgeWebService extends DatabaseConfiguration {
 }
 
 trait NineGagActorService extends DatabaseConfiguration {
+
   implicit def executionContext: ExecutionContext
 
-  lazy val db: NineGagDataProvider = new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)
+  implicit val system: ActorSystem
 
-  lazy val categoryDb: CategoryDataProvider = new CategoryDataProvider(jdbcUrl, dbUser, dbPassword)
+  lazy val databaseDispatcher: ExecutionContext =
+    system.dispatchers.lookup("database-dispatcher")
+
+  lazy val db: NineGagDataProvider =
+    new NineGagDataProvider(jdbcUrl, dbUser, dbPassword)(databaseDispatcher)
+
+  lazy val categoryDb: CategoryDataProvider =
+    new CategoryDataProvider(jdbcUrl, dbUser, dbPassword)(databaseDispatcher)
 
   lazy val nineGagService: NineGagService = new NineGagService(db, categoryDb)
 
@@ -73,26 +87,46 @@ trait NineGagActorService extends DatabaseConfiguration {
 }
 
 trait CodingLoveActorService extends DatabaseConfiguration {
+
   implicit def executionContext: ExecutionContext
 
-  lazy val db: CodingLoveDataProvider = new CodingLoveDataProvider(jdbcUrl, dbUser, dbPassword)
+  implicit val system: ActorSystem
+
+  lazy val databaseDispatcher: ExecutionContext =
+    system.dispatchers.lookup("database-dispatcher")
+
+  lazy val db: CodingLoveDataProvider =
+    new CodingLoveDataProvider(jdbcUrl, dbUser, dbPassword)(databaseDispatcher)
 
   lazy val codingLoveService: CodingLoveService = new CodingLoveService(db)
 }
 
 trait RssConfigActorService extends DatabaseConfiguration {
+
   implicit def executionContext: ExecutionContext
 
+  implicit val system: ActorSystem
+
+  lazy val databaseDispatcher: ExecutionContext =
+    system.dispatchers.lookup("database-dispatcher")
+
   lazy val rssConfigDb: RssConfigDataProvider =
-    new RssConfigDataProvider(jdbcUrl, dbUser, dbPassword)
+    new RssConfigDataProvider(jdbcUrl, dbUser, dbPassword)(databaseDispatcher)
 
   lazy val rssConfigService: RssConfigService = new RssConfigService(rssConfigDb)
 }
 
 trait BotActorService extends DatabaseConfiguration {
+
   implicit def executionContext: ExecutionContext
 
-  lazy val botDb: BotDataProvider = new BotDataProvider(jdbcUrl, dbUser, dbPassword)
+  implicit val system: ActorSystem
+
+  lazy val databaseDispatcher: ExecutionContext =
+    system.dispatchers.lookup("database-dispatcher")
+
+  lazy val botDb: BotDataProvider =
+    new BotDataProvider(jdbcUrl, dbUser, dbPassword)(databaseDispatcher)
 
   lazy val botService: BotService = new BotService(botDb)
 }

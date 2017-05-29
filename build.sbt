@@ -1,7 +1,7 @@
 import sbt.Keys._
 
-val akkaVersion = "2.4.17"
-val akkaHttpVersion = "10.0.4"
+val akkaVersion = "2.5.1"
+val akkaHttpVersion = "10.0.6"
 val scalaTestVersion = "2.2.6"
 val logbackVersion = "1.1.3"
 val scalaScrapperVersion = "1.0.0"
@@ -25,6 +25,8 @@ val testLibs: Seq[ModuleID] = Seq(
 val serviceLibs = Seq(
   "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
   "ch.qos.logback" % "logback-classic" % logbackVersion,
+  "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+  "com.typesafe.akka" %% "akka-stream" % akkaVersion,
   "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,

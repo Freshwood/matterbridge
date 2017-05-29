@@ -42,7 +42,7 @@ object MatterBridgeServer
   }
 
   system.scheduler.schedule(1 seconds,
-                            5 seconds,
+                            100 millis,
                             NineGagIntegration.nineGagResolver,
                             NineGagResolveCommand())
 

@@ -6,29 +6,26 @@ import akka.http.scaladsl.coding.Gzip
 import akka.http.scaladsl.model._
 import akka.stream.scaladsl.Sink
 import akka.util.ByteString
-import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration.{
-  newsriverIncomingTokenUrl => _
-}
-import model.MatterBridgeEntities.{ISlashCommandJsonSupport, IncomingResponse}
 import com.freshsoft.matterbridge.server.MatterBridgeContext
+import model.MatterBridgeEntities.{ISlashCommandJsonSupport, IncomingResponse}
 import spray.json._
 
 import scala.concurrent.Future
 
 /**
-	* A simple http client to send request external services
-	*/
+  * A simple http client to send request external services
+  */
 object MatterBridgeHttpClient extends ISlashCommandJsonSupport with MatterBridgeContext {
 
   val log: LoggingAdapter = Logging.getLogger(system, this)
 
   /**
-		* Try to post the incoming token response object to the given url
-		*
-		* @param url              The requested url
-		* @param incomingResponse The post data content
-		* @return Nothing => only logs the result
-		*/
+    * Try to post the incoming token response object to the given url
+    *
+    * @param url              The requested url
+    * @param incomingResponse The post data content
+    * @return Nothing => only logs the result
+    */
   def postToIncomingWebhook(url: String, incomingResponse: IncomingResponse): Future[Unit] =
     Http().singleRequest(
       HttpRequest(uri = url,
@@ -46,11 +43,11 @@ object MatterBridgeHttpClient extends ISlashCommandJsonSupport with MatterBridge
     }
 
   /**
-		* Get a raw http result from the provided url
-		*
-		* @param url The url to retrieve the result
-		* @return Raw HttpResponse UTF-8 conform String as a future
-		*/
+    * Get a raw http result from the provided url
+    *
+    * @param url The url to retrieve the result
+    * @return Raw HttpResponse UTF-8 conform String as a future
+    */
   def getUrlContent(url: String): Future[String] =
     Http().singleRequest(HttpRequest(uri = url)) flatMap {
 
@@ -71,6 +68,11 @@ object MatterBridgeHttpClient extends ISlashCommandJsonSupport with MatterBridge
             }
         }
 
-      case _ => Future.successful("")
+      // We have to consume the response, cause we need a valid akka.http flow
+      // https://stackoverflow.com/questions/40447805/how-to-handle-akka-http-client-response-failure
+      case HttpResponse(_, _, entity, _) =>
+        entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { x =>
+          x.decodeString("UTF-8")
+        }
     }
 }
