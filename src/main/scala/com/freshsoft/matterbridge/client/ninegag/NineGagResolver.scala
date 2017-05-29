@@ -38,7 +38,6 @@ class NineGagResolver extends Actor {
     "cute",
     "girl",
     "awesome",
-    "cosplay",
     "sport",
     "food",
     "ask9gag",
