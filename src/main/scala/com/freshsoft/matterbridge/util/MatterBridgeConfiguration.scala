@@ -28,6 +28,8 @@ trait MatterBridgeConfig extends MatterBridgeServerConfig {
     config.getString("matterbridge.integrations.codinglove.command")
   lazy val codingLoveResponseType: String =
     config.getString("matterbridge.integrations.codinglove.response_type")
+  lazy val isNineGagFeatureEnabled: Boolean =
+    config.getBoolean("matterbridge.integrations.ninegag.enabled")
   lazy val nineGagCommand: String =
     config.getString("matterbridge.integrations.ninegag.command")
   lazy val nineGagResponseType: String =

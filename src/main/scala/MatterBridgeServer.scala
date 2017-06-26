@@ -7,7 +7,7 @@ import akka.util.Timeout
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration
 import com.freshsoft.matterbridge.client.rss.RssIntegration
 import com.freshsoft.matterbridge.server.{Flyway, MatterBridgeContext, MatterBridgeWebService}
-import com.freshsoft.matterbridge.util.MatterBridgeServerConfig
+import com.freshsoft.matterbridge.util.MatterBridgeConfig
 import model.MatterBridgeEntities.{NineGagResolveCommand, RssReaderActorModel}
 
 import scala.concurrent.duration._
@@ -18,7 +18,7 @@ import scala.language.postfixOps
   */
 object MatterBridgeServer
     extends App
-    with MatterBridgeServerConfig
+    with MatterBridgeConfig
     with MatterBridgeContext
     with MatterBridgeWebService
     with Flyway {
@@ -41,10 +41,12 @@ object MatterBridgeServer
       system.terminate()
   }
 
-  system.scheduler.schedule(1 seconds,
-                            5 seconds,
-                            NineGagIntegration.nineGagResolver,
-                            NineGagResolveCommand())
+  if (isNineGagFeatureEnabled) {
+    system.scheduler.schedule(1 seconds,
+                              5 seconds,
+                              NineGagIntegration.nineGagResolver,
+                              NineGagResolveCommand())
+  }
 
   system.scheduler
     .schedule(15 seconds, 15 minutes, RssIntegration.rssReaderActor, RssReaderActorModel.Start)
