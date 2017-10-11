@@ -7,6 +7,8 @@ import com.freshsoft.matterbridge.util.MatterBridgeConfig
 import model.SlashCommandRequest
 import org.scalatest.{Matchers, WordSpec}
 
+import scala.util.{Failure, Success}
+
 /**
 	* The newsriver integration test
 	*/
@@ -23,9 +25,10 @@ class NewsriverIntegrationTest
     "Return a slash response when a friendly request was sent" in {
       val result = NewsriverIntegration.getResult(rightRequest)
 
-      result onSuccess {
-        case Some(x) => x shouldBe a[SlashResponse]
-        case None => fail("There should be `SlashResponse` available")
+      result onComplete {
+        case Success(Some(x)) => x shouldBe a[SlashResponse]
+        case Success(None)    => fail("There should be `SlashResponse` available")
+        case Failure(_)       => fail("Unexpected behaviour")
       }
     }
 

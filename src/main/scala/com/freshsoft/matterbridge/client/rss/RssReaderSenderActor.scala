@@ -23,6 +23,7 @@ class RssReaderSenderActor extends Actor with MatterBridgeContext {
       val incomingResponseData = buildIncomingResponseFromRssModel(x.rssReaderModels)
       MatterBridgeHttpClient
         .postToIncomingWebhook(x.rssFeedConfigEntry.incomingToken, incomingResponseData)
+      ()
 
     case y: RssReaderIncomingModel if y.rssReaderModels.isEmpty =>
       log.warning(s"Actual there are no rss items from ${y.rssFeedConfigEntry.rssUrl} to send")

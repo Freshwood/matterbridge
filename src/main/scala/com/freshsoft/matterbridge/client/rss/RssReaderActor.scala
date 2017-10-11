@@ -19,7 +19,7 @@ class RssReaderActor extends Actor with MatterBridgeContext with RssConfigActorS
 
   override def receive: Receive = {
     case RssReaderActorModel.Start =>
-      feedList map { feeds =>
+      feedList foreach { feeds =>
         feeds foreach { feed =>
           log.info(s"Start reading rss feed from ${feed.rssUrl} \nScan Time ${feed.updatedAt}")
           worker ! feed

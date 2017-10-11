@@ -34,6 +34,7 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
         case ex =>
           log.error(ex, s"Could not retrieve 9gag images from ${command.nineGagUrl}")
       }
+      ()
   }
 
   /**
@@ -67,10 +68,11 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
 
     val gifResults = for {
       article <- articles
-      headline <- article("header h2 a")
-      gifSrc <- (article >> elementList("div a div") >?> attr("data-image")("div")).flatten
+      headline <- article("header h2") map (_ >> allText("a"))
+      gifSrc <- (article >> elementList("div a div") >?> attr("data-image")).flatten
     } yield (headline, gifSrc)
 
+    // TODO: Fix this???
     gifResults.map(r => NineGagGifResult(r._1, r._2, category)).toList
   }
 }

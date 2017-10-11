@@ -26,7 +26,7 @@ class UserActor(service: WebService)(implicit executionContext: ExecutionContext
   def connected(outgoing: ActorRef): Receive = {
     case Tick(_) =>
       context.system.scheduler.scheduleOnce(5 second, self, Tick("Start"))
-      service.overallCount.map(result => outgoing ! OutgoingMessage(result.toJson))
+      service.overallCount.foreach(result => outgoing ! OutgoingMessage(result.toJson))
   }
 }
 

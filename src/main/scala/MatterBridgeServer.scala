@@ -35,7 +35,7 @@ object MatterBridgeServer
     log.info(s"REST interface bound to ${binding.localAddress}")
   }
 
-  binding.onFailure {
+  binding.failed.foreach {
     case ex: Exception =>
       log.error(ex, "Failed to bind to {}:{}!", host, port)
       system.terminate()

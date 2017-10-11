@@ -28,7 +28,7 @@ class RssReaderWorkerActor extends Actor with MatterBridgeContext with RssConfig
 
   override def receive: Receive = {
     case x: RssEntity =>
-      retrieveRssData(x) map {
+      retrieveRssData(x) foreach {
         case Some(model) => readerActor ! model
         case None =>
           log.info("Got no rss items to send. No rss content was sent")

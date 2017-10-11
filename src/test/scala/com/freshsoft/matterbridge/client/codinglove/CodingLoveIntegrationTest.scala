@@ -5,6 +5,8 @@ import com.freshsoft.matterbridge.server.MatterBridgeContext
 import model.SlashCommandRequest
 import org.scalatest.{Matchers, WordSpec}
 
+import scala.util.{Failure, Success}
+
 /**
 	* The coding love integration test
 	*/
@@ -17,8 +19,10 @@ class CodingLoveIntegrationTest extends WordSpec with Matchers with MatterBridge
     "Return a slash response when a friendly request was sent" in {
       val result = CodingLoveIntegration.getResult(rightRequest)
 
-      result onSuccess {
-        case Some(x) => x shouldBe a[SlashResponse]
+      result onComplete {
+        case Success(Some(x)) => x shouldBe a[SlashResponse]
+        case Success(None)    => fail("Expected a slash response")
+        case Failure(_)       => fail("Unexpected behaviour")
       }
     }
   }
