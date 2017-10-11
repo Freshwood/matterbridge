@@ -1,11 +1,11 @@
 import sbt.Keys._
 
-val akkaVersion = "2.5.1"
-val akkaHttpVersion = "10.0.6"
+val akkaVersion = "2.5.6"
+val akkaHttpVersion = "10.0.10"
 val scalaTestVersion = "2.2.6"
 val logbackVersion = "1.1.3"
-val scalaScrapperVersion = "1.0.0"
-val scalaMockVersion = "3.2.2"
+val scalaScraperVersion = "2.0.0"
+val scalaMockVersion = "3.6.0"
 val flyway = "3.2.1"
 
 val database: Seq[ModuleID] = Seq(
@@ -23,6 +23,7 @@ val testLibs: Seq[ModuleID] = Seq(
 )
 
 val serviceLibs = Seq(
+  "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
   "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
   "ch.qos.logback" % "logback-classic" % logbackVersion,
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -30,14 +31,29 @@ val serviceLibs = Seq(
   "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
-  "net.ruippeixotog" %% "scala-scraper" % scalaScrapperVersion
+  "net.ruippeixotog" %% "scala-scraper" % scalaScraperVersion
 )
 
 def settings(projectName: String) = Seq(
-  organization := "freshsoft",
+  organization := "softler.net",
   name := projectName,
-  version := "2.0.0",
-  scalaVersion := "2.11.8",
+  version := "2.1.0",
+  organizationName := "Tobias Frischholz",
+  scalaVersion := "2.12.3",
+  startYear := Some(2016),
+  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-encoding",
+    "UTF-8",
+    "-feature",
+    "-unchecked",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xfatal-warnings",
+    "-Yno-adapted-args",
+    "-Xfuture"
+  ),
   resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
 )
 
