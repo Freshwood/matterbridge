@@ -59,7 +59,6 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
 		* @param htmlContent The web result to retrieve the information
 		* @return A list of NineGagGifResult
 		*/
-  @throws[Exception]
   private def resolveGifsFromContent(htmlContent: String, category: String) = {
     val browser = JsoupBrowser()
     val doc = browser.parseString(htmlContent)
