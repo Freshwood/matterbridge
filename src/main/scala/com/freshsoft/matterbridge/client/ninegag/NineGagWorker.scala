@@ -1,6 +1,6 @@
 package com.freshsoft.matterbridge.client.ninegag
 
-import akka.actor.{Actor, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.event.{Logging, LoggingAdapter}
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration.NineGagWorkerCommand
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
@@ -14,9 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
 	* The nine gag worker which is resolving the urls
 	*/
-class NineGagWorker(nineGagReceiver: ActorRef) extends Actor {
-
-  val log: LoggingAdapter = Logging.getLogger(context.system, this)
+class NineGagWorker(nineGagReceiver: ActorRef) extends Actor with ActorLogging {
 
   implicit val executionContext: ExecutionContext = context.dispatcher
 
