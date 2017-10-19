@@ -1,7 +1,6 @@
 package com.freshsoft.matterbridge.client.ninegag
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import akka.event.{Logging, LoggingAdapter}
 import com.freshsoft.matterbridge.client.ninegag.NineGagIntegration.NineGagWorkerCommand
 import com.freshsoft.matterbridge.util.MatterBridgeHttpClient
 import model.MatterBridgeEntities.NineGagGifResult
@@ -20,7 +19,7 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor with ActorLogging {
 
   override def receive: Receive = {
     case command: NineGagWorkerCommand =>
-      getNineGagGifs(command) map { result =>
+      retrieve9GagGifs(command) foreach { result =>
         log.info(s"Found ${result.size} gifs from $command")
 
         if (result.isEmpty) {
@@ -28,11 +27,7 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor with ActorLogging {
         } else {
           result foreach (nineGagReceiver ! _)
         }
-      } recover {
-        case ex =>
-          log.error(ex, s"Could not retrieve 9gag images from ${command.nineGagUrl}")
       }
-      ()
   }
 
   /**
@@ -41,15 +36,11 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor with ActorLogging {
 		* @param command The url to retrieve the gifs
 		* @return A Future list of NineGagGifResult
 		*/
-  private def getNineGagGifs(command: NineGagWorkerCommand): Future[List[NineGagGifResult]] = {
-
+  private def retrieve9GagGifs(command: NineGagWorkerCommand): Future[List[NineGagGifResult]] =
     MatterBridgeHttpClient.getUrlContent(command.nineGagUrl) map {
-
-      case x if x.isEmpty => log.warning(s"Get no content from ${command.nineGagUrl}"); Nil
-
+      case x if x.isEmpty  => log.info(s"Get no content from ${command.nineGagUrl}"); Nil
       case x if !x.isEmpty => resolveGifsFromContent(x, command.relatedCategory)
     }
-  }
 
   /**
 		* Get the gifs from the content
@@ -69,7 +60,6 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor with ActorLogging {
       gifSrc <- (article >> elementList("div a div") >?> attr("data-image")).flatten
     } yield (headline, gifSrc)
 
-    // TODO: Fix this???
     gifResults.map(r => NineGagGifResult(r._1, r._2, category)).toList
   }
 }
