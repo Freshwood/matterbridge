@@ -17,6 +17,8 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor with ActorLogging {
 
   implicit val executionContext: ExecutionContext = context.dispatcher
 
+  private lazy val browser = JsoupBrowser()
+
   override def receive: Receive = {
     case command: NineGagWorkerCommand =>
       retrieve9GagGifs(command) foreach { result =>
@@ -49,7 +51,6 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor with ActorLogging {
 		* @return A list of NineGagGifResult
 		*/
   private def resolveGifsFromContent(htmlContent: String, category: String) = {
-    val browser = JsoupBrowser()
     val doc = browser.parseString(htmlContent)
 
     val articles = doc >> elements("article")

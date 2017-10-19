@@ -31,7 +31,7 @@ object CodingLoveIntegration
 
   private val randomUrl = "http://thecodinglove.com/random"
 
-  private val browser = JsoupBrowser()
+  private lazy val browser = JsoupBrowser()
 
   override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] =
     getDataFromWebsite(randomUrl, request)
