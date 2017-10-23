@@ -24,6 +24,7 @@ val testLibs: Seq[ModuleID] = Seq(
 
 val serviceLibs = Seq(
   "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
+  "net.softler" %% "akka-http-rest-client" % "0.1.0",
   "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
   "ch.qos.logback" % "logback-classic" % logbackVersion,
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -54,7 +55,9 @@ def settings(projectName: String) = Seq(
     "-Yno-adapted-args",
     "-Xfuture"
   ),
-  resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+  resolvers ++= Seq("Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+    Resolver.bintrayRepo("freshwood", "maven")
+  )
 )
 
 lazy val model = (project in file("modules/model"))
@@ -77,4 +80,4 @@ lazy val root = (project in file("."))
       val conf = (resourceDirectory in Compile).value / "application.conf"
       conf -> "conf/application.conf"
     }
-  ) dependsOn data aggregate (model, data)
+  ) dependsOn data aggregate(model, data)
