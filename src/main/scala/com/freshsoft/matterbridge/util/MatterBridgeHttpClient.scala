@@ -1,8 +1,10 @@
 package com.freshsoft.matterbridge.util
 
 import akka.event.{Logging, LoggingAdapter}
-import akka.http.scaladsl.coding.Gzip
+import akka.http.scaladsl.coding.{Deflate, Gzip, NoCoding}
+import akka.http.scaladsl.model.HttpEntity.Chunked
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.HttpEncodings
 import akka.stream.scaladsl.Sink
 import akka.util.ByteString
 import com.freshsoft.matterbridge.server.MatterBridgeContext
@@ -47,23 +49,11 @@ object MatterBridgeHttpClient extends ISlashCommandJsonSupport with MatterBridge
     * @return Raw HttpResponse UTF-8 conform String as a future
     */
   def getUrlContent(url: String): Future[String] =
-    ClientRequest(url).get().map(_.response) flatMap {
+    ClientRequest(url).get().map(_.response).map(decodeResponse) flatMap {
 
-      case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-        val isGzipContent =
-          (x: HttpHeader) => x.name() == "Content-Encoding" && x.value() == "gzip"
-
-        headers.find(isGzipContent) match {
-          case Some(_) =>
-            entity.dataBytes
-              .via(Gzip.decoderFlow)
-              .map(_.decodeString("UTF-8"))
-              .runWith(Sink.fold("")(_ ++ _))
-
-          case None =>
-            entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { x =>
-              x.decodeString("UTF-8")
-            }
+      case HttpResponse(StatusCodes.OK, _, entity, _) =>
+        entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { x =>
+          x.decodeString("UTF-8")
         }
 
       // We have to consume the response, cause we need a valid akka.http flow
@@ -73,4 +63,17 @@ object MatterBridgeHttpClient extends ISlashCommandJsonSupport with MatterBridge
           x.decodeString("UTF-8")
         }
     }
+
+  def decodeResponse(response: HttpResponse): HttpResponse = {
+    val decoder = response.encoding match {
+      case HttpEncodings.gzip ⇒
+        Gzip
+      case HttpEncodings.deflate ⇒
+        Deflate
+      case HttpEncodings.identity ⇒
+        NoCoding
+    }
+
+    decoder.decodeMessage(response)
+  }
 }
