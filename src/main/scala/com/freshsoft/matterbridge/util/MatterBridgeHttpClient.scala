@@ -2,10 +2,8 @@ package com.freshsoft.matterbridge.util
 
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.coding.{Deflate, Gzip, NoCoding}
-import akka.http.scaladsl.model.HttpEntity.Chunked
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.HttpEncodings
-import akka.stream.scaladsl.Sink
 import akka.util.ByteString
 import com.freshsoft.matterbridge.server.MatterBridgeContext
 import model.MatterBridgeEntities.{ISlashCommandJsonSupport, IncomingResponse}

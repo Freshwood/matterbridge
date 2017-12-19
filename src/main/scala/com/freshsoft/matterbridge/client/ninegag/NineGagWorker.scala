@@ -55,10 +55,10 @@ class NineGagWorker(nineGagReceiver: ActorRef) extends Actor with ActorLogging {
 
     val articles = doc >> elements("article")
 
-    val gifResults = for {
+    val gifResults: Iterable[(String, String)] = for {
       article <- articles
-      headline <- article("header h2") map (_ >> allText("a"))
-      gifSrc <- (article >> elementList("div a div") >?> attr("data-image")).flatten
+      headline <- article("header a") map (_ >> allText("h1"))
+      gifSrc <- (article >> elementList("div a img") >?> attr("src")).flatten
     } yield (headline, gifSrc)
 
     gifResults.map(r => NineGagGifResult(r._1, r._2, category)).toList
