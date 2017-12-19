@@ -64,16 +64,9 @@ object MatterBridgeHttpClient extends ISlashCommandJsonSupport with MatterBridge
         }
     }
 
-  def decodeResponse(response: HttpResponse): HttpResponse = {
-    val decoder = response.encoding match {
-      case HttpEncodings.gzip ⇒
-        Gzip
-      case HttpEncodings.deflate ⇒
-        Deflate
-      case HttpEncodings.identity ⇒
-        NoCoding
-    }
-
-    decoder.decodeMessage(response)
+  def decodeResponse(response: HttpResponse): HttpResponse = response.encoding match {
+    case HttpEncodings.gzip    => Gzip.decodeMessage(response)
+    case HttpEncodings.deflate => Deflate.decodeMessage(response)
+    case _                     => NoCoding.decodeMessage(response)
   }
 }
