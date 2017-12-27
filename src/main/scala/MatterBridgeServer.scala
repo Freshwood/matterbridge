@@ -41,12 +41,10 @@ object MatterBridgeServer
       system.terminate()
   }
 
-  if (isNineGagFeatureEnabled) {
-    system.scheduler.schedule(1 seconds,
-                              5 seconds,
-                              NineGagIntegration.nineGagResolver,
-                              NineGagResolveCommand())
-  }
+  system.scheduler.schedule(1 seconds,
+                            5 seconds,
+                            NineGagIntegration.nineGagResolver,
+                            NineGagResolveCommand())
 
   system.scheduler
     .schedule(15 seconds, 15 minutes, RssIntegration.rssReaderActor, RssReaderActorModel.Start)
