@@ -34,6 +34,12 @@ object MatterBridgeEntities {
 
   case class NineGagGifResult(key: String, gifUrl: String, categoryName: String)
 
+  case class NineGagApiResult(data: NineGagItemResult)
+
+  case class NineGagItemResult(items: Seq[NineGagItem])
+
+  case class NineGagItem(title: String, imageURL: String)
+
   case class NewsriverRecoverWebsite(domainName: String, rankingGlobal: Int)
 
   case class NewsriverResponseEntity(primary: Boolean, url: String)
@@ -57,7 +63,7 @@ object MatterBridgeEntities {
                             author: String = "")
 
   object RssReaderActorModel extends Enumeration(initial = 0) {
-    val Start = Value
+    val Start: RssReaderActorModel.Value = Value
   }
 
   /**
@@ -81,5 +87,13 @@ object MatterBridgeEntities {
       NewsriverResponse)
     implicit val nineGagGifResultResponseFormat: RootJsonFormat[NineGagGifResult] = jsonFormat3(
       NineGagGifResult)
+
+    implicit val nineGagItemFormat: RootJsonFormat[NineGagItem] = jsonFormat2(NineGagItem)
+
+    implicit val nineGagItemResultFormat: RootJsonFormat[NineGagItemResult] = jsonFormat1(
+      NineGagItemResult)
+
+    implicit val nineGagApiResultFormat: RootJsonFormat[NineGagApiResult] = jsonFormat1(
+      NineGagApiResult)
   }
 }
