@@ -123,7 +123,7 @@ class NineGagService(db: NineGagDataProvider, categoryDb: CategoryDataProvider)(
   override def add(name: String, gifUrl: String, categoryId: UUID): Future[Boolean] = {
     this.exists(gifUrl) flatMap { isExistent =>
       if (isExistent) {
-        log.info(
+        log.debug(
           s"The 9gag gif with the name [$name] and url [$gifUrl] already exists. Skipping entry...")
         Future.successful(false)
       } else {

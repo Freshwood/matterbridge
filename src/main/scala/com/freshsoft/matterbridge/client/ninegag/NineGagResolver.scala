@@ -27,6 +27,7 @@ class NineGagResolver extends Actor with ActorLogging with MatterBridgeConfig wi
       ()
 
     case result: NineGagApiResult =>
+      log.info(s"Found [${result.data.items.length}] gifs from the 9Gag API")
       result.data.items foreach (item => receiver ! NineGagGifResult(item.title, item.imageURL))
   }
 }
