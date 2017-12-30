@@ -3,13 +3,13 @@ package com.freshsoft.matterbridge.routing
 import akka.http.scaladsl.model.FormData
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import model.MatterBridgeEntities.ISlashCommandJsonSupport
+import model.MatterBridgeEntities.JsonSupport
 import com.freshsoft.matterbridge.server.{MatterBridgeService, MatterBridgeServiceIntegration}
 
 /**
   * The matter bridge application routing definition
   */
-class MatterBridgeRoute extends ISlashCommandJsonSupport {
+class MatterBridgeRoute extends JsonSupport {
 
   val matterBridgeService: MatterBridgeServiceIntegration =
     new MatterBridgeService

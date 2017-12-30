@@ -32,7 +32,7 @@ object MatterBridgeEntities {
 
   case class NineGagResolveCommand(action: String = "Resolve")
 
-  case class NineGagGifResult(key: String, gifUrl: String, categoryName: String)
+  case class NineGagGifResult(key: String, gifUrl: String, categoryName: String = "funny")
 
   case class NineGagApiResult(data: NineGagItemResult)
 
@@ -69,7 +69,7 @@ object MatterBridgeEntities {
   /**
 		* Implicit json conversion -> Nothing to do when we complete the object
 		*/
-  trait ISlashCommandJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
+  trait JsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
     implicit val slashResponseFieldFormat: RootJsonFormat[SlashResponseField] = jsonFormat3(
       SlashResponseField)
     implicit val slashResponseElementFormat: RootJsonFormat[SlashResponseAttachment] =

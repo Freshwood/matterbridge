@@ -6,7 +6,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.HttpEncodings
 import akka.util.ByteString
 import com.freshsoft.matterbridge.server.MatterBridgeContext
-import model.MatterBridgeEntities.{ISlashCommandJsonSupport, IncomingResponse}
+import model.MatterBridgeEntities.{JsonSupport, IncomingResponse}
 import net.softler.client.ClientRequest
 import spray.json._
 
@@ -15,7 +15,7 @@ import scala.concurrent.Future
 /**
   * A simple http client to send request external services
   */
-object MatterBridgeHttpClient extends ISlashCommandJsonSupport with MatterBridgeContext {
+object MatterBridgeHttpClient extends JsonSupport with MatterBridgeContext {
 
   val log: LoggingAdapter = Logging.getLogger(system, this)
 

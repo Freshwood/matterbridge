@@ -24,7 +24,7 @@ object NewsriverIntegration
     extends IMatterBridgeResult
     with MatterBridgeConfig
     with MatterBridgeContext
-    with ISlashCommandJsonSupport {
+    with JsonSupport {
 
   private val log = Logging.getLogger(system, this)
 
@@ -109,8 +109,7 @@ object NewsriverIntegration
         r.text,
         e.url,
         List(
-          SlashResponseField(r.website.domainName,
-                             "Ranking: " + r.website.rankingGlobal.toString)),
+          SlashResponseField(r.website.domainName, "Ranking: " + r.website.rankingGlobal.toString)),
         rankingColor(r.website.rankingGlobal)
       )
 
@@ -133,7 +132,7 @@ object NewsriverIntegration
       case x if x < 50000 => "#764FA5"
       case x if x < 75000 => "#36a64f"
       case x if x < 90000 => "#36a6Cf"
-      case _ => "#000000"
+      case _              => "#000000"
     }
   }
 

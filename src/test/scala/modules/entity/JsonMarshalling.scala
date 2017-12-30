@@ -8,11 +8,7 @@ import spray.json._
 /**
 	* Test the json unmarshaller/marshaller from `ISlashCommandJsonSupport`
 	*/
-class JsonMarshalling
-    extends WordSpec
-    with Matchers
-    with MatterBridgeContext
-    with ISlashCommandJsonSupport {
+class JsonMarshalling extends WordSpec with Matchers with MatterBridgeContext with JsonSupport {
 
   "The spray json marshalling" should {
 

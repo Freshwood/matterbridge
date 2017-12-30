@@ -1,7 +1,6 @@
 package com.freshsoft.matterbridge.client.ninegag
 
-import akka.actor.{Actor, ActorRef, Props}
-import akka.event.{Logging, LoggingAdapter}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.freshsoft.matterbridge.client.IMatterBridgeResult
 import com.freshsoft.matterbridge.server.{MatterBridgeContext, NineGagActorService}
 import com.freshsoft.matterbridge.util.MatterBridgeConfig
@@ -19,16 +18,13 @@ object NineGagIntegration
     with MatterBridgeContext
     with NineGagActorService {
 
-  case class NineGagWorkerCommand(nineGagUrl: String, relatedCategory: String)
-
-  val log: LoggingAdapter = Logging.getLogger(system, this)
   val nineGagResolver: ActorRef =
     system.actorOf(Props(classOf[NineGagResolver]), "NineGagResolver")
 
   /**
 		* The gif receiving actor which is handling the receiving of NineGagGifResult's
 		*/
-  class NineGagGifReceiver extends Actor {
+  class NineGagGifReceiver extends Actor with ActorLogging {
 
     override def receive: Receive = {
       case x: NineGagGifResult =>
@@ -36,21 +32,20 @@ object NineGagIntegration
           cats find (_.name == x.categoryName) map { result =>
             nineGagService.add(x.key, x.gifUrl, result.id) map {
               case true => log.info(s"Added 9 Gag gif '${x.key}' with url '${x.gifUrl}'")
-              case _    => log.info(s"Could not add 9 Gag guf with the name [${x.key}]")
+              case _    => log.info(s"Could not add 9 Gag gif with the name [${x.key}]")
             }
           }
         }
     }
   }
 
-  override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] = {
-
-    nineGagService.byName(request.text) map { gifs =>
-      gifs.headOption map { gif =>
+  override def getResult(request: SlashCommandRequest): Future[Option[SlashResponse]] =
+    nineGagService.byName(request.text) map {
+      _.headOption map { gif =>
         SlashResponse(nineGagResponseType,
                       s"${gif.name}\n${gif.gifUrl}\nSearched for ${request.text}",
                       List())
       }
     }
-  }
+
 }

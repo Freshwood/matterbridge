@@ -123,7 +123,8 @@ class NineGagService(db: NineGagDataProvider, categoryDb: CategoryDataProvider)(
   override def add(name: String, gifUrl: String, categoryId: UUID): Future[Boolean] = {
     this.exists(gifUrl) flatMap { isExistent =>
       if (isExistent) {
-        log.info(s"The 9gag gif with the url [$gifUrl] already exists. Skipping entry...")
+        log.info(
+          s"The 9gag gif with the name [$name] and url [$gifUrl] already exists. Skipping entry...")
         Future.successful(false)
       } else {
         log.info(s"Adding 9gag gif with name [$name]")
@@ -137,8 +138,7 @@ class NineGagService(db: NineGagDataProvider, categoryDb: CategoryDataProvider)(
   override def last: Future[Seq[NineGagEntity]] = db.last
 }
 
-class CodingLoveService(db: CodingLoveDataProvider)(
-    implicit val executionContext: ExecutionContext)
+class CodingLoveService(db: CodingLoveDataProvider)(implicit val executionContext: ExecutionContext)
     extends AbstractDataService[CodingLoveEntity, CodingLoveDataProvider](db)
     with CodingLoveDataService {
 
