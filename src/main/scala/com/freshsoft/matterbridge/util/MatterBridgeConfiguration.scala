@@ -34,14 +34,6 @@ trait MatterBridgeConfig extends MatterBridgeServerConfig {
     config.getString("matterbridge.integrations.ninegag.command")
   lazy val nineGagResponseType: String =
     config.getString("matterbridge.integrations.ninegag.response_type")
-  lazy val newsriverApiToken: String =
-    config.getString("matterbridge.integrations.newsriver.api_token")
-  lazy val newsriverIncomingTokenUrl: String =
-    config.getString("matterbridge.integrations.newsriver.incoming_token")
-  lazy val newsriverCommand: String =
-    config.getString("matterbridge.integrations.newsriver.command")
-  lazy val newsriverResponseType: String =
-    config.getString("matterbridge.integrations.newsriver.response_type")
 }
 
 trait DatabaseConfiguration extends MatterBridgeConfigHolder {
