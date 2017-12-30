@@ -72,37 +72,36 @@ The service is supporting all types of web hooks:
 `}`
 * Bind here the host and your port
 
-`database {`
-  `url = "jdbc:postgresql://localhost/matterbridgedb"`
-  `url = ${?PSQL_URL}`
-  `user = "admin"`
-  `user = ${?PSQL_USER}`
-  `password = "Admin12!"`
-  `password = ${?PSQL_PASSWORD}`
-  `driver = org.postgresql.Driver`
-`}`
-
 * Setup the database name and user
+  * Here you can override the default slash commands
+  * For example /ninegag and /codinglove
+  
+````scala
+database {
+  url = "jdbc:postgresql://localhost/matterbridgedb"
+  url = ${?PSQL_URL}
+  user = "admin"
+  user = ${?PSQL_USER}
+  password = "Admin12!"
+  password = ${?PSQL_PASSWORD}
+  driver = org.postgresql.Driver
+}
+````  
 
-`matterbridge {`
-  `integrations {`
-    `codinglove {`
-      `command = "codinglove"`
-      `response_type = "in_channel"`
-    `}`
-    `ninegag {`
-      `command = "ninegag"`
-      `response_type = "in_channel"`
-    `}`
-    `newsriver {`
-      `api_token = "sBBqsGXiYgF0Db5OV5tAw9cKkG-R9HP8i_Hw0VCYICEOnIvuIlisyP67o0v1pThT"`
-      `incoming_token = "<your token here>"`
-      `command = "news"`
-      `response_type = "ephemeral"`
-    `}`
-  `}`
-` }`
+#### Example slack / mattermost configuration
 
-* Here you can override the default slash commands
-* For example /ninegag and /codinglove
-
+````scala
+matterbridge {
+  integrations {
+    codinglove {
+      command = "codinglove"
+      response_type = "in_channel"
+    }
+    ninegag {
+      api-url = "https://9gag.com/v1/featured-posts"
+      command = "ninegag"
+      response_type = "in_channel"
+    }
+  }
+}
+````
